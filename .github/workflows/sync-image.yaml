@@ -1,0 +1,22 @@
+name: DockerHub to SWR
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  HUAWEICLOUD_IAM_AK: "${{ secrets.HUAWEICLOUD_IAM_AK }}"
+  HUAWEICLOUD_IAM_SK: "${{ secrets.HUAWEICLOUD_IAM_SK }}"
+
+jobs:
+  build:
+    name: DockerHub to SWR
+    runs-on: ubuntu-latest
+    steps:
+      - name: git checkout
+        uses: actions/checkout@v4
+
+      - name: DockerHub to SWR
+        run: |
+          docker login -u cn-south-1@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.cn-south-1.myhuaweicloud.com
+          sh sync-image.sh

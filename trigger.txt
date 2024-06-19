@@ -1,0 +1,9 @@
+rancher/klipper-helm:v0.8.3-build20240228
+rancher/klipper-lb:v0.4.7
+rancher/local-path-provisioner:v0.0.26
+rancher/mirrored-coredns-coredns:1.10.1
+rancher/mirrored-library-busybox:1.36.1
+rancher/mirrored-library-traefik:2.10.7
+rancher/mirrored-metrics-server:v0.7.0
+rancher/mirrored-pause:3.6
+rancher/shell:v0.1.20
