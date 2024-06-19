@@ -1,3 +1,8 @@
+#!/bin/bash
+
+# -e当命令发生错误的时候, 停止脚本的执行; -x把将要运行的命令用一个 + 标记之后显示出来
+set -ex
+
 # docker pull
 # 如果需要特定架构镜像可以手动指定  --platform linux/arm64 , linux/amd64 , linux/arm/v7 等信息
 
