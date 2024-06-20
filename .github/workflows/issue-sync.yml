@@ -9,7 +9,7 @@ on:
 env:
   HUAWEICLOUD_IAM_AK: "${{ secrets.HUAWEICLOUD_IAM_AK }}"
   HUAWEICLOUD_IAM_SK: "${{ secrets.HUAWEICLOUD_IAM_SK }}"
-  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GH_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 
 # https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
 permissions:
@@ -23,7 +23,7 @@ jobs:
       - name: git checkout
         uses: actions/checkout@v4
 
-      - name: check
+      - name: check image format
         if: (!contains(github.event.issue.labels.*.name, 'x86_64')) && (!contains(github.event.issue.labels.*.name, 'aarch64'))
         run: |
           gh issue comment ${{ github.event.issue.number }} -b "镜像架构标签不存在, 请添加镜像架构标签
@@ -93,13 +93,13 @@ jobs:
 
       - name: success
         run: |
-          gh issue comment ${{ github.event.issue.number }} -b "镜像 ${{ github.event.issue.title }} 同步完成<br>"
-          gh issue edit ${{ github.event.issue.number }} --add-label "sync-image-success" -b "IMAGE SYNC"
-          gh issue close ${{ github.event.issue.number }} --reason "completed"
+          gh issue comment ${{ github.event.issue.number }} -b "镜像 ${{ github.event.issue.title }} 同步完成<br><br>[离线镜像包下载地址](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+          gh issue edit ${{ github.event.issue.number }} --add-label "sync-image-success"
+          gh issue close ${{ github.event.issue.number }}
 
       - name: fail
         if: failure()
         run: |
-          gh issue comment ${{ github.event.issue.number }} -b "镜像 ${{ github.event.issue.title }} 同步失败<br><br>[详情请查看](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})<br>请检查 image 是否存在"
+          gh issue comment ${{ github.event.issue.number }} -b "镜像 ${{ github.event.issue.title }} 同步失败<br><br>[失败详情请查看](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
           gh issue edit ${{ github.event.issue.number }} --add-label "sync-image-fail"
-          gh issue close ${{ github.event.issue.number }} --reason "not planned"
+          gh issue close ${{ github.event.issue.number }}
