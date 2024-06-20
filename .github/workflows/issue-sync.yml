@@ -16,7 +16,8 @@ permissions:
   issues: write
 
 jobs:
-  sync:
+  build:
+    name: issue-sync
     runs-on: ubuntu-latest
     if: contains(github.event.issue.labels.*.name, 'sync-image')
     steps:
