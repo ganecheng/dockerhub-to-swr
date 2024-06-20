@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: check image format
-        if: ((!contains(github.event.issue.labels.*.name, 'x86_64')) && (!contains(github.event.issue.labels.*.name, 'aarch64'))) || !contains(github.event.issue.labels.*.name, 'sync-image')
+        if: ((!contains(github.event.issue.labels.*.name, 'x86_64')) && (!contains(github.event.issue.labels.*.name, 'aarch64'))) || !contains(github.event.issue.labels.*.name, 'sync-image') || github.event.issue.user.login != 'ganecheng'
         run: |
           gh issue comment ${{ github.event.issue.number }} -b "issue检查不通过, 需要满足以下3个条件的issue才会开启镜像自动同步<br><br>由@ganecheng提交<br>添加了sync-image标签<br>添加了镜像架构标签x86_64或aarch64"
           exit 1
@@ -66,11 +66,11 @@ jobs:
           docker login -u cn-south-1@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.cn-south-1.myhuaweicloud.com
           set -ex
           
-          images="${{ github.event.inputs.docker_images }}"
+          images="${{ github.event.issue.title }}"
           IFS=',' read -r -a image_array <<< "$images"
           
           for image in "${image_array[@]}"; do
-            docker pull "${image}" --platform "linux/amd64"
+            docker pull "${image}" --platform "linux/arm64"
             docker tag "${image}" swr.cn-south-1.myhuaweicloud.com/gsc-hub/${image}-aarch64
             docker push swr.cn-south-1.myhuaweicloud.com/gsc-hub/${image}-aarch64
           
