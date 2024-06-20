@@ -11,6 +11,7 @@ on:
 env:
   HUAWEICLOUD_IAM_AK: "${{ secrets.HUAWEICLOUD_IAM_AK }}"
   HUAWEICLOUD_IAM_SK: "${{ secrets.HUAWEICLOUD_IAM_SK }}"
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 # https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
 permissions:
@@ -20,9 +21,10 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     if: contains(github.event.issue.labels.*.name, 'sync-image')
-    env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
+      - name: git checkout
+        uses: actions/checkout@v4
+
       - name: check
         if: (!contains(github.event.issue.labels.*.name, 'x86_64')) && (!contains(github.event.issue.labels.*.name, 'aarch64'))
         run: |
@@ -32,9 +34,6 @@ jobs:
       - name: init
         run: |
           gh issue comment ${{ github.event.issue.number }} -b "Hi @${{ github.event.issue.user.login }}, 镜像 ${{ github.event.issue.title }} 同步中...<br>[详情请查看](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
-
-      - name: git checkout
-        uses: actions/checkout@v4
 
       - name: DockerHub to SWR
         if: contains(github.event.issue.labels.*.name, 'x86_64')
