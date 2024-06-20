@@ -19,7 +19,7 @@ jobs:
   build:
     name: issue-sync
     runs-on: ubuntu-latest
-    if: contains(github.event.issue.labels.*.name, 'sync-image')
+    if: contains(github.event.issue.labels.*.name, 'sync-image') && ${{ github.event.issue.user.login == 'ganecheng' }}
     steps:
       - name: git checkout
         uses: actions/checkout@v4
