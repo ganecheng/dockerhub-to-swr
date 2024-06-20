@@ -1,0 +1,108 @@
+name: issue-sync
+
+on:
+  issue_comment:
+    types:
+      - created
+  issues:
+    types:
+      - opened
+
+env:
+  HUAWEICLOUD_IAM_AK: "${{ secrets.HUAWEICLOUD_IAM_AK }}"
+  HUAWEICLOUD_IAM_SK: "${{ secrets.HUAWEICLOUD_IAM_SK }}"
+
+# https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
+permissions:
+  issues: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    if: contains(github.event.issue.labels.*.name, 'sync-image')
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: check
+        if: (!contains(github.event.issue.labels.*.name, 'x86_64')) && (!contains(github.event.issue.labels.*.name, 'aarch64'))
+        run: |
+          gh issue comment ${{ github.event.issue.number }} -b "镜像架构标签不存在, 请添加镜像架构标签
+          exit 1
+
+      - name: init
+        run: |
+          gh issue comment ${{ github.event.issue.number }} -b "Hi @${{ github.event.issue.user.login }}, 镜像 ${github.event.issue.title} 同步中...<br>[详情请查看](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+
+      - name: git checkout
+        uses: actions/checkout@v4
+
+      - name: DockerHub to SWR
+        if: contains(github.event.issue.labels.*.name, 'x86_64')
+        run: |
+          docker login -u cn-south-1@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.cn-south-1.myhuaweicloud.com
+          set -ex
+          
+          images="${{ github.event.inputs.docker_images }}"
+          IFS=',' read -r -a image_array <<< "$images"
+          
+          for image in "${image_array[@]}"; do
+            docker pull "${image}" --platform "linux/amd64"
+            docker tag "${image}" swr.cn-south-1.myhuaweicloud.com/gsc-hub/${image}-x86_64
+            docker push swr.cn-south-1.myhuaweicloud.com/gsc-hub/${image}-x86_64
+          
+            docker save "${image}" -o "${image//\//_}-x86_64.tar"
+          done
+          
+          tar -czf x86_64-images.tar.gz *-x86_64.tar
+
+      - name: Upload artifact
+        if: contains(github.event.issue.labels.*.name, 'x86_64')
+        uses: actions/upload-artifact@v4
+        with:
+          name: x86_64-images.tar.gz
+          path: x86_64-images.tar.gz
+          retention-days: 1  # 将保留天数设置为1天 最多可设置90天
+
+      - name: DockerHub to SWR
+        if: contains(github.event.issue.labels.*.name, 'aarch64')
+        run: |
+          docker login -u cn-south-1@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.cn-south-1.myhuaweicloud.com
+          set -ex
+          
+          images="${{ github.event.inputs.docker_images }}"
+          IFS=',' read -r -a image_array <<< "$images"
+          
+          for image in "${image_array[@]}"; do
+            docker pull "${image}" --platform "linux/amd64"
+            docker tag "${image}" swr.cn-south-1.myhuaweicloud.com/gsc-hub/${image}-aarch64
+            docker push swr.cn-south-1.myhuaweicloud.com/gsc-hub/${image}-aarch64
+          
+            docker save "${image}" -o "${image//\//_}-aarch64.tar"
+          done
+          
+          tar -czf aarch64-images.tar.gz *-aarch64.tar
+
+      - name: Upload artifact
+        if: contains(github.event.issue.labels.*.name, 'aarch64')
+        uses: actions/upload-artifact@v4
+        with:
+          name: aarch64-images.tar.gz
+          path: aarch64-images.tar.gz
+          retention-days: 1  # 将保留天数设置为1天 最多可设置90天
+
+      - name: Clean up intermediate files
+        run: |
+          rm *.tar
+
+      - name: success
+        run: |
+          gh issue comment ${{ github.event.issue.number }} -b "镜像 ${github.event.issue.title} 同步完成<br>"
+          gh issue edit ${{ github.event.issue.number }} --add-label "sync-image-success" -b "IMAGE SYNC"
+          gh issue close ${{ github.event.issue.number }} --reason "completed"
+
+      - name: fail
+        if: failure()
+        run: |
+          gh issue comment ${{ github.event.issue.number }} -b "镜像 ${github.event.issue.title} 同步失败[详情请查看](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})<br>请检查 image 是否存在"
+          gh issue edit ${{ github.event.issue.number }} --add-label "sync-image-fail" -b "IMAGE SYNC"
+          gh issue close ${{ github.event.issue.number }} --reason "not planned"
