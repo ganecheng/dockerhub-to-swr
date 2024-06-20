@@ -1,8 +1,8 @@
 ---
-name: 同步镜像模板x86_64
-about: 用这个模板来同步镜像x86_64
+name: 同步镜像模板aarch64
+about: 用这个模板来同步镜像aarch64
 title: ''
-labels: sync-image, x86_64
+labels: aarch64, sync-image
 assignees: ''
 
 ---
