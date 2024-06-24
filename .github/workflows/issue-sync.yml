@@ -42,8 +42,7 @@ jobs:
               return 0
           } 
           search_term="${{ github.event.issue.user.login }}"
-          result=$(strict_contains "$search_term")
-          if [[ "$result" == "0" ]]; then
+          if [[ "$(strict_contains "$search_term")" == "0" ]]; then
             gh issue comment ${{ github.event.issue.number }} -b "@${{ github.event.issue.user.login }}, issue检查不通过, 需要满足以下3个条件的issue才会开启镜像自动同步<br><br>由 @ganecheng, @C772746954 提交<br>添加了sync-image标签<br>添加了镜像架构标签x86_64或aarch64"
             exit 1
           fi
