@@ -23,26 +23,10 @@ jobs:
       - name: git checkout
         uses: actions/checkout@v4
 
-      - name: check author
-        run: |
-          set -ex
-          # 定义一个包含字符串的数组
-          declare -a STRING_SET=("ganecheng" "C772746954")
-          search_term="${{ github.event.issue.user.login }}"
-
-          for item in "${STRING_SET[@]}"; do
-              if [[ "$item" == "$search_term" ]]; then
-                  exit 0
-              fi
-          done
-          
-          gh issue comment ${{ github.event.issue.number }} -b "@${{ github.event.issue.user.login }}, issue检查不通过, 需要满足以下3个条件的issue才会开启镜像自动同步<br><br>由 @ganecheng, @C772746954 提交<br>添加了sync-image标签<br>添加了镜像架构标签x86_64或aarch64"
-          exit 1
-
       - name: check sync condition
-        if: ((!contains(github.event.issue.labels.*.name, 'x86_64')) && (!contains(github.event.issue.labels.*.name, 'aarch64'))) || !contains(github.event.issue.labels.*.name, 'sync-image')
+        if: ((!contains(github.event.issue.labels.*.name, 'x86_64')) && (!contains(github.event.issue.labels.*.name, 'aarch64'))) || !contains(github.event.issue.labels.*.name, 'sync-image') || github.event.issue.user.login != 'ganecheng'
         run: |
-          gh issue comment ${{ github.event.issue.number }} -b "@${{ github.event.issue.user.login }}, issue检查不通过, 需要满足以下3个条件的issue才会开启镜像自动同步<br><br>由 @ganecheng, @C772746954 提交<br>添加了sync-image标签<br>添加了镜像架构标签x86_64或aarch64"
+          gh issue comment ${{ github.event.issue.number }} -b "issue检查不通过, 需要满足以下3个条件的issue才会开启镜像自动同步<br><br>由 @ganecheng 提交<br>添加了sync-image标签<br>添加了镜像架构标签x86_64或aarch64"
           exit 1
 
       - name: init
@@ -61,20 +45,13 @@ jobs:
           for image in "${image_array[@]}"; do
             docker pull "${image}" --platform "linux/amd64"
             docker tag "${image}" swr.cn-south-1.myhuaweicloud.com/gsc-hub/${image}-x86_64
+            docker tag "${image}" ${image}-x86_64
             docker push swr.cn-south-1.myhuaweicloud.com/gsc-hub/${image}-x86_64
           
-            docker save "${image}" -o "${image//\//_}-x86_64.tar"
+            docker save "${image}-x86_64" -o "${image//\//_}-x86_64.tar"
           done
           
-          tar -czf x86_64-images.tar.gz *-x86_64.tar
-
-      - name: Upload artifact
-        if: contains(github.event.issue.labels.*.name, 'x86_64')
-        uses: actions/upload-artifact@v4
-        with:
-          name: x86_64-images.tar.gz
-          path: x86_64-images.tar.gz
-          retention-days: 1  # 将保留天数设置为1天 最多可设置90天
+          tar -czf images.tar.gz *-x86_64.tar
 
       - name: DockerHub to SWR
         if: contains(github.event.issue.labels.*.name, 'aarch64')
@@ -88,20 +65,20 @@ jobs:
           for image in "${image_array[@]}"; do
             docker pull "${image}" --platform "linux/arm64"
             docker tag "${image}" swr.cn-south-1.myhuaweicloud.com/gsc-hub/${image}-aarch64
+            docker tag "${image}" ${image}-aarch64
             docker push swr.cn-south-1.myhuaweicloud.com/gsc-hub/${image}-aarch64
           
-            docker save "${image}" -o "${image//\//_}-aarch64.tar"
+            docker save "${image}-aarch64" -o "${image//\//_}-aarch64.tar"
           done
           
-          tar -czf aarch64-images.tar.gz *-aarch64.tar
+          tar -czf images.tar.gz *-aarch64.tar
 
       - name: Upload artifact
-        if: contains(github.event.issue.labels.*.name, 'aarch64')
         uses: actions/upload-artifact@v4
         with:
-          name: aarch64-images.tar.gz
-          path: aarch64-images.tar.gz
-          retention-days: 1  # 将保留天数设置为1天 最多可设置90天
+          name: images.tar.gz
+          path: images.tar.gz
+          retention-days: 90  # 将保留天数设置为1天 最多可设置90天
 
       - name: Clean up intermediate files
         run: |
