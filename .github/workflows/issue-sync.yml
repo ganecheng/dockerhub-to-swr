@@ -81,10 +81,6 @@ jobs:
           path: images.tar.gz
           retention-days: 90  # 将保留天数设置为1天 最多可设置90天
 
-      - name: Clean up intermediate files
-        run: |
-          rm *.tar
-
       - name: success
         run: |
           gh issue comment ${{ github.event.issue.number }} -b "镜像 ${{ github.event.issue.title }} 同步完成<br><br>[离线镜像包下载地址](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
