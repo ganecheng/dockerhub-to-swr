@@ -10,7 +10,6 @@ env:
   HUAWEICLOUD_IAM_AK: "${{ secrets.HUAWEICLOUD_IAM_AK }}"
   HUAWEICLOUD_IAM_SK: "${{ secrets.HUAWEICLOUD_IAM_SK }}"
   GH_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-  IMAGE_LIST: ""
 
 # https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
 permissions:
@@ -49,7 +48,7 @@ jobs:
             docker push swr.cn-south-1.myhuaweicloud.com/gsc-hub/${image}-x86_64
 
             docker tag "${image}" ${image}-x86_64
-            IMAGE_LIST="${IMAGE_LIST} ${image}-x86_64"
+            echo -n " ${image}-x86_64" >> images.txt
           done
 
       - name: DockerHub to SWR aarch64
@@ -67,13 +66,13 @@ jobs:
             docker push swr.cn-south-1.myhuaweicloud.com/gsc-hub/${image}-aarch64
             
             docker tag "${image}" ${image}-aarch64
-            IMAGE_LIST="${IMAGE_LIST} ${image}-aarch64"
+            echo -n " ${image}-aarch64" >> images.txt
           done
 
       - name: Offline images tar gz
         run: |
           set -ex
-          docker save ${IMAGE_LIST} | gzip > images.tar.gz
+          docker save $(cat images.txt) | gzip > images.tar.gz
           
       - name: Upload artifact
         uses: actions/upload-artifact@v4
