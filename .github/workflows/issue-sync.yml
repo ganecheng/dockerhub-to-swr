@@ -28,24 +28,16 @@ jobs:
           set -ex
           # 定义一个包含字符串的数组
           declare -a STRING_SET=("ganecheng" "C772746954")
-           
-          # 严格判断函数
-          strict_contains() {
-              local search_term="$1"
-              for item in "${STRING_SET[@]}"; do
-                  if [[ "$item" == "$search_term" ]]; then
-                      echo "1" # 返回1表示包含
-                      return 1
-                  fi
-              done
-              echo "0" # 返回0表示不包含
-              return 0
-          } 
           search_term="${{ github.event.issue.user.login }}"
-          if [[ "$(strict_contains "$search_term")" == "0" ]]; then
-            gh issue comment ${{ github.event.issue.number }} -b "@${{ github.event.issue.user.login }}, issue检查不通过, 需要满足以下3个条件的issue才会开启镜像自动同步<br><br>由 @ganecheng, @C772746954 提交<br>添加了sync-image标签<br>添加了镜像架构标签x86_64或aarch64"
-            exit 1
-          fi
+
+          for item in "${STRING_SET[@]}"; do
+              if [[ "$item" == "$search_term" ]]; then
+                  exit 0
+              fi
+          done
+          
+          gh issue comment ${{ github.event.issue.number }} -b "@${{ github.event.issue.user.login }}, issue检查不通过, 需要满足以下3个条件的issue才会开启镜像自动同步<br><br>由 @ganecheng, @C772746954 提交<br>添加了sync-image标签<br>添加了镜像架构标签x86_64或aarch64"
+          exit 1
 
       - name: check sync condition
         if: ((!contains(github.event.issue.labels.*.name, 'x86_64')) && (!contains(github.event.issue.labels.*.name, 'aarch64'))) || !contains(github.event.issue.labels.*.name, 'sync-image')
