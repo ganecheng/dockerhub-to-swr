@@ -73,6 +73,11 @@ jobs:
           
           tar -czf images.tar.gz *-aarch64.tar
 
+      - name: Offline images tar gz
+        run: |
+          set -ex
+          tar -czf images.tar.gz *.tar
+          
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
