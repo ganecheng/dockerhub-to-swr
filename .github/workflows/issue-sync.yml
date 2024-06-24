@@ -10,6 +10,7 @@ env:
   HUAWEICLOUD_IAM_AK: "${{ secrets.HUAWEICLOUD_IAM_AK }}"
   HUAWEICLOUD_IAM_SK: "${{ secrets.HUAWEICLOUD_IAM_SK }}"
   GH_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+  IMAGE_LIST: ""
 
 # https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
 permissions:
@@ -45,13 +46,11 @@ jobs:
           for image in "${image_array[@]}"; do
             docker pull "${image}" --platform "linux/amd64"
             docker tag "${image}" swr.cn-south-1.myhuaweicloud.com/gsc-hub/${image}-x86_64
-            docker tag "${image}" ${image}-x86_64
             docker push swr.cn-south-1.myhuaweicloud.com/gsc-hub/${image}-x86_64
-          
-            docker save "${image}-x86_64" -o "${image//\//_}-x86_64.tar"
+
+            docker tag "${image}" ${image}-x86_64
+            IMAGE_LIST="${IMAGE_LIST} ${image}-x86_64"
           done
-          
-          tar -czf images.tar.gz *-x86_64.tar
 
       - name: DockerHub to SWR aarch64
         if: contains(github.event.issue.labels.*.name, 'aarch64')
@@ -65,18 +64,16 @@ jobs:
           for image in "${image_array[@]}"; do
             docker pull "${image}" --platform "linux/arm64"
             docker tag "${image}" swr.cn-south-1.myhuaweicloud.com/gsc-hub/${image}-aarch64
-            docker tag "${image}" ${image}-aarch64
             docker push swr.cn-south-1.myhuaweicloud.com/gsc-hub/${image}-aarch64
-          
-            docker save "${image}-aarch64" -o "${image//\//_}-aarch64.tar"
+            
+            docker tag "${image}" ${image}-aarch64
+            IMAGE_LIST="${IMAGE_LIST} ${image}-aarch64"
           done
-          
-          tar -czf images.tar.gz *-aarch64.tar
 
       - name: Offline images tar gz
         run: |
           set -ex
-          tar -czf images.tar.gz *.tar
+          docker save ${IMAGE_LIST} | gzip > images.tar.gz
           
       - name: Upload artifact
         uses: actions/upload-artifact@v4
