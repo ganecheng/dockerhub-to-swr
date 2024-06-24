@@ -33,7 +33,7 @@ jobs:
         run: |
           gh issue comment ${{ github.event.issue.number }} -b "Hi @${{ github.event.issue.user.login }}, 镜像 ${{ github.event.issue.title }} 同步中...<br><br>[详情请查看](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
 
-      - name: DockerHub to SWR
+      - name: DockerHub to SWR x86_64
         if: contains(github.event.issue.labels.*.name, 'x86_64')
         run: |
           docker login -u cn-south-1@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.cn-south-1.myhuaweicloud.com
@@ -53,7 +53,7 @@ jobs:
           
           tar -czf images.tar.gz *-x86_64.tar
 
-      - name: DockerHub to SWR
+      - name: DockerHub to SWR aarch64
         if: contains(github.event.issue.labels.*.name, 'aarch64')
         run: |
           docker login -u cn-south-1@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.cn-south-1.myhuaweicloud.com
