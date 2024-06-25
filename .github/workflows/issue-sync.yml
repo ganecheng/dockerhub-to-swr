@@ -72,10 +72,14 @@ jobs:
           gh issue comment ${{ github.event.issue.number }} -b "Hi @${{ github.event.issue.user.login }}, 镜像 ${{ github.event.issue.title }} 正在同步中...<br><br>[详情请查看](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
 
       - name: DockerHub to SWR x86_64
-        if: contains(github.event.issue.labels.*.name, 'x86_64')
         run: |
           docker login -u cn-south-1@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.cn-south-1.myhuaweicloud.com
           set -ex
+          
+          label_list="$(cat label.txt)"
+          if [[ ${label_list} != *x86_64* ]]; then
+            exit 0
+          fi
           
           images="${{ github.event.issue.title }}"
           IFS=',' read -r -a image_array <<< "$images"
@@ -90,10 +94,14 @@ jobs:
           done
 
       - name: DockerHub to SWR aarch64
-        if: contains(github.event.issue.labels.*.name, 'aarch64')
         run: |
           docker login -u cn-south-1@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.cn-south-1.myhuaweicloud.com
           set -ex
+
+          label_list="$(cat label.txt)"
+          if [[ ${label_list} != *aarch64* ]]; then
+            exit 0
+          fi
           
           images="${{ github.event.issue.title }}"
           IFS=',' read -r -a image_array <<< "$images"
