@@ -23,21 +23,29 @@ jobs:
       - name: git checkout
         uses: actions/checkout@v4
 
-      - name: add label
+      - name: init
+        run: |
+          gh issue comment ${{ github.event.issue.number }} -b "Hi @${{ github.event.issue.user.login }}, 正在处理您的issue...<br><br>[详情请查看](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+
+      - name: add label sync-image
         if: contains(github.event.issue.body, 'sync-image')
         run: |
           gh issue edit ${{ github.event.issue.number }} --add-label "sync-image"
           
-      - name: add label
+      - name: add label x86_64
         if: contains(github.event.issue.body, 'x86_64')
         run: |
           gh issue edit ${{ github.event.issue.number }} --add-label "x86_64"
           
-      - name: add label
+      - name: add label aarch64
         if: contains(github.event.issue.body, 'aarch64')
         run: |
           gh issue edit ${{ github.event.issue.number }} --add-label "aarch64"
-          
+
+      - name: wait label active
+        run: |
+          sleep 10s
+
       - name: check sync condition
         if: ((!contains(github.event.issue.labels.*.name, 'x86_64')) && (!contains(github.event.issue.labels.*.name, 'aarch64'))) || !contains(github.event.issue.labels.*.name, 'sync-image') || ( (github.event.issue.user.login != 'ganecheng') && (github.event.issue.user.login != 'c772746954') )
         run: |
