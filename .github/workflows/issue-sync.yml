@@ -25,36 +25,51 @@ jobs:
 
       - name: welcome
         run: |
+          set -ex
           gh issue comment ${{ github.event.issue.number }} -b "Hi @${{ github.event.issue.user.login }}, 正在处理您的issue...<br><br>[详情请查看](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
 
       - name: add label sync-image
         if: contains(github.event.issue.body, 'sync-image')
         run: |
+          set -ex
           gh issue edit ${{ github.event.issue.number }} --add-label "sync-image"
+          echo -n " sync-image" >> label.txt
           
       - name: add label x86_64
         if: contains(github.event.issue.body, 'x86_64')
         run: |
+          set -ex
           gh issue edit ${{ github.event.issue.number }} --add-label "x86_64"
+          echo -n " x86_64" >> label.txt
           
       - name: add label aarch64
         if: contains(github.event.issue.body, 'aarch64')
         run: |
+          set -ex
           gh issue edit ${{ github.event.issue.number }} --add-label "aarch64"
-
-      - name: wait label active
-        run: |
-          sleep 10s
+          echo -n " aarch64" >> label.txt
 
       - name: check sync condition
-        if: ((!contains(github.event.issue.labels.*.name, 'x86_64')) && (!contains(github.event.issue.labels.*.name, 'aarch64'))) || !contains(github.event.issue.labels.*.name, 'sync-image') || github.event.issue.user.login != 'ganecheng'
         run: |
-          gh issue comment ${{ github.event.issue.number }} -b "issue检查不通过, 需要满足以下3个条件的issue才会开启镜像自动同步<br><br>由 @ganecheng 提交<br>添加了sync-image标签<br>添加了镜像架构标签x86_64或aarch64"
-          exit 1
+          set -ex
+          issue_author="${{ github.event.issue.user.login }}"
+          if [[ ${issue_author} != "ganecheng" && ${issue_author} != "C772746954" ]]; then
+            gh issue comment ${{ github.event.issue.number }} -b "issue检查不通过, 需要满足以下3个条件的issue才会开启镜像自动同步<br><br>由 @ganecheng 提交<br>添加了sync-image标签<br>添加了镜像架构标签x86_64或aarch64"
+            exit 1
+          fi
+          label_list="$(cat label.txt)"
+          if [[ ${label_list} != *sync-image* ]]; then
+            gh issue comment ${{ github.event.issue.number }} -b "issue检查不通过, 需要满足以下3个条件的issue才会开启镜像自动同步<br><br>由 @ganecheng 提交<br>添加了sync-image标签<br>添加了镜像架构标签x86_64或aarch64"
+            exit 1
+          fi
+          if [[ ${label_list} != *x86_64* && ${label_list} != *aarch64* ]]; then
+            gh issue comment ${{ github.event.issue.number }} -b "issue检查不通过, 需要满足以下3个条件的issue才会开启镜像自动同步<br><br>由 @ganecheng 提交<br>添加了sync-image标签<br>添加了镜像架构标签x86_64或aarch64"
+            exit 1
+          fi
 
       - name: init
         run: |
-          gh issue comment ${{ github.event.issue.number }} -b "Hi @${{ github.event.issue.user.login }}, 镜像 ${{ github.event.issue.title }} 同步中...<br><br>[详情请查看](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+          gh issue comment ${{ github.event.issue.number }} -b "Hi @${{ github.event.issue.user.login }}, 镜像 ${{ github.event.issue.title }} 正在同步中...<br><br>[详情请查看](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
 
       - name: DockerHub to SWR x86_64
         if: contains(github.event.issue.labels.*.name, 'x86_64')
