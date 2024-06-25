@@ -128,7 +128,7 @@ jobs:
             echo "gsc-hub/${image}<br>" >> image_name.txt
           done
           
-          gh issue comment ${{ github.event.issue.number }} -b "镜像 ${{ github.event.issue.title }} 同步完成<br><br>镜像pull名称如下:$(cat images.txt)<br><br>[离线镜像包下载地址](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+          gh issue comment ${{ github.event.issue.number }} -b "镜像 ${{ github.event.issue.title }} 同步完成<br><hr><br>镜像名称如下:<br><br>$(cat image_name.txt)<br><hr><br>[离线镜像包下载地址](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
           gh issue edit ${{ github.event.issue.number }} --add-label "sync-image-success"
           gh issue close ${{ github.event.issue.number }}
 
