@@ -14,11 +14,10 @@ assignees: ''
 rancher/klipper-helm:v0.8.3-build20240228,rancher/klipper-lb:v0.4.7
 
 # 标签
-sync-image：有此标签的issue才会根据标题同步镜像
-x86_64：有此标签代表同步x86_64架构镜像
-aarch64：有此标签代表同步aarch64架构镜像
-sync-image-success：有此标签代表镜像已同步成功
-sync-image-fail：有此标签代表镜像同步失败
+sync-image：有此标签的issue才会根据标题同步镜像（请保留这一行）
+aarch64：有此标签代表同步aarch64架构镜像（如果要同步aarch64，请保留这一行）
+sync-image-success：有此标签代表镜像已同步成功（这一行不重要）
+sync-image-fail：有此标签代表镜像同步失败（这一行不重要）
 
 # 参考示例：
 
