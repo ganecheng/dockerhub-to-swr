@@ -125,10 +125,10 @@ jobs:
         run: |
           IFS=' ' read -r -a image_name_array <<< "$(cat images.txt)"
           for image in "${image_name_array[@]}"; do
-            echo "gsc-hub/${image}<br>" >> image_name.txt
+            echo "gsc-hub/${image}" >> image_name.txt
           done
           
-          gh issue comment ${{ github.event.issue.number }} -b "镜像 ${{ github.event.issue.title }} 同步完成<br><hr><br>镜像名称如下:<br><br>$(cat image_name.txt)<br><hr><br>[离线镜像包下载地址](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+          gh issue comment ${{ github.event.issue.number }} -b "镜像 ${{ github.event.issue.title }} 同步完成<br><hr><br>pull时使用域名加上下面的镜像名称:<br><br>$(cat image_name.txt)<br><hr><br>[离线镜像包下载地址](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
           gh issue edit ${{ github.event.issue.number }} --add-label "sync-image-success"
           gh issue close ${{ github.event.issue.number }}
 
