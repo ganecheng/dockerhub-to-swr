@@ -1,0 +1,5 @@
+FROM openeuler/openeuler:24.03-lts
+
+COPY file /file
+
+CMD /bin/bash

@@ -1,4 +1,4 @@
-name: download_file
+name: x86_64 sync & tar
 
 on:
   workflow_dispatch:
@@ -7,6 +7,10 @@ on:
         description: '请填写下载地址'
         required: true
         default: ''
+
+env:
+  HUAWEICLOUD_IAM_AK: "${{ secrets.HUAWEICLOUD_IAM_AK }}"
+  HUAWEICLOUD_IAM_SK: "${{ secrets.HUAWEICLOUD_IAM_SK }}"
 
 jobs:
   build:
@@ -18,17 +22,16 @@ jobs:
 
       - name: DockerHub to SWR
         run: |
+          docker login -u cn-south-1@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.cn-south-1.myhuaweicloud.com
           set -ex
           
           images="${{ github.event.inputs.download_file }}"
           curl -o file ${images}
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: file
-          path: file
-          retention-days: 1  # 将保留天数设置为1天 最多可设置90天
+          
+          current_datetime=$(date +'%Y%m%d_%H%M%S')
+          docker build -t swr.cn-south-1.myhuaweicloud.com/gsc-hub/file:${current_datetime} -f Dockerfile_download_file .
+          
+          docker push swr.cn-south-1.myhuaweicloud.com/gsc-hub/file:${current_datetime}
 
       - name: Clean up intermediate files
         run: |
