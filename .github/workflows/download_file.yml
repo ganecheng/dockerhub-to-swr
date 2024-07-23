@@ -1,4 +1,4 @@
-name: x86_64 sync & tar
+name: download_file
 
 on:
   workflow_dispatch:
