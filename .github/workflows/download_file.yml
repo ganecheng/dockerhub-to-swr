@@ -1,0 +1,35 @@
+name: download_file
+
+on:
+  workflow_dispatch:
+    inputs:
+      download_file:
+        description: '请填写下载地址'
+        required: true
+        default: ''
+
+jobs:
+  build:
+    name: download_file
+    runs-on: ubuntu-latest
+    steps:
+      - name: git checkout
+        uses: actions/checkout@v4
+
+      - name: DockerHub to SWR
+        run: |
+          set -ex
+          
+          images="${{ github.event.inputs.download_file }}"
+          curl -o file ${images}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: file
+          path: file
+          retention-days: 1  # 将保留天数设置为1天 最多可设置90天
+
+      - name: Clean up intermediate files
+        run: |
+          rm file
