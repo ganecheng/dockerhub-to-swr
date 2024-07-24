@@ -21,3 +21,9 @@ cat trigger.txt | awk '{print "docker tag " $1 " swr.cn-south-1.myhuaweicloud.co
 # docker push
 cat trigger.txt | awk '{print "docker push swr.cn-south-1.myhuaweicloud.com/gsc-hub/" $1} '
 cat trigger.txt | awk '{print "docker push swr.cn-south-1.myhuaweicloud.com/gsc-hub/" $1} ' | sh
+
+# docker rmi
+cat trigger.txt | awk '{print "docker rmi " $1} '
+cat trigger.txt | awk '{print "docker rmi " $1} ' | sh
+cat trigger.txt | awk '{print "docker rmi swr.cn-south-1.myhuaweicloud.com/gsc-hub/" $1} '
+cat trigger.txt | awk '{print "docker rmi swr.cn-south-1.myhuaweicloud.com/gsc-hub/" $1} ' | sh
