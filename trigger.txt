@@ -1,1 +1,1 @@
-alpine/git:latest
+openjdk:11
