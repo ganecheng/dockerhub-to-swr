@@ -55,17 +55,17 @@ jobs:
           sleep 3s
           
           issue_author="${{ github.event.issue.user.login }}"
-          if [[ ${issue_author} != "ganecheng" && ${issue_author} != "C772746954" && ${issue_author} != "if-believe" ]]; then
-            gh issue comment ${{ github.event.issue.number }} -b "issue检查不通过, 需要满足以下3个条件的issue才会开启镜像自动同步<br><br>由 @ganecheng, @C772746954, @if-believe 提交<br>添加了sync-image标签<br>添加了镜像架构标签x86_64或aarch64"
+          if [[ ${issue_author} != "ganecheng" && ${issue_author} != "C772746954" && ${issue_author} != "Shirley125" && ${issue_author} != "if-believe" ]]; then
+            gh issue comment ${{ github.event.issue.number }} -b "issue检查不通过, 需要满足以下3个条件的issue才会开启镜像自动同步<br><br>由 @ganecheng, @C772746954, @Shirley125, @if-believe 提交<br>添加了sync-image标签<br>添加了镜像架构标签x86_64或aarch64"
             exit 1
           fi
           label_list="$(cat label.txt)"
           if [[ ${label_list} != *sync-image* ]]; then
-            gh issue comment ${{ github.event.issue.number }} -b "issue检查不通过, 需要满足以下3个条件的issue才会开启镜像自动同步<br><br>由 @ganecheng, @C772746954, @if-believe 提交<br>添加了sync-image标签<br>添加了镜像架构标签x86_64或aarch64"
+            gh issue comment ${{ github.event.issue.number }} -b "issue检查不通过, 需要满足以下3个条件的issue才会开启镜像自动同步<br><br>由 @ganecheng, @C772746954, @Shirley125, @if-believe 提交<br>添加了sync-image标签<br>添加了镜像架构标签x86_64或aarch64"
             exit 1
           fi
           if [[ ${label_list} != *x86_64* && ${label_list} != *aarch64* ]]; then
-            gh issue comment ${{ github.event.issue.number }} -b "issue检查不通过, 需要满足以下3个条件的issue才会开启镜像自动同步<br><br>由 @ganecheng, @C772746954, @if-believe 提交<br>添加了sync-image标签<br>添加了镜像架构标签x86_64或aarch64"
+            gh issue comment ${{ github.event.issue.number }} -b "issue检查不通过, 需要满足以下3个条件的issue才会开启镜像自动同步<br><br>由 @ganecheng, @C772746954, @Shirley125, @if-believe 提交<br>添加了sync-image标签<br>添加了镜像架构标签x86_64或aarch64"
             exit 1
           fi
 
