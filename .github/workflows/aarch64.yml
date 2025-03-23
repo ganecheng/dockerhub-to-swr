@@ -22,7 +22,7 @@ jobs:
 
       - name: DockerHub to SWR
         run: |
-          docker login -u cn-south-1@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.cn-south-1.myhuaweicloud.com
+          docker login -u cn-southwest-2@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.cn-southwest-2.myhuaweicloud.com
           set -ex
           
           images="${{ github.event.inputs.docker_images }}"
@@ -30,8 +30,8 @@ jobs:
           
           for image in "${image_array[@]}"; do
             docker pull "${image}" --platform "linux/arm64"
-            docker tag "${image}" swr.cn-south-1.myhuaweicloud.com/gsc-hub/${image}-aarch64
-            docker push swr.cn-south-1.myhuaweicloud.com/gsc-hub/${image}-aarch64
+            docker tag "${image}" swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/${image}-aarch64
+            docker push swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/${image}-aarch64
           
             docker save "${image}" -o "${image//\//_}-aarch64.tar"
           done

@@ -6,7 +6,7 @@ set -ex
 list="trigger.txt"
 for i in $(cat ${list}); do
     docker pull ${i}
-    docker tag ${i} swr.cn-south-1.myhuaweicloud.com/gsc-hub/${i}
-    docker push swr.cn-south-1.myhuaweicloud.com/gsc-hub/${i}
-    docker rmi ${i} swr.cn-south-1.myhuaweicloud.com/gsc-hub/${i}
+    docker tag ${i} swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/${i}
+    docker push swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/${i}
+    docker rmi ${i} swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/${i}
 done

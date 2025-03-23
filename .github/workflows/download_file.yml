@@ -22,16 +22,16 @@ jobs:
 
       - name: DockerHub to SWR
         run: |
-          docker login -u cn-south-1@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.cn-south-1.myhuaweicloud.com
+          docker login -u cn-southwest-2@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.cn-southwest-2.myhuaweicloud.com
           set -ex
           
           images="${{ github.event.inputs.download_file }}"
           curl -o file ${images}
           
           current_datetime=$(date +'%Y%m%d_%H%M%S')
-          docker build -t swr.cn-south-1.myhuaweicloud.com/gsc-hub/file:${current_datetime} -f Dockerfile_download_file .
+          docker build -t swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/file:${current_datetime} -f Dockerfile_download_file .
           
-          docker push swr.cn-south-1.myhuaweicloud.com/gsc-hub/file:${current_datetime}
+          docker push swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/file:${current_datetime}
 
       - name: Clean up intermediate files
         run: |
