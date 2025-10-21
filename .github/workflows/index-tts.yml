@@ -1,0 +1,59 @@
+name: index-tts image
+
+on:
+  workflow_dispatch:
+    inputs:
+      docker_images:
+        description: '请填写docker镜像名称, 多个用英文逗号分开'
+        required: true
+        default: 'nginx:1.25.5,openeuler/openeuler:24.03-lts'  # 设置默认的 Docker 镜像列表
+
+env:
+  HUAWEICLOUD_IAM_AK: "${{ secrets.HUAWEICLOUD_IAM_AK }}"
+  HUAWEICLOUD_IAM_SK: "${{ secrets.HUAWEICLOUD_IAM_SK }}"
+
+jobs:
+  build:
+    name: index-tts image
+    runs-on: ubuntu-latest
+    steps:
+      - name: clean disk
+        run: |
+          uname -a
+          df -h
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/share/swift
+          sudo docker system prune --all --force --volumes
+          sudo apt-get clean
+          df -h
+
+      - name: git checkout
+        uses: actions/checkout@v4
+
+      - name: build container image
+        run: |
+          docker login -u cn-southwest-2@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.cn-southwest-2.myhuaweicloud.com
+          set -ex
+          
+          current_datetime=$(date +'%Y%m%d%_H%M%S')
+          artifact_image_url=swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/index-tts-2-${current_datetime}-x86_64
+          docker build -f index-tts-2/Dockerfile --squash --no-cache -t ${artifact_image_url} .
+          
+          docker push ${artifact_image_url}
+          docker save "${artifact_image_url}" -o "${${artifact_image_url}//\//_}.tar"
+
+      - name: Compress the TAR files
+        run: tar -czf x86_64-images.tar.gz *-x86_64.tar
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: x86_64-images.tar.gz
+          path: x86_64-images.tar.gz
+          retention-days: 1  # 将保留天数设置为1天 最多可设置90天
+
+      - name: Clean up intermediate files
+        run: |
+          rm *-x86_64.tar
