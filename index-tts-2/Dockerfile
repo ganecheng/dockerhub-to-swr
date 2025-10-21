@@ -13,6 +13,7 @@ RUN git lfs pull
 
 # 使用uv安装依赖
 RUN pip install -U uv
+ENV PATH $PATH:/root/.local/bin
 RUN uv sync --all-extras
 
 # 下载模型
