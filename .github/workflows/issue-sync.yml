@@ -20,6 +20,11 @@ jobs:
     name: issue-sync
     runs-on: ubuntu-latest
     steps:
+      - name: welcome
+        run: |
+          set -ex
+          gh issue comment ${{ github.event.issue.number }} -b "Hi @${{ github.event.issue.user.login }}, 正在处理您的issue...<br><br>[详情请查看](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+
       - name: 清理磁盘
         run: |
           uname -a
@@ -35,25 +40,20 @@ jobs:
       - name: git checkout
         uses: actions/checkout@v4
 
-      - name: welcome
-        run: |
-          set -ex
-          gh issue comment ${{ github.event.issue.number }} -b "Hi @${{ github.event.issue.user.login }}, 正在处理您的issue...<br><br>[详情请查看](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
-
       - name: add label sync-image
         if: contains(github.event.issue.body, 'sync-image')
         run: |
           set -ex
           gh issue edit ${{ github.event.issue.number }} --add-label "sync-image"
           echo -n " sync-image" >> label.txt
-          
+
       - name: add label x86_64
         if: contains(github.event.issue.body, 'x86_64')
         run: |
           set -ex
           gh issue edit ${{ github.event.issue.number }} --add-label "x86_64"
           echo -n " x86_64" >> label.txt
-          
+
       - name: add label aarch64
         if: contains(github.event.issue.body, 'aarch64')
         run: |
@@ -90,7 +90,7 @@ jobs:
         run: |
           docker login -u cn-southwest-2@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.cn-southwest-2.myhuaweicloud.com
           set -ex
-                   
+          
           images="${{ github.event.issue.title }}"
           IFS=',' read -r -a image_array <<< "$images"
           
@@ -116,7 +116,7 @@ jobs:
             docker pull "${image}" --platform "linux/arm64"
             docker tag "${image}" swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/${image}-aarch64
             docker push swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/${image}-aarch64
-            
+          
             docker tag "${image}" ${image}-aarch64
             echo -n " ${image}-aarch64" >> images.txt
           done
@@ -125,7 +125,7 @@ jobs:
         run: |
           set -ex
           docker save $(cat images.txt) | gzip > images.tar.gz
-          
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
