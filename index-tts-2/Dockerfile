@@ -1,6 +1,6 @@
 # 基于PyTorch官方镜像
 FROM pytorch/pytorch:2.8.0-cuda12.9-cudnn9-runtime
-RUN apt-get update && apt-get install -y git git-lfs net-tools tree
+RUN apt-get update && apt-get install -y git git-lfs net-tools tree curl wget
 
 # 下载代码
 WORKDIR /app
