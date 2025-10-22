@@ -20,6 +20,7 @@ jobs:
       - name: clean disk
         run: |
           uname -a
+          docker images
           df -h
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /usr/local/lib/android
@@ -28,6 +29,7 @@ jobs:
           sudo docker system prune --all --force --volumes
           sudo apt-get clean
           df -h
+          docker images
 
       - name: git checkout
         uses: actions/checkout@v4
@@ -40,6 +42,8 @@ jobs:
           current_datetime=$(date +'%Y%m%d%H%M%S')
           artifact_image_url=swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/index-tts:${current_datetime}-x86_64
           docker build -f index-tts-2/Dockerfile --squash --no-cache -t ${artifact_image_url} .
+          
+          docker images
           
           docker push ${artifact_image_url}
           docker save "${artifact_image_url}" -o "${artifact_image_url//\//_}.tar"

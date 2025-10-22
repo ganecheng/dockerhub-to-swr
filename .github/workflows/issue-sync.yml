@@ -25,9 +25,10 @@ jobs:
           set -ex
           gh issue comment ${{ github.event.issue.number }} -b "Hi @${{ github.event.issue.user.login }}, 正在处理您的issue...<br><br>[详情请查看](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
 
-      - name: 清理磁盘
+      - name: clean disk
         run: |
           uname -a
+          docker images
           df -h
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /usr/local/lib/android
@@ -36,6 +37,7 @@ jobs:
           sudo docker system prune --all --force --volumes
           sudo apt-get clean
           df -h
+          docker images
 
       - name: git checkout
         uses: actions/checkout@v4

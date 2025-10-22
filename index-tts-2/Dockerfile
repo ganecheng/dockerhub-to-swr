@@ -36,7 +36,6 @@ RUN chmod 777 /app/run.sh
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 RUN uv cache clean
 RUN git lfs uninstall && rm -rf .git
-RUN rm -rf /root/.cache
 RUN rm -rf /app/checkpoints/.cache
 RUN apt-get remove -y git git-lfs && apt-get autoremove -y
 
