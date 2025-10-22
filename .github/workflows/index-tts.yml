@@ -19,6 +19,7 @@ jobs:
     steps:
       - name: clean disk
         run: |
+          pwd
           id
           uname -a
           docker images
@@ -46,6 +47,7 @@ jobs:
           
           docker images
           df -h
+          pwd
           
           docker push ${artifact_image_url}
           docker save "${artifact_image_url}" -o "${artifact_image_url//\//_}.tar"
