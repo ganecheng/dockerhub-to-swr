@@ -19,6 +19,7 @@ jobs:
     steps:
       - name: clean disk
         run: |
+          id
           uname -a
           docker images
           df -h
@@ -44,6 +45,7 @@ jobs:
           docker build -f index-tts-2/Dockerfile --squash --no-cache -t ${artifact_image_url} .
           
           docker images
+          df -h
           
           docker push ${artifact_image_url}
           docker save "${artifact_image_url}" -o "${artifact_image_url//\//_}.tar"
