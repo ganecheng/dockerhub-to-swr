@@ -34,11 +34,11 @@ jobs:
         run: |
           mkdir -pv /etc/docker/
           if [ ! -f /etc/docker/daemon.json ]; then
-            echo '{}' > /etc/docker/daemon.json
+            sudo echo '{}' > /etc/docker/daemon.json
           fi
           
-          jq '.experimental = "enabled"' /etc/docker/daemon.json > /etc/docker/daemon.tmp
-          mv /etc/docker/daemon.tmp /etc/docker/daemon.json
+          sudo jq '.experimental = "enabled"' /etc/docker/daemon.json > /etc/docker/daemon.tmp
+          sudo mv /etc/docker/daemon.tmp /etc/docker/daemon.json
           
           sudo systemctl reload docker
           
