@@ -30,8 +30,17 @@ jobs:
           df -h
           docker images
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Enable Docker experimental features
+        run: |
+          mkdir -p ~/.docker
+          # 如果 config.json 不存在，使用空对象 {}
+          if [ ! -f ~/.docker/config.json ]; then
+            echo '{}' > ~/.docker/config.json
+          fi
+          # 使用 jq 设置 experimental: "enabled"
+          jq '.experimental = "enabled"' ~/.docker/config.json > ~/.docker/config.tmp && \
+          mv ~/.docker/config.tmp ~/.docker/config.json
+          docker info
 
       - name: git checkout
         uses: actions/checkout@v4
