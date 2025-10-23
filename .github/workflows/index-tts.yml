@@ -1,12 +1,7 @@
-name: index-tts image
+name: index-tts
 
 on:
   workflow_dispatch:
-    inputs:
-      docker_images:
-        description: '请填写docker镜像名称, 多个用英文逗号分开'
-        required: true
-        default: 'nginx:1.25.5,openeuler/openeuler:24.03-lts'  # 设置默认的 Docker 镜像列表
 
 env:
   HUAWEICLOUD_IAM_AK: "${{ secrets.HUAWEICLOUD_IAM_AK }}"
