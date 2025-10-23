@@ -1,5 +1,5 @@
 # 基于PyTorch官方镜像
-FROM pytorch/pytorch:2.8.0-cuda12.9-cudnn9-runtime
+FROM ubuntu:jammy-20251001
 
 COPY index-tts-2/run.sh /run.sh
 COPY index-tts-2/build.sh /build.sh
