@@ -1,5 +1,5 @@
 # 基于PyTorch官方镜像
-FROM ubuntu/python:3.10-22.04
+FROM ubuntu:jammy-20251001
 
 COPY index-tts-2/run.sh /run.sh
 COPY index-tts-2/build.sh /build.sh

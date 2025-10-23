@@ -8,7 +8,7 @@ mkdir -pv /app
 cd /app
 
 # 软件安装
-apt-get update && apt-get install -y git git-lfs net-tools tree curl wget
+apt-get update && apt-get install -y git git-lfs net-tools tree curl wget python3
 
 # 下载代码
 git clone https://github.com/index-tts/index-tts.git . && git checkout bde7d0b
