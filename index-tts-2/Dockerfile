@@ -9,9 +9,12 @@ RUN apt-get update && apt-get install -y git git-lfs net-tools tree curl wget
 
 # 下载代码
 WORKDIR /app
-RUN git clone https://github.com/index-tts/index-tts.git .
+RUN git clone https://github.com/index-tts/index-tts.git . && git checkout bde7d0b
 RUN git lfs install
 RUN git lfs pull
+
+# 语言修改为默认中文
+RUN sed -i "s@en_US@zh_CN@g" tools/i18n/i18n.py
 
 # 使用uv安装依赖
 RUN pip install -U uv --no-cache-dir
@@ -36,7 +39,7 @@ RUN chmod 777 /app/run.sh
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 RUN uv cache clean
 RUN git lfs uninstall && rm -rf .git
-RUN rm -rf /app/checkpoints/.cache
+RUN rm -rf /app/checkpoints/.cache /root/.cache/huggingface/xet /opt/conda
 RUN apt-get remove -y git git-lfs && apt-get autoremove -y
 
 # 运行

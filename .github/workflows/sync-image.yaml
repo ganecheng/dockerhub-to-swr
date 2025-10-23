@@ -1,8 +1,7 @@
 name: DockerHub to SWR
 
 on:
-  push:
-    branches: [ main ]
+  workflow_dispatch:
 
 env:
   HUAWEICLOUD_IAM_AK: "${{ secrets.HUAWEICLOUD_IAM_AK }}"

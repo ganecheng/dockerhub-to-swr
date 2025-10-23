@@ -22,6 +22,7 @@ jobs:
           pwd
           id
           uname -a
+          docker info
           docker images
           df -h
           sudo rm -rf /usr/share/dotnet
@@ -43,7 +44,7 @@ jobs:
           
           current_datetime=$(date +'%Y%m%d%H%M%S')
           artifact_image_url=swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/index-tts:${current_datetime}-x86_64
-          docker build -f index-tts-2/Dockerfile --squash --no-cache -t ${artifact_image_url} .
+          DOCKER_BUILDKIT=0 docker build -f index-tts-2/Dockerfile --squash --no-cache -t ${artifact_image_url} .
           
           docker images
           df -h
