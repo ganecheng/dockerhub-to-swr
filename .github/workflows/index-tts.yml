@@ -30,20 +30,6 @@ jobs:
           df -h
           docker images
 
-      - name: Enable Docker experimental features
-        run: |
-          mkdir -pv /etc/docker/
-          if [ ! -f /etc/docker/daemon.json ]; then
-            sudo echo '{}' > /etc/docker/daemon.json
-          fi
-          
-          sudo jq '.experimental = "enabled"' /etc/docker/daemon.json > /etc/docker/daemon.tmp
-          sudo mv /etc/docker/daemon.tmp /etc/docker/daemon.json
-          
-          sudo systemctl reload docker
-          
-          docker info
-
       - name: git checkout
         uses: actions/checkout@v4
 
@@ -54,7 +40,7 @@ jobs:
           
           current_datetime=$(date +'%Y%m%d%H%M%S')
           artifact_image_url=swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/index-tts:${current_datetime}-x86_64
-          DOCKER_BUILDKIT=0 docker build -f index-tts-2/Dockerfile --squash --no-cache -t ${artifact_image_url} .
+          docker build -f index-tts-2/Dockerfile --squash --no-cache -t ${artifact_image_url} .
           
           docker images
           df -h
