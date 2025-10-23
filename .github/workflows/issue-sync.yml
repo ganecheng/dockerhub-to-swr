@@ -20,6 +20,9 @@ jobs:
     name: issue-sync
     runs-on: ubuntu-latest
     steps:
+      - name: git checkout
+        uses: actions/checkout@v4
+
       - name: welcome
         run: |
           set -ex
@@ -38,9 +41,6 @@ jobs:
           sudo apt-get clean
           df -h
           docker images
-
-      - name: git checkout
-        uses: actions/checkout@v4
 
       - name: add label sync-image
         if: contains(github.event.issue.body, 'sync-image')
