@@ -31,7 +31,7 @@ hf download nvidia/bigvgan_v2_22khz_80band_256x bigvgan_generator.pt config.json
 hf download Plachta/JDCnet bst.t7
 
 # 启动命令
-chmod 777 /app/run.sh
+chmod 777 /run.sh
 
 # 清理无用文件
 apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
