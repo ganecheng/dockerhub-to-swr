@@ -8,7 +8,7 @@ mkdir -pv /app
 cd /app
 
 # 软件安装
-apt-get update && apt-get install -y git git-lfs net-tools tree curl wget python3
+apt-get update && apt-get install -y git git-lfs net-tools tree curl wget python3 python3-pip
 
 # 下载代码
 git clone https://github.com/index-tts/index-tts.git . && git checkout bde7d0b
@@ -16,7 +16,7 @@ git lfs install
 git lfs pull
 
 # 语言修改为默认中文
-sed -i "s@en_US@zh_CN@g" tools/i18n/i18n.py
+sed -i 's/.*getdefaultlocale.*/            language =\"zh_CN\"/' tools/i18n/i18n.py
 
 # 使用uv安装依赖
 pip install -U uv --no-cache-dir
