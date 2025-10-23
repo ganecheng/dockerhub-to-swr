@@ -7,8 +7,6 @@ COPY index-tts-2/build.sh /build.sh
 # 设置时区
 ENV TZ=Asia/Shanghai
 
-WORKDIR /app
-
 ENV PATH="$PATH:/root/.local/bin"
 
 # 构建
