@@ -32,14 +32,16 @@ jobs:
 
       - name: Enable Docker experimental features
         run: |
-          mkdir -p ~/.docker
-          # 如果 config.json 不存在，使用空对象 {}
-          if [ ! -f ~/.docker/config.json ]; then
-            echo '{}' > ~/.docker/config.json
+          mkdir -pv /etc/docker/
+          if [ ! -f /etc/docker/daemon.json ]; then
+            echo '{}' > /etc/docker/daemon.json
           fi
-          # 使用 jq 设置 experimental: "enabled"
-          jq '.experimental = "enabled"' ~/.docker/config.json > ~/.docker/config.tmp && \
-          mv ~/.docker/config.tmp ~/.docker/config.json
+          
+          jq '.experimental = "enabled"' /etc/docker/daemon.json > /etc/docker/daemon.tmp
+          mv /etc/docker/daemon.tmp /etc/docker/daemon.json
+          
+          sudo systemctl reload docker
+          
           docker info
 
       - name: git checkout
