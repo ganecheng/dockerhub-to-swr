@@ -30,6 +30,9 @@ jobs:
           df -h
           docker images
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: git checkout
         uses: actions/checkout@v4
 
