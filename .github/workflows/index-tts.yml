@@ -6,7 +6,6 @@ on:
 env:
   HUAWEICLOUD_IAM_AK: "${{ secrets.HUAWEICLOUD_IAM_AK }}"
   HUAWEICLOUD_IAM_SK: "${{ secrets.HUAWEICLOUD_IAM_SK }}"
-  DOCKER_CLI_EXPERIMENTAL: enabled
 
 jobs:
   build:
@@ -40,7 +39,7 @@ jobs:
           docker login -u cn-southwest-2@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.cn-southwest-2.myhuaweicloud.com
           set -ex
           
-          current_datetime=$(date +'%Y%m%d%H%M%S')
+          current_datetime="$(date +'%Y%m%d_%H%M%S')"
           artifact_image_url=swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/index-tts:${current_datetime}-x86_64
           docker build -f index-tts-2/Dockerfile --squash --no-cache -t ${artifact_image_url} .
           

@@ -6,12 +6,13 @@ on:
 env:
   HUAWEICLOUD_IAM_AK: "${{ secrets.HUAWEICLOUD_IAM_AK }}"
   HUAWEICLOUD_IAM_SK: "${{ secrets.HUAWEICLOUD_IAM_SK }}"
-  DOCKER_CLI_EXPERIMENTAL: enabled
 
 jobs:
   build:
     name: index-tts image
     runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Shanghai
     steps:
       - name: clean disk
         run: |
@@ -38,7 +39,7 @@ jobs:
           docker login -u cn-southwest-2@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.cn-southwest-2.myhuaweicloud.com
           set -ex
           
-          current_datetime=$(date +'%Y%m%d%H%M%S')
+          current_datetime="$(date +'%Y%m%d_%H%M%S')"
           artifact_image_url=swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/index-tts:${current_datetime}-openeuler-x86_64
           docker build -f index-tts-2-openEuler/Dockerfile --squash --no-cache -t ${artifact_image_url} .
           
@@ -47,7 +48,10 @@ jobs:
           pwd
           
           docker push ${artifact_image_url}
-          docker save "${artifact_image_url}" | gzip > ${artifact_image_url//\//_}.tar.gz
+          docker save "${artifact_image_url}" | gzip > ${current_datetime}-x86_64.tar.gz
+
+          ls -alh
+          df -h
 
       - name: upload artifact
         uses: actions/upload-artifact@v4
@@ -55,3 +59,8 @@ jobs:
           name: images.tar.gz
           path: "*-x86_64.tar.gz"
           retention-days: 1  # 将保留天数设置为1天 最多可设置90天
+
+      - name: clean up intermediate files
+        run: |
+          rm -rf *.tar
+          rm -rf *.tar.gz
