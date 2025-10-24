@@ -12,6 +12,8 @@ jobs:
   build:
     name: index-tts image
     runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Shanghai
     steps:
       - name: clean disk
         run: |
