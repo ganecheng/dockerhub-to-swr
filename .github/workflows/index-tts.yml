@@ -47,18 +47,11 @@ jobs:
           pwd
           
           docker push ${artifact_image_url}
-          docker save "${artifact_image_url}" -o "${artifact_image_url//\//_}.tar"
+          docker save "${artifact_image_url}" | gzip > ${artifact_image_url//\//_}.tar.gz
 
-      - name: Compress the TAR files
-        run: tar -czf x86_64-images.tar.gz *-x86_64.tar
-
-      - name: Upload artifact
+      - name: upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: x86_64-images.tar.gz
-          path: x86_64-images.tar.gz
+          name: images.tar.gz
+          path: "*-x86_64.tar.gz"
           retention-days: 1  # 将保留天数设置为1天 最多可设置90天
-
-      - name: Clean up intermediate files
-        run: |
-          rm *-x86_64.tar
