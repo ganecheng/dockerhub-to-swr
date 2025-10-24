@@ -48,7 +48,7 @@ jobs:
           
           docker push ${artifact_image_url}
           sudo mkdir -pv /mnt/share-disk
-          sudo docker save "${artifact_image_url}" | sudo gzip > /mnt/share-disk/${artifact_image_url//\//_}.tar.gz
+          sudo docker save "${artifact_image_url}" | sudo gzip > /mnt/share-disk/${current_datetime}-x86_64.tar.gz
 
       - name: upload artifact
         uses: actions/upload-artifact@v4
