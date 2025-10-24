@@ -47,8 +47,8 @@ jobs:
           pwd
           
           docker push ${artifact_image_url}
-          mkdir -pv /mnt/share-disk
-          docker save "${artifact_image_url}" | gzip > /mnt/share-disk/${artifact_image_url//\//_}.tar.gz
+          sudo mkdir -pv /mnt/share-disk
+          sudo docker save "${artifact_image_url}" | gzip > /mnt/share-disk/${artifact_image_url//\//_}.tar.gz
 
       - name: upload artifact
         uses: actions/upload-artifact@v4
@@ -59,5 +59,5 @@ jobs:
 
       - name: clean up intermediate files
         run: |
-          rm -rf /mnt/share-disk/*.tar
-          rm -rf /mnt/share-disk/*.tar.gz
+          sudo rm -rf /mnt/share-disk/*.tar
+          sudo rm -rf /mnt/share-disk/*.tar.gz

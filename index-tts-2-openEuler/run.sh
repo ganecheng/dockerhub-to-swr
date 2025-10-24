@@ -5,7 +5,7 @@ set -ex
 
 cd /app
 
-source /root/.profile
+source /root/.bash_profile
 
 source .venv/bin/activate
 
