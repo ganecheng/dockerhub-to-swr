@@ -49,17 +49,19 @@ jobs:
           pwd
           
           docker push ${artifact_image_url}
-          sudo mkdir -pv /mnt/share-disk
-          sudo docker save "${artifact_image_url}" | gzip > /mnt/share-disk/${artifact_image_url//\//_}.tar.gz
+          docker save "${artifact_image_url}" | gzip > ${current_datetime}-x86_64.tar.gz
+
+          ls -alh
+          df -h
 
       - name: upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: images.tar.gz
-          path: "/mnt/share-disk/*-x86_64.tar.gz"
+          path: "*-x86_64.tar.gz"
           retention-days: 1  # 将保留天数设置为1天 最多可设置90天
 
       - name: clean up intermediate files
         run: |
-          sudo rm -rf /mnt/share-disk/*.tar
-          sudo rm -rf /mnt/share-disk/*.tar.gz
+          rm -rf *.tar
+          rm -rf *.tar.gz
