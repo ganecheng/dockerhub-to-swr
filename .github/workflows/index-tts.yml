@@ -34,8 +34,6 @@ jobs:
 
       - name: monitor disk usage during build
         run: |
-          sudo du -h / --max-depth=1 | sort -hr || true
-          sudo find / -type f -size +100M -exec ls -alh {} \; | head -20
           sudo du -h /opt --max-depth=1 | sort -hr || true
           sudo du -h /usr --max-depth=1 | sort -hr || true
           sudo du -h /usr/lib --max-depth=1 | sort -hr || true
