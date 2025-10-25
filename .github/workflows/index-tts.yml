@@ -27,8 +27,6 @@ jobs:
           sudo rm -rf /opt/ghc
           sudo rm -rf /usr/share/swift
           sudo rm -rf /opt/google /usr/lib/jvm /usr/lib/google-cloud-sdk /usr/lib/llvm* /usr/lib/firefox /opt/hostedtoolcache /usr/share/miniconda /usr/share/gradle-9.1.0 /usr/local/.ghcup /usr/local/julia1.11.7 /usr/local/share/powershell /usr/local/share/chromium /usr/local/lib/node_modules
-          sudo docker system prune --all --force --volumes
-          sudo apt-get clean
           df -h
           docker images
 
