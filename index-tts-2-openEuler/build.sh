@@ -29,11 +29,11 @@ uv sync --all-extras --no-cache
 uv tool install "huggingface-hub[cli,hf_xet]"
 uv tool install "modelscope"
 hf download IndexTeam/IndexTTS-2 --local-dir=checkpoints
-hf download facebook/w2v-bert-2.0 --resume-download --local-dir-use-symlinks false
-hf download amphion/MaskGCT semantic_codec/model.safetensors --resume-download --local-dir-use-symlinks false
-hf download funasr/campplus --resume-download --local-dir-use-symlinks false
-hf download nvidia/bigvgan_v2_22khz_80band_256x bigvgan_generator.pt config.json --resume-download --local-dir-use-symlinks false
-hf download Plachta/JDCnet bst.t7 --resume-download --local-dir-use-symlinks false
+hf download facebook/w2v-bert-2.0
+hf download amphion/MaskGCT semantic_codec/model.safetensors
+hf download funasr/campplus
+hf download nvidia/bigvgan_v2_22khz_80band_256x bigvgan_generator.pt config.json
+hf download Plachta/JDCnet bst.t7
 
 # 启动命令
 chmod 777 /run.sh
