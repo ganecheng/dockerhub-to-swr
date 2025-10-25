@@ -31,6 +31,11 @@ jobs:
           df -h
           docker images
 
+      - name: monitor disk usage during build
+        run: |
+          du -h / --max-depth=1 | sort -hr || true
+          find / -type f -size +100M -exec ls -alh {} \; | head -20
+
       - name: git checkout
         uses: actions/checkout@v4
 
