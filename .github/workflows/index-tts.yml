@@ -26,7 +26,7 @@ jobs:
           sudo rm -rf /usr/local/lib/android
           sudo rm -rf /opt/ghc
           sudo rm -rf /usr/share/swift
-          sudo rm -rf /opt/google /usr/lib/jvm /usr/lib/google-cloud-sdk /usr/lib/llvm* /usr/lib/firefox /opt/hostedtoolcache /usr/share/miniconda /usr/share/gradle-9.1.0
+          sudo rm -rf /opt/google /usr/lib/jvm /usr/lib/google-cloud-sdk /usr/lib/llvm* /usr/lib/firefox /opt/hostedtoolcache /usr/share/miniconda /usr/share/gradle-9.1.0 /usr/local/.ghcup /usr/local/julia1.11.7
           sudo docker system prune --all --force --volumes
           sudo apt-get clean
           df -h
@@ -41,6 +41,9 @@ jobs:
           sudo du -h /usr/lib --max-depth=1 | sort -hr || true
           sudo du -h /usr/share --max-depth=1 | sort -hr || true
           sudo du -h /usr/local --max-depth=1 | sort -hr || true
+          sudo du -h /usr/local/share --max-depth=1 | sort -hr || true
+          sudo du -h /usr/local/bin --max-depth=1 | sort -hr || true
+          sudo du -h /usr/local/lib --max-depth=1 | sort -hr || true
           df -h
 
       - name: git checkout
