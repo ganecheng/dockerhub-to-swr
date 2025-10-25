@@ -33,8 +33,8 @@ jobs:
 
       - name: monitor disk usage during build
         run: |
-          du -h / --max-depth=1 | sort -hr || true
-          find / -type f -size +100M -exec ls -alh {} \; | head -20
+          sudo du -h / --max-depth=1 | sort -hr || true
+          sudo find / -type f -size +100M -exec ls -alh {} \; | head -20
 
       - name: git checkout
         uses: actions/checkout@v4
