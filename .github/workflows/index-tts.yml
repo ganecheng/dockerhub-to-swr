@@ -35,6 +35,16 @@ jobs:
         run: |
           sudo du -h / --max-depth=1 | sort -hr || true
           sudo find / -type f -size +100M -exec ls -alh {} \; | head -20
+          sudo du -h /opt --max-depth=1 | sort -hr || true
+          sudo du -h /home/packer --max-depth=1 | sort -hr || true
+          sudo du -h /home/packer/.rustup --max-depth=1 | sort -hr || true
+          sudo du -h /home/linuxbrew --max-depth=1 | sort -hr || true
+          sudo du -h /home/linuxbrew/.linuxbrew --max-depth=1 | sort -hr || true
+          sudo du -h /home/runner --max-depth=1 | sort -hr || true
+          sudo du -h /home/runner/.rustup --max-depth=1 | sort -hr || true
+          sudo du -h /home/runner/actions-runner --max-depth=1 | sort -hr || true
+          sudo du -h /usr --max-depth=1 | sort -hr || true
+          sudo du -h /usr/lib --max-depth=1 | sort -hr || true
 
       - name: git checkout
         uses: actions/checkout@v4
