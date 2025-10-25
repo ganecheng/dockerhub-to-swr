@@ -26,7 +26,7 @@ jobs:
           sudo rm -rf /usr/local/lib/android
           sudo rm -rf /opt/ghc
           sudo rm -rf /usr/share/swift
-          sudo rm -rf /opt/google /usr/lib/jvm /usr/lib/google-cloud-sdk /usr/lib/llvm* /usr/lib/firefox
+          sudo rm -rf /opt/google /usr/lib/jvm /usr/lib/google-cloud-sdk /usr/lib/llvm* /usr/lib/firefox /opt/hostedtoolcache /usr/share/miniconda /usr/share/gradle-9.1.0
           sudo docker system prune --all --force --volumes
           sudo apt-get clean
           df -h
@@ -39,9 +39,6 @@ jobs:
           sudo du -h /opt --max-depth=1 | sort -hr || true
           sudo du -h /usr --max-depth=1 | sort -hr || true
           sudo du -h /usr/lib --max-depth=1 | sort -hr || true
-          sudo du -h /opt/hostedtoolcache --max-depth=1 | sort -hr || true
-          sudo du -h /opt/az --max-depth=1 | sort -hr || true
-          sudo du -h /opt/pipx --max-depth=1 | sort -hr || true
           sudo du -h /usr/share --max-depth=1 | sort -hr || true
           sudo du -h /usr/local --max-depth=1 | sort -hr || true
           df -h
