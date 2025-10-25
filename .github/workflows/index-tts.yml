@@ -26,6 +26,7 @@ jobs:
           sudo rm -rf /usr/local/lib/android
           sudo rm -rf /opt/ghc
           sudo rm -rf /usr/share/swift
+          sudo rm -rf /opt/google /usr/lib/jvm /usr/lib/google-cloud-sdk /usr/lib/llvm* /usr/lib/firefox
           sudo docker system prune --all --force --volumes
           sudo apt-get clean
           df -h
@@ -36,15 +37,14 @@ jobs:
           sudo du -h / --max-depth=1 | sort -hr || true
           sudo find / -type f -size +100M -exec ls -alh {} \; | head -20
           sudo du -h /opt --max-depth=1 | sort -hr || true
-          sudo du -h /home/packer --max-depth=1 | sort -hr || true
-          sudo du -h /home/packer/.rustup --max-depth=1 | sort -hr || true
-          sudo du -h /home/linuxbrew --max-depth=1 | sort -hr || true
-          sudo du -h /home/linuxbrew/.linuxbrew --max-depth=1 | sort -hr || true
-          sudo du -h /home/runner --max-depth=1 | sort -hr || true
-          sudo du -h /home/runner/.rustup --max-depth=1 | sort -hr || true
-          sudo du -h /home/runner/actions-runner --max-depth=1 | sort -hr || true
           sudo du -h /usr --max-depth=1 | sort -hr || true
           sudo du -h /usr/lib --max-depth=1 | sort -hr || true
+          sudo du -h /opt/hostedtoolcache --max-depth=1 | sort -hr || true
+          sudo du -h /opt/az --max-depth=1 | sort -hr || true
+          sudo du -h /opt/pipx --max-depth=1 | sort -hr || true
+          sudo du -h /usr/share --max-depth=1 | sort -hr || true
+          sudo du -h /usr/local --max-depth=1 | sort -hr || true
+          df -h
 
       - name: git checkout
         uses: actions/checkout@v4
