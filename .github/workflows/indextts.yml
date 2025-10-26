@@ -84,7 +84,7 @@ jobs:
           ls -alh
           df -h
           
-          docker push ghcr.io/${current_user}/indextts:${current_datetime}-openeuler-x86_64
+          docker push ghcr.io/${current_user}/indextts:${current_datetime}-ubuntu-x86_64
           
           ls -alh
           df -h
