@@ -16,7 +16,7 @@ jobs:
       current_datetime: ${{ steps.global_env.outputs.current_datetime }}
       current_user: ${{ github.actor }}
     steps:
-      - name: Generate multiple timestamp formats
+      - name: generate global_env
         id: global_env
         run: |
           echo "current_datetime=$(date +'%Y%m%d_%H%M%S')" >> $GITHUB_OUTPUT
