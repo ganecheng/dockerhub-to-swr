@@ -76,7 +76,10 @@ jobs:
           set -ex
           
           artifact_image_url=swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/indextts:${current_datetime}-ubuntu-x86_64
+          ghcr_image_url=ghcr.io/${current_user}/indextts:${current_datetime}-ubuntu-x86_64
+          
           docker build -f indextts/ubuntu/Dockerfile --squash --no-cache -t ${artifact_image_url} .
+          docker tag ${artifact_image_url} ${ghcr_image_url}
           
           docker images
           df -h
@@ -146,7 +149,10 @@ jobs:
           set -ex
           
           artifact_image_url=swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/indextts:${current_datetime}-openeuler-x86_64
+          ghcr_image_url=ghcr.io/${current_user}/indextts:${current_datetime}-openeuler-x86_64
+          
           docker build -f indextts/openeuler/Dockerfile --squash --no-cache -t ${artifact_image_url} .
+          docker tag ${artifact_image_url} ${ghcr_image_url}
           
           docker images
           df -h
