@@ -5,12 +5,10 @@ set -ex
 
 cd /app
 
-source /root/.bash_profile
-
 source .venv/bin/activate
 
 python -V
 
 python tools/gpu_check.py
 
-python webui.py --host 0.0.0.0 --port 7860 --fp16 --cuda_kernel
+python webui.py --host 0.0.0.0 --port 7860 --fp16

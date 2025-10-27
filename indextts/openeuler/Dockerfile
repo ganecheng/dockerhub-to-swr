@@ -1,7 +1,12 @@
 FROM openeuler/openeuler:24.03-lts-sp2
 
-COPY indextts/openeuler/run.sh /run.sh
-COPY indextts/openeuler/build.sh /build.sh
+COPY indextts/openeuler/os_init.sh /os_init.sh
+COPY indextts/openeuler/os_clean.sh /os_clean.sh
+
+COPY indextts/run.sh /run.sh
+COPY indextts/code.sh /code.sh
+COPY indextts/model_indextts.sh /model_indextts.sh
+COPY indextts/model_additional.sh /model_additional.sh
 
 # 设置时区
 ENV TZ=Asia/Shanghai
@@ -10,7 +15,10 @@ ENV TZ=Asia/Shanghai
 ENV PATH="$PATH:/root/.local/bin"
 
 # 构建
-RUN sh /build.sh
+RUN sh /os_init.sh
+RUN sh /code.sh
+RUN sh /model_indextts.sh
+RUN sh /model_additional.sh
 
 # 运行
 CMD ["/run.sh"]
