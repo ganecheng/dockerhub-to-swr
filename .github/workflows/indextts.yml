@@ -85,12 +85,12 @@ jobs:
           df -h
           pwd
           
-          docker push ${artifact_image_url}
+          docker push --retry 5 --retry-delay 10s ${artifact_image_url}
 
           ls -alh
           df -h
           
-          docker push ghcr.io/${current_user}/indextts:${current_datetime}-ubuntu-x86_64
+          docker push --retry 5 --retry-delay 10s ghcr.io/${current_user}/indextts:${current_datetime}-ubuntu-x86_64
           
           ls -alh
           df -h
@@ -158,12 +158,12 @@ jobs:
           df -h
           pwd
           
-          docker push ${artifact_image_url}
+          docker push --retry 5 --retry-delay 10s ${artifact_image_url}
 
           ls -alh
           df -h
           
-          docker push ghcr.io/${current_user}/indextts:${current_datetime}-openeuler-x86_64
+          docker push --retry 5 --retry-delay 10s ghcr.io/${current_user}/indextts:${current_datetime}-openeuler-x86_64
           
           ls -alh
           df -h
