@@ -1,4 +1,4 @@
-
+import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
@@ -10,6 +10,7 @@ app = FastAPI(
     title="OpenAI-compatible TTS API",
     version="1.0"
 )
+
 
 # OpenAI 请求体模型（简化版，只取必要字段）
 class SpeechRequest(BaseModel):
@@ -38,8 +39,10 @@ async def create_speech(request: SpeechRequest):
     print(file_path)
     return FileResponse(file_path, media_type="audio/wav", filename=timestamp_wav)
 
+
 def start_api():
     uvicorn.run(app, host=cmd_args.host, port=8000)
+
 
 if __name__ == "__main__":
     t = threading.Thread(
