@@ -11,8 +11,4 @@ python -V
 
 python tools/gpu_check.py
 
-# 增加OpenAI兼容TTS接口
-sed -i '/__main__/,$d' webui.py
-cat restapi.py >> webui.py
-
 python webui.py --host 0.0.0.0 --port 7860 --fp16

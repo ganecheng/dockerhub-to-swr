@@ -16,6 +16,10 @@ git lfs uninstall && rm -rf .git
 # 语言修改为默认中文
 sed -i 's/.*getdefaultlocale.*/            language =\"zh_CN\"/' tools/i18n/i18n.py
 
+# 增加OpenAI兼容TTS接口
+sed -i '/__main__/,$d' webui.py
+cat /restapi.py >> webui.py
+
 # 使用uv安装依赖
 pip install -U uv --no-cache-dir
 uv sync --extra webui --no-cache
