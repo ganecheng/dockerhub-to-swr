@@ -7,7 +7,7 @@ set -ex
 cd /app
 
 # 下载代码
-git clone https://github.com/index-tts/index-tts.git . && git checkout bde7d0b
+git clone https://github.com/index-tts/index-tts.git . && git checkout 1d5d079
 git lfs install
 git lfs pull
 
