@@ -11,4 +11,4 @@ mkdir -pv /app
 cd /app
 
 # 软件安装
-apt-get update && apt-get install -y git git-lfs net-tools tree curl wget python3 python3-pip ffmpeg
+apt-get update && apt-get install -y git git-lfs net-tools tree curl wget python3 python3-pip python3-venv ffmpeg
