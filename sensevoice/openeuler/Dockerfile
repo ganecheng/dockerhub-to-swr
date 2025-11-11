@@ -6,6 +6,7 @@ COPY sensevoice/openeuler/os_clean.sh /os_clean.sh
 COPY sensevoice/run.sh /run.sh
 COPY sensevoice/code.sh /code.sh
 COPY sensevoice/model.sh /model.sh
+COPY sensevoice/webui.py /webui.py
 
 # 设置时区
 ENV TZ=Asia/Shanghai
