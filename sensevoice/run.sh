@@ -5,7 +5,7 @@ set -ex
 
 cd /app
 
-source .venv/bin/activate
+. .venv/bin/activate
 
 python -V
 

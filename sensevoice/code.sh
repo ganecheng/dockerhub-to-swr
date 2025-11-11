@@ -18,7 +18,7 @@ cat /webui.py > webui.py
 
 # 安装依赖
 python3 -m venv .venv
-source .venv/bin/activate
+. .venv/bin/activate
 # 安装CPU版torch
 pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
 # 删除包含torch的所有行
