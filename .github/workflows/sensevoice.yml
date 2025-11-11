@@ -1,0 +1,111 @@
+name: sensevoice
+
+on:
+  workflow_dispatch:
+
+env:
+  HUAWEICLOUD_IAM_AK: "${{ secrets.HUAWEICLOUD_IAM_AK }}"
+  HUAWEICLOUD_IAM_SK: "${{ secrets.HUAWEICLOUD_IAM_SK }}"
+
+jobs:
+  main_job:
+    runs-on: ubuntu-24.04
+    env:
+      TZ: Asia/Shanghai
+    outputs:
+      current_datetime: ${{ steps.global_env.outputs.current_datetime }}
+      current_user: ${{ github.actor }}
+    steps:
+      - name: generate global_env
+        id: global_env
+        run: |
+          set -ex
+          echo "current_datetime=$(date +'%Y%m%d_%H%M%S')" >> $GITHUB_OUTPUT
+
+#  ubuntu_container_image_build:
+#    runs-on: ubuntu-24.04
+#    needs: main_job
+#    env:
+#      TZ: Asia/Shanghai
+#      current_datetime: ${{ needs.main_job.outputs.current_datetime }}
+#      current_user: ${{ needs.main_job.outputs.current_user }}
+#    steps:
+#      - name: git checkout
+#        uses: actions/checkout@v4
+#
+#      - name: login ghcr
+#        uses: docker/login-action@v3
+#        with:
+#          registry: ghcr.io
+#          username: ${{ github.actor }}
+#          password: ${{ secrets.GITHUB_TOKEN }}
+#
+#      - name: build container image
+#        run: |
+#          docker login -u cn-southwest-2@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.cn-southwest-2.myhuaweicloud.com
+#          set -ex
+#
+#          artifact_image_url=swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/sensevoice:${current_datetime}-ubuntu-x86_64
+#          ghcr_image_url=ghcr.io/${current_user}/sensevoice:${current_datetime}-ubuntu-x86_64
+#
+#          docker build -f sensevoice/ubuntu/Dockerfile --squash --no-cache -t ${artifact_image_url} .
+#          docker tag ${artifact_image_url} ${ghcr_image_url}
+#
+#          docker images
+#          docker history ${artifact_image_url}
+#          df -h
+#          pwd
+#
+#          docker push ${artifact_image_url}
+#
+#          ls -alh
+#          df -h
+#
+#          docker push ghcr.io/${current_user}/sensevoice:${current_datetime}-ubuntu-x86_64
+#
+#          ls -alh
+#          df -h
+
+  openeuler_container_image_build:
+    runs-on: ubuntu-24.04
+    needs: main_job
+    env:
+      TZ: Asia/Shanghai
+      current_datetime: ${{ needs.main_job.outputs.current_datetime }}
+      current_user: ${{ needs.main_job.outputs.current_user }}
+    steps:
+      - name: git checkout
+        uses: actions/checkout@v4
+
+      - name: login ghcr
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: build container image
+        run: |
+          docker login -u cn-southwest-2@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.cn-southwest-2.myhuaweicloud.com
+          set -ex
+          
+          artifact_image_url=swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/sensevoice:${current_datetime}-openeuler-x86_64
+          ghcr_image_url=ghcr.io/${current_user}/sensevoice:${current_datetime}-openeuler-x86_64
+          
+          docker build -f sensevoice/openeuler/Dockerfile --squash --no-cache -t ${artifact_image_url} .
+          docker tag ${artifact_image_url} ${ghcr_image_url}
+          
+          docker images
+          docker history ${artifact_image_url}
+          df -h
+          pwd
+          
+          docker push ${artifact_image_url}
+
+          ls -alh
+          df -h
+          
+          docker push ghcr.io/${current_user}/sensevoice:${current_datetime}-openeuler-x86_64
+          
+          ls -alh
+          df -h
