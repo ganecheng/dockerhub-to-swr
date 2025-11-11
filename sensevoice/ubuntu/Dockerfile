@@ -1,4 +1,4 @@
-FROM ubuntu:jammy-20251001
+FROM ubuntu:questing-20251007
 
 COPY sensevoice/ubuntu/os_init.sh /os_init.sh
 COPY sensevoice/ubuntu/os_clean.sh /os_clean.sh
