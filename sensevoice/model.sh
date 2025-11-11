@@ -5,6 +5,7 @@ set -ex
 
 # 应用目录
 cd /app
+source .venv/bin/activate
 
 # 下载 SenseVoice 模型
 modelscope download --model iic/SenseVoiceSmall --local_dir ./models/iic/SenseVoiceSmall
