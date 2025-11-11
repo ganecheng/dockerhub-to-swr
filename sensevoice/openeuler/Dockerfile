@@ -1,11 +1,11 @@
 FROM openeuler/openeuler:24.03-lts-sp2
 
-COPY indextts/openeuler/os_init.sh /os_init.sh
-COPY indextts/openeuler/os_clean.sh /os_clean.sh
+COPY sensevoice/openeuler/os_init.sh /os_init.sh
+COPY sensevoice/openeuler/os_clean.sh /os_clean.sh
 
-COPY indextts/run.sh /run.sh
-COPY indextts/code.sh /code.sh
-COPY indextts/model.sh /model.sh
+COPY sensevoice/run.sh /run.sh
+COPY sensevoice/code.sh /code.sh
+COPY sensevoice/model.sh /model.sh
 
 # 设置时区
 ENV TZ=Asia/Shanghai
