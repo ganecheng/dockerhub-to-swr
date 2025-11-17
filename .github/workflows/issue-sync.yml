@@ -28,19 +28,16 @@ jobs:
           set -ex
           gh issue comment ${{ github.event.issue.number }} -b "Hi @${{ github.event.issue.user.login }}, 正在处理您的issue...<br><br>[详情请查看](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
 
-#      - name: clean disk
-#        run: |
-#          uname -a
-#          docker images
-#          df -h
-#          sudo rm -rf /usr/share/dotnet
-#          sudo rm -rf /usr/local/lib/android
-#          sudo rm -rf /opt/ghc
-#          sudo rm -rf /usr/share/swift
-#          sudo docker system prune --all --force --volumes
-#          sudo apt-get clean
-#          df -h
-#          docker images
+      - name: clean disk
+        run: |
+          uname -a
+          docker images
+          df -h
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/share/swift
+          df -h
 
       - name: add label sync-image
         if: contains(github.event.issue.body, 'sync-image')
