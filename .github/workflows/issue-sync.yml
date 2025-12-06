@@ -33,10 +33,11 @@ jobs:
           uname -a
           docker images
           df -h
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/share/swift
+          sudo mkdir /tmp/empty
+          sudo rsync -a --delete /tmp/empty/ /usr/share/dotnet/
+          sudo rsync -a --delete /tmp/empty/ /usr/local/lib/android/
+          sudo rsync -a --delete /tmp/empty/ /opt/ghc/
+          sudo rsync -a --delete /tmp/empty/ /usr/share/swift/
           df -h
 
       - name: add label sync-image
