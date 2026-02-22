@@ -33,11 +33,17 @@ jobs:
           uname -a
           docker images
           df -h
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/share/swift
-          df -h
+          # 最新的执行机空间较大, 暂时停止清理磁盘
+      #      - name: clean disk
+      #        run: |
+      #          uname -a
+      #          docker images
+      #          df -h
+      #          sudo rm -rf /usr/share/dotnet
+      #          sudo rm -rf /usr/local/lib/android
+      #          sudo rm -rf /opt/ghc
+      #          sudo rm -rf /usr/share/swift
+      #          df -h
 
       - name: add label sync-image
         if: contains(github.event.issue.body, 'sync-image')
