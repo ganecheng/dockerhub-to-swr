@@ -1,12 +1,12 @@
 FROM pytorch/pytorch:2.11.0-cuda13.0-cudnn9-runtime
 
-COPY indextts/ubuntu/os_init.sh /os_init.sh
-COPY indextts/ubuntu/os_clean.sh /os_clean.sh
+COPY comfyui/ubuntu/os_init.sh /os_init.sh
+COPY comfyui/ubuntu/os_clean.sh /os_clean.sh
 
-COPY indextts/run.sh /run.sh
-COPY indextts/code.sh /code.sh
-COPY indextts/model_additional.sh /model_additional.sh
-COPY indextts/restapi.py /restapi.py
+COPY comfyui/run.sh /run.sh
+COPY comfyui/code.sh /code.sh
+COPY comfyui/model_additional.sh /model_additional.sh
+COPY comfyui/restapi.py /restapi.py
 
 # 设置时区
 ENV TZ=Asia/Shanghai
