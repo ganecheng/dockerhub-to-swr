@@ -6,7 +6,6 @@ COPY comfyui/ubuntu/os_clean.sh /os_clean.sh
 COPY comfyui/run.sh /run.sh
 COPY comfyui/code.sh /code.sh
 COPY comfyui/model_additional.sh /model_additional.sh
-COPY comfyui/restapi.py /restapi.py
 
 # 设置时区
 ENV TZ=Asia/Shanghai
