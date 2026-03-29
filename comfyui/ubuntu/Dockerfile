@@ -21,6 +21,9 @@ ENV PATH="$PATH:/root/.local/bin"
 
 # 构建
 RUN sh /os_init.sh
+RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cu130
+RUN pip install --no-cache-dir torchvision --index-url https://download.pytorch.org/whl/cu130
+RUN pip install --no-cache-dir torchaudio --index-url https://download.pytorch.org/whl/cu130
 RUN sh /code.sh
 RUN sh /model_additional.sh
 
