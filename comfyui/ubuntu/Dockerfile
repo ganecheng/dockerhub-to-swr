@@ -1,4 +1,4 @@
-FROM nvidia/cuda:12.8.1-cudnn-runtime-ubuntu24.04
+FROM nvidia/cuda:13.0.2-cudnn-runtime-ubuntu24.04
 
 # 忽略 PEP 668 的安全检查
 ENV PIP_BREAK_SYSTEM_PACKAGES=1
@@ -21,9 +21,9 @@ ENV PATH="$PATH:/root/.local/bin"
 
 # 构建
 RUN sh /os_init.sh
-RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cu128
-RUN pip install --no-cache-dir torchvision --index-url https://download.pytorch.org/whl/cu128
-RUN pip install --no-cache-dir torchaudio --index-url https://download.pytorch.org/whl/cu128
+RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cu130
+RUN pip install --no-cache-dir torchvision --index-url https://download.pytorch.org/whl/cu130
+RUN pip install --no-cache-dir torchaudio --index-url https://download.pytorch.org/whl/cu130
 RUN sh /code.sh
 RUN sh /model_additional.sh
 
