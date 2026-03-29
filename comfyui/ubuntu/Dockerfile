@@ -1,4 +1,4 @@
-FROM nvidia/cuda:nvidia/cuda:12.8.1-cudnn-runtime-ubuntu24.04
+FROM nvidia/cuda:12.8.1-cudnn-runtime-ubuntu24.04
 
 # 忽略 PEP 668 的安全检查
 ENV PIP_BREAK_SYSTEM_PACKAGES=1
