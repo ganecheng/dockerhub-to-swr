@@ -1,7 +1,10 @@
-FROM pytorch/pytorch:2.11.0-cuda13.0-cudnn9-runtime
+FROM nvidia/cuda:13.0.2-cudnn-runtime-ubuntu24.04
 
 # 忽略 PEP 668 的安全检查
 ENV PIP_BREAK_SYSTEM_PACKAGES=1
+# 设置环境变量，防止 Python 生成 .pyc 文件，缓冲输出以便实时查看日志
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 COPY comfyui/ubuntu/os_init.sh /os_init.sh
 COPY comfyui/ubuntu/os_clean.sh /os_clean.sh

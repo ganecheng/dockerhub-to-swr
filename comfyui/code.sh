@@ -7,7 +7,7 @@ set -ex
 cd /app
 
 # 下载代码
-git clone https://github.com/Comfy-Org/ComfyUI.git . && git checkout v0.18.2
+git clone --depth 1 https://github.com/Comfy-Org/ComfyUI.git . && git checkout v0.18.2
 git lfs install
 git lfs pull
 git lfs uninstall
