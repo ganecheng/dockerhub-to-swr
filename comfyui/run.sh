@@ -20,22 +20,33 @@ else
     echo "[INFO] Using existing ComfyUI in user storage..."
 fi
 
+# 设置国内pip仓库镜像站, pip安装依赖到/root目录下
+if [ ! -f "/root/.config/pip/pip.conf" ] ; then
+    echo "[INFO] 设置国内pip仓库镜像站, pip安装依赖到/root目录下"
+    mkdir -p /root/.config/pip/
+
+    # 常用命令自定义
+    cat >>/root/.config/pip/pip.conf <<'EOF'
+[global]
+index = https://mirrors.huaweicloud.com/repository/pypi
+index-url = https://mirrors.huaweicloud.com/repository/pypi/simple
+trusted-host = mirrors.huaweicloud.com
+user = true
+EOF
+
+else
+    echo "[INFO] Using existing /root/.config/pip/pip.conf in user storage..."
+fi
+
 echo "[INFO] Starting ComfyUI..."
 echo "########################################"
 
 # Let .pyc files be stored in one place
 export PYTHONPYCACHEPREFIX="/root/.cache/pycache"
-# Let PIP install packages to /root/.local
-export PIP_USER=true
 # Add above to PATH
 export PATH="${PATH}:/root/.local/bin"
 # Suppress [WARNING: Running pip as the 'root' user]
 export PIP_ROOT_USER_ACTION=ignore
-
-# 设置国内pip仓库镜像站
-pip config set global.index https://mirrors.huaweicloud.com/repository/pypi
-pip config set global.index-url https://mirrors.huaweicloud.com/repository/pypi/simple
-pip config set global.trusted-host mirrors.huaweicloud.com
 
 python -V
 
