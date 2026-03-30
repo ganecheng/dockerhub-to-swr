@@ -19,4 +19,4 @@ cd /app
 
 python -V
 
-python main.py --listen 0.0.0.0 --port 8188 --enable-manager ${CLI_ARGS}
+python main.py --listen 0.0.0.0 --port 8188 --enable-manager --enable-manager-legacy-ui ${CLI_ARGS}
