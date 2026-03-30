@@ -8,7 +8,7 @@ cd /default_comfyui_bundle
 
 # 下载代码
 git clone 'https://github.com/Comfy-Org/ComfyUI.git'
-cd /default-comfyui-bundle/ComfyUI
+cd /default_comfyui_bundle/ComfyUI
 # Using stable version (has a release tag)
 git reset --hard "$(git tag | grep -e '^v' | sort -V | tail -1)"
 rm -rf .git
