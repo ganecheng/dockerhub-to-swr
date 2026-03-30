@@ -7,10 +7,12 @@ set -ex
 chmod 777 /run.sh
 
 # 应用目录
-mkdir -pv /app
-cd /app
+mkdir -pv /default_comfyui_bundle
 
 # 软件安装
 apt-get update && apt-get install -y vim git git-lfs net-tools tree curl wget python3 python3-pip
 
 ln -s /usr/bin/python3 /usr/bin/python
+
+# 清理无用文件
+sh /os_clean.sh

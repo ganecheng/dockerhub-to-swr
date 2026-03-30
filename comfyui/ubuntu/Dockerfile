@@ -11,6 +11,7 @@ COPY comfyui/ubuntu/os_clean.sh /os_clean.sh
 
 COPY comfyui/run.sh /run.sh
 COPY comfyui/code.sh /code.sh
+COPY comfyui/install_pytorch.sh /install_pytorch.sh
 COPY comfyui/model_additional.sh /model_additional.sh
 
 # 设置时区
@@ -21,9 +22,7 @@ ENV PATH="$PATH:/root/.local/bin"
 
 # 构建
 RUN sh /os_init.sh
-RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cu130
-RUN pip install --no-cache-dir torchvision --index-url https://download.pytorch.org/whl/cu130
-RUN pip install --no-cache-dir torchaudio --index-url https://download.pytorch.org/whl/cu130
+RUN sh /install_pytorch.sh
 RUN sh /code.sh
 RUN sh /model_additional.sh
 

@@ -3,6 +3,23 @@
 # -e当命令发生错误的时候, 停止脚本的执行;
 set -ex
 
+# Copy ComfyUI from cache to workdir if it doesn't exist
+cd /root
+if [ ! -f "/root/ComfyUI/main.py" ] ; then
+    mkdir -p /root/ComfyUI
+    # 'cp --archive': all file timestamps and permissions will be preserved
+    # 'cp --update=none': do not overwrite
+    if cp --archive --update=none "/default-comfyui-bundle/ComfyUI/." "/root/ComfyUI/" ; then
+        echo "[INFO] Setting up ComfyUI..."
+        echo "[INFO] Using image-bundled ComfyUI (copied to workdir)."
+    else
+        echo "[ERROR] Failed to copy ComfyUI bundle to '/root/ComfyUI'" >&2
+        exit 1
+    fi
+else
+    echo "[INFO] Using existing ComfyUI in user storage..."
+fi
+
 echo "[INFO] Starting ComfyUI..."
 echo "########################################"
 
@@ -15,8 +32,8 @@ export PATH="${PATH}:/root/.local/bin"
 # Suppress [WARNING: Running pip as the 'root' user]
 export PIP_ROOT_USER_ACTION=ignore
 
-cd /app
+cd /root
 
 python -V
 
-python main.py --listen 0.0.0.0 --port 8188 --enable-manager --enable-manager-legacy-ui ${CLI_ARGS}
+python /root/ComfyUI/main.py --listen 0.0.0.0 --port 8188 --enable-manager --enable-manager-legacy-ui ${CLI_ARGS}

@@ -4,13 +4,13 @@
 set -ex
 
 # 应用目录
-cd /app
+cd /default_comfyui_bundle
 
 # 下载代码
-git clone https://github.com/Comfy-Org/ComfyUI.git . && git checkout v0.18.2
-git lfs install
-git lfs pull
-git lfs uninstall
+git clone 'https://github.com/Comfy-Org/ComfyUI.git'
+cd /default-comfyui-bundle/ComfyUI
+# Using stable version (has a release tag)
+git reset --hard "$(git tag | grep -e '^v' | sort -V | tail -1)"
 rm -rf .git
 
 # 安装依赖
