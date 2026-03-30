@@ -21,6 +21,3 @@ RUN sh /os_init.sh
 RUN sh /install_pytorch.sh
 
 RUN rm -rf /os_init.sh /install_pytorch.sh /os_clean.sh
-
-# 运行
-CMD ["/run.sh"]

@@ -32,7 +32,10 @@ export PATH="${PATH}:/root/.local/bin"
 # Suppress [WARNING: Running pip as the 'root' user]
 export PIP_ROOT_USER_ACTION=ignore
 
-cd /root
+# 设置国内pip仓库镜像站
+pip config set global.index https://mirrors.huaweicloud.com/repository/pypi
+pip config set global.index-url https://mirrors.huaweicloud.com/repository/pypi/simple
+pip config set global.trusted-host mirrors.huaweicloud.com
 
 python -V
 
