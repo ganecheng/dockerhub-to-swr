@@ -1,4 +1,4 @@
-FROM ghcr.io/ganecheng/pytorch:20260330_160900-ubuntu-x86_64
+FROM ghcr.io/ganecheng/pytorch:20260402_002531-ubuntu-x86_64
 
 COPY comfyui/ubuntu/os_init.sh /os_init.sh
 COPY comfyui/ubuntu/os_clean.sh /os_clean.sh
