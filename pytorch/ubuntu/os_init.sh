@@ -12,8 +12,8 @@ ln -s /usr/bin/python3 /usr/bin/python
 # 使用uv安装依赖
 pip install --no-cache-dir -U uv
 # 模型工具
-uv tool install --no-cache "huggingface-hub[cli,hf_xet]"
-uv tool install --no-cache "modelscope"
+pip install --no-cache-dir "huggingface-hub[cli,hf_xet]"
+pip install --no-cache-dir modelscope
 
 # 常用命令自定义
 cat >>/etc/bash.bashrc <<'EOF'

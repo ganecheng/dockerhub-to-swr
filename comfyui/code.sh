@@ -17,9 +17,5 @@ rm -rf .git
 pip install --no-cache-dir -r requirements.txt
 pip install --no-cache-dir -r manager_requirements.txt
 
-# 模型工具
-uv tool install --no-cache "huggingface-hub[cli,hf_xet]"
-uv tool install --no-cache "modelscope"
-
 # 清理无用文件
 sh /os_clean.sh
