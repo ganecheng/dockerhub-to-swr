@@ -1,4 +1,4 @@
-FROM ghcr.io/ganecheng/pytorch:20260402_002531-ubuntu-x86_64
+FROM ubuntu:jammy-20251001
 
 COPY ace-step/ubuntu/os_init.sh /os_init.sh
 COPY ace-step/ubuntu/os_clean.sh /os_clean.sh
@@ -6,6 +6,12 @@ COPY ace-step/ubuntu/os_clean.sh /os_clean.sh
 COPY ace-step/run.sh /run.sh
 COPY ace-step/code.sh /code.sh
 COPY ace-step/model_additional.sh /model_additional.sh
+
+# 设置时区
+ENV TZ=Asia/Shanghai
+
+# 设置全局命令
+ENV PATH="$PATH:/root/.local/bin"
 
 # 构建
 RUN sh /os_init.sh
