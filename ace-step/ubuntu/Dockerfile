@@ -1,5 +1,11 @@
 FROM ubuntu:noble-20260324
 
+# 忽略 PEP 668 的安全检查
+ENV PIP_BREAK_SYSTEM_PACKAGES=1
+# 设置环境变量，防止 Python 生成 .pyc 文件，缓冲输出以便实时查看日志
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
 COPY ace-step/ubuntu/os_init.sh /os_init.sh
 COPY ace-step/ubuntu/os_clean.sh /os_clean.sh
 
@@ -34,6 +40,7 @@ ENV DOWNLOAD_SOURCE="--download-source huggingface"
 ENV INIT_LLM="--init_llm auto"
 ENV INIT_SERVICE="--init_service false"
 ENV OFFLOAD_TO_CPU="--offload_to_cpu auto"
+ENV ACESTEP_CHECKPOINTS_DIR="~/ace-step-models"
 
 # 运行
 CMD ["/run.sh"]
