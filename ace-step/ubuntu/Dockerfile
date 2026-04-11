@@ -1,4 +1,4 @@
-FROM ubuntu:jammy-20251001
+FROM ubuntu:noble-20260324
 
 COPY ace-step/ubuntu/os_init.sh /os_init.sh
 COPY ace-step/ubuntu/os_clean.sh /os_clean.sh

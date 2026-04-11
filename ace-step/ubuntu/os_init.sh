@@ -11,7 +11,7 @@ mkdir -pv /app
 cd /app
 
 # 软件安装
-apt-get update && apt-get install -y git git-lfs net-tools tree curl wget python3 python3-pip ffmpeg
+apt-get update && apt-get install -y vim git git-lfs net-tools tree curl wget python3 python3-pip ffmpeg
 
 # 设置全局python命令
 ln -s /usr/bin/python3 /usr/bin/python

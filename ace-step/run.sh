@@ -5,6 +5,10 @@ set -ex
 
 cd /app
 
+# 设置国内apt仓库镜像站
+sed -i "s@http://.*.ubuntu.com@http://mirrors.huaweicloud.com@g" /etc/apt/sources.list.d/ubuntu.sources || true
+sed -i "s@http://.*.ubuntu.com@http://mirrors.huaweicloud.com@g" /etc/apt/sources.list || true
+
 # 设置国内pip仓库镜像站, pip安装依赖到/root目录下
 if [ ! -f "/root/.config/pip/pip.conf" ] ; then
     echo "[INFO] 设置国内pip仓库镜像站, pip安装依赖到/root目录下"
@@ -29,6 +33,8 @@ export PYTHONPYCACHEPREFIX="/root/.cache/pycache"
 export PATH="${PATH}:/root/.local/bin"
 # Suppress [WARNING: Running pip as the 'root' user]
 export PIP_ROOT_USER_ACTION=ignore
+
+source .venv/bin/activate
 
 python -V
 
