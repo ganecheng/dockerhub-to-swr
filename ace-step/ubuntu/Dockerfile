@@ -40,7 +40,6 @@ ENV DOWNLOAD_SOURCE="--download-source huggingface"
 ENV INIT_LLM="--init_llm auto"
 ENV INIT_SERVICE="--init_service false"
 ENV OFFLOAD_TO_CPU="--offload_to_cpu auto"
-ENV ACESTEP_CHECKPOINTS_DIR="~/ace-step-models"
 
 # 运行
 CMD ["/run.sh"]
