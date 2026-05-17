@@ -1,4 +1,4 @@
-FROM nvidia/cuda:13.0.2-cudnn-runtime-ubuntu24.04
+FROM nvidia/cuda:13.2.1-cudnn-runtime-ubuntu24.04
 
 # 移除基础镜像的标签
 LABEL maintainer=""
