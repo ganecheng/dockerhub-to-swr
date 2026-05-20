@@ -10,7 +10,7 @@ pip install --no-cache-dir \
     --index-url https://download.pytorch.org/whl/cu132
 
 pip install --no-cache-dir \
-    torchaudio==2.11.*
+    torchaudio==2.11.* \
     --index-url https://download.pytorch.org/whl/cu130
 
 # 清理无用文件
