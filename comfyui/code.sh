@@ -8,7 +8,7 @@ mkdir -pv /default_comfyui_bundle/ComfyUI
 cd /default_comfyui_bundle/ComfyUI
 
 # 下载代码
-git clone https://github.com/Comfy-Org/ComfyUI.git . && git checkout a8d2519
+git clone https://github.com/Comfy-Org/ComfyUI.git . && git checkout a88e02b
 rm -rf .git
 
 # 安装依赖
