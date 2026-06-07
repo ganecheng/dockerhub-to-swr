@@ -9,8 +9,5 @@ pip install --no-cache-dir \
     torchcodec==0.12.* \
     --index-url https://download.pytorch.org/whl/cu132
 
-# 安装 CPU 版 torchaudio，通用兼容 CUDA/non-CUDA 环境
-pip install --no-cache-dir torchaudio==2.11.* --index-url https://download.pytorch.org/whl/cpu
-
 # 清理无用文件
 sh /os_clean.sh
