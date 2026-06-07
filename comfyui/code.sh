@@ -11,9 +11,6 @@ cd /default_comfyui_bundle/ComfyUI
 git clone https://github.com/Comfy-Org/ComfyUI.git . && git checkout f49bdb6
 rm -rf .git
 
-# 移除 torchaudio 避免 CUDA 版本冲突
-sed -i '/torchaudio/d' requirements.txt
-
 # 安装依赖
 pip install --no-cache-dir -r requirements.txt
 pip install --no-cache-dir -r manager_requirements.txt
