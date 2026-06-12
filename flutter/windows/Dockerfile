@@ -22,8 +22,9 @@ RUN New-Item -ItemType Directory -Force -Path C:\TEMP; `
         --installPath "C:\BuildTools" `
         --add Microsoft.VisualStudio.Workload.VCTools `
         --includeRecommended; `
-    Remove-Item C:\TEMP\vs_BuildTools.exe -Force; `
-    Remove-Item C:\Windows\Temp\* -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item C:\TEMP\vs_BuildTools.exe -Force -ErrorAction SilentlyContinue
+
+RUN Remove-Item C:\Windows\Temp\* -Recurse -Force -ErrorAction SilentlyContinue
 
 # Flutter SDK 3.44.1 (Dart >=3.10.0)
 ARG FLUTTER_VERSION=3.44.1
