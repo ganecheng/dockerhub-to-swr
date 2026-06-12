@@ -19,9 +19,6 @@ RUN choco install visualstudio2022buildtools -y --no-progress `
     --params "--quiet --wait --norestart --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended" ; `
     Remove-Item C:\ProgramData\chocolatey\logs -Recurse -Force -ErrorAction SilentlyContinue
 
-RUN Remove-Item C:\Windows\Temp\* -Recurse -Force -ErrorAction SilentlyContinue; `
-    Remove-Item C:\Users\ContainerAdministrator\AppData\Local\Temp\* -Recurse -Force -ErrorAction SilentlyContinue
-
 # Flutter SDK 3.44.1 (Dart >=3.10.0)
 ARG FLUTTER_VERSION=3.44.1
 ENV FLUTTER_HOME=C:\flutter
