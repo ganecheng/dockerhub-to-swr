@@ -15,16 +15,12 @@ RUN choco install git -y --no-progress; `
 
 # Visual Studio Build Tools 2022 (MSVC v143 + Windows SDK + CMake)
 # Flutter Windows 构建唯一需要的 VS 工作负载
-RUN New-Item -ItemType Directory -Force -Path C:\TEMP; `
-    Invoke-WebRequest -Uri "https://aka.ms/vs/17/release/vs_BuildTools.exe" `
-        -OutFile C:\TEMP\vs_BuildTools.exe; `
-    C:\TEMP\vs_BuildTools.exe --quiet --wait --norestart --nocache `
-        --installPath "C:\BuildTools" `
-        --add Microsoft.VisualStudio.Workload.VCTools `
-        --includeRecommended; `
-    Remove-Item C:\TEMP\vs_BuildTools.exe -Force -ErrorAction SilentlyContinue
+RUN choco install visualstudio2022buildtools -y --no-progress `
+    --params "--quiet --wait --norestart --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended" ; `
+    Remove-Item C:\ProgramData\chocolatey\logs -Recurse -Force -ErrorAction SilentlyContinue
 
-RUN Remove-Item C:\Windows\Temp\* -Recurse -Force -ErrorAction SilentlyContinue
+RUN Remove-Item C:\Windows\Temp\* -Recurse -Force -ErrorAction SilentlyContinue; `
+    Remove-Item C:\Users\ContainerAdministrator\AppData\Local\Temp\* -Recurse -Force -ErrorAction SilentlyContinue
 
 # Flutter SDK 3.44.1 (Dart >=3.10.0)
 ARG FLUTTER_VERSION=3.44.1
