@@ -13,11 +13,18 @@ RUN choco install git -y --no-progress; `
     Remove-Item C:\ProgramData\chocolatey\logs -Recurse -Force -ErrorAction SilentlyContinue; `
     Remove-Item C:\Users\ContainerAdministrator\AppData\Local\Temp\chocolatey -Recurse -Force -ErrorAction SilentlyContinue
 
-# Visual Studio Build Tools 2022 (MSVC v143 + Windows SDK + CMake)
-# Flutter Windows 构建唯一需要的 VS 工作负载
-RUN choco install visualstudio2022buildtools -y --no-progress `
-    --params "--quiet --wait --norestart --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended" ; `
-    Remove-Item C:\ProgramData\chocolatey\logs -Recurse -Force -ErrorAction SilentlyContinue
+# Visual Studio Build Tools 2022 — 仅 Flutter Windows 必需的三个组件
+# 不用完整 VCTools workload（~12GB），避免容器层过大导致 commit 损坏
+RUN [System.Net.ServicePointManager]::SecurityProtocol = 3072; `
+    New-Item -ItemType Directory -Force -Path C:\TEMP; `
+    Invoke-WebRequest -Uri "https://aka.ms/vs/17/release/vs_BuildTools.exe" `
+        -OutFile C:\TEMP\vs_BuildTools.exe; `
+    C:\TEMP\vs_BuildTools.exe --quiet --wait --norestart `
+        --installPath "C:\BuildTools" `
+        --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
+        --add Microsoft.VisualStudio.Component.Windows11SDK.22621 `
+        --add Microsoft.VisualStudio.Component.VC.CMake.Project; `
+    Remove-Item C:\TEMP\vs_BuildTools.exe -Force -ErrorAction SilentlyContinue
 
 # Flutter SDK 3.44.1 (Dart >=3.10.0)
 ARG FLUTTER_VERSION=3.44.1
