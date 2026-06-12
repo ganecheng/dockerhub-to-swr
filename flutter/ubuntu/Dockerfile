@@ -33,15 +33,27 @@ ENV PATH="${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin:${ANDROID_SDK_ROOT}/platf
 
 # Android SDK 组件 (compileSdk 36, NDK 29, build-tools 36)
 # 额外预装传递依赖需要的版本，避免 Gradle 构建时实时下载
-RUN yes | sdkmanager --licenses \
-    && sdkmanager \
-        "platform-tools" \
-        "platforms;android-36" \
-        "platforms;android-35" \
-        "build-tools;36.0.0" \
-        "ndk;29.0.14206865" \
-        "ndk;28.2.13676358" \
-        "cmake;3.22.1" \
+RUN yes | sdkmanager --licenses
+
+RUN sdkmanager "platform-tools" \
+    && rm -rf ${ANDROID_SDK_ROOT}/.temp ${ANDROID_SDK_ROOT}/.knownPackages
+
+RUN sdkmanager "platforms;android-36" \
+    && rm -rf ${ANDROID_SDK_ROOT}/.temp ${ANDROID_SDK_ROOT}/.knownPackages
+
+RUN sdkmanager "platforms;android-35" \
+    && rm -rf ${ANDROID_SDK_ROOT}/.temp ${ANDROID_SDK_ROOT}/.knownPackages
+
+RUN sdkmanager "build-tools;36.0.0" \
+    && rm -rf ${ANDROID_SDK_ROOT}/.temp ${ANDROID_SDK_ROOT}/.knownPackages
+
+RUN sdkmanager "ndk;29.0.14206865" \
+    && rm -rf ${ANDROID_SDK_ROOT}/.temp ${ANDROID_SDK_ROOT}/.knownPackages
+
+RUN sdkmanager "ndk;28.2.13676358" \
+    && rm -rf ${ANDROID_SDK_ROOT}/.temp ${ANDROID_SDK_ROOT}/.knownPackages
+
+RUN sdkmanager "cmake;3.22.1" \
     && rm -rf ${ANDROID_SDK_ROOT}/.temp ${ANDROID_SDK_ROOT}/.knownPackages
 
 # Flutter SDK 3.44.1 (Dart >=3.10.0)
