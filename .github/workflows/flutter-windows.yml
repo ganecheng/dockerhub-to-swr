@@ -49,8 +49,8 @@ jobs:
 
           docker login -u "cn-southwest-2@$env:HUAWEICLOUD_IAM_AK" -p "$env:HUAWEICLOUD_IAM_SK" swr.cn-southwest-2.myhuaweicloud.com
 
-          $artifact_image_url = "swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/flutter-windows:$env:current_datetime-windows-amd64"
-          $ghcr_image_url = "ghcr.io/$env:current_user/flutter-windows:$env:current_datetime-windows-amd64"
+          $artifact_image_url = "swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/flutter-windows:$env:current_datetime-windows-x86_64"
+          $ghcr_image_url = "ghcr.io/$env:current_user/flutter-windows:$env:current_datetime-windows-x86_64"
 
           docker build -f flutter/windows/Dockerfile --no-cache -t $artifact_image_url .
 
