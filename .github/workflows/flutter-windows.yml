@@ -9,7 +9,7 @@ env:
 
 jobs:
   main_job:
-    runs-on: ubuntu-24.04
+    runs-on: windows-2022
     env:
       TZ: Asia/Shanghai
     outputs:
@@ -18,29 +18,20 @@ jobs:
     steps:
       - name: generate global_env
         id: global_env
+        shell: powershell
         run: |
-          set -ex
-          echo "current_datetime=$(date +'%Y%m%d_%H%M%S')" >> $GITHUB_OUTPUT
+          $ErrorActionPreference = "Stop"
+          $datetime = Get-Date -Format 'yyyyMMdd_HHmmss'
+          echo "current_datetime=$datetime" >> $env:GITHUB_OUTPUT
 
-  ubuntu_container_image_build:
-    runs-on: ubuntu-24.04
+  windows_container_image_build:
+    runs-on: windows-2022
     needs: main_job
     env:
       TZ: Asia/Shanghai
       current_datetime: ${{ needs.main_job.outputs.current_datetime }}
       current_user: ${{ needs.main_job.outputs.current_user }}
     steps:
-      - name: clean disk
-        run: |
-          set -ex
-          pwd
-          id
-          uname -a
-          docker info
-          docker images
-          df -h
-          docker images
-
       - name: git checkout
         uses: actions/checkout@v4
 
@@ -52,27 +43,23 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: build container image
+        shell: powershell
         run: |
-          docker login -u cn-southwest-2@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.cn-southwest-2.myhuaweicloud.com
-          set -ex
-          
-          artifact_image_url=swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/flutter-windows:${current_datetime}-ubuntu-x86_64
-          ghcr_image_url=ghcr.io/${current_user}/flutter-windows:${current_datetime}-ubuntu-x86_64
-          
-          docker build -f flutter/ubuntu/Dockerfile.windows --no-cache -t ${artifact_image_url} .
-          docker tag ${artifact_image_url} ${ghcr_image_url}
-          
-          docker images
-          docker history ${artifact_image_url}
-          df -h
-          pwd
-          
-          docker push ${artifact_image_url}
+          $ErrorActionPreference = "Stop"
 
-          ls -alh
-          df -h
-          
-          docker push ghcr.io/${current_user}/flutter-windows:${current_datetime}-ubuntu-x86_64
-          
-          ls -alh
-          df -h
+          docker login -u "cn-southwest-2@$env:HUAWEICLOUD_IAM_AK" -p "$env:HUAWEICLOUD_IAM_SK" swr.cn-southwest-2.myhuaweicloud.com
+
+          $artifact_image_url = "swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/flutter-windows:$env:current_datetime-windows-amd64"
+          $ghcr_image_url = "ghcr.io/$env:current_user/flutter-windows:$env:current_datetime-windows-amd64"
+
+          docker build -f flutter/windows/Dockerfile --no-cache -t $artifact_image_url .
+
+          docker tag $artifact_image_url $ghcr_image_url
+
+          docker images
+          docker history $artifact_image_url
+          Get-PSDrive
+
+          docker push $artifact_image_url
+
+          docker push $ghcr_image_url

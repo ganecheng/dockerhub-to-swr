@@ -72,7 +72,7 @@ jobs:
           ls -alh
           df -h
           
-          docker push ghcr.io/${current_user}/flutter:${current_datetime}-ubuntu-x86_64
+          docker push ${ghcr_image_url}
           
           ls -alh
           df -h
