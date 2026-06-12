@@ -32,12 +32,16 @@ RUN curl -fsSL ${CMDLINE_TOOLS_URL} -o /tmp/cmdline-tools.zip \
 ENV PATH="${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin:${ANDROID_SDK_ROOT}/platform-tools:${PATH}"
 
 # Android SDK 组件 (compileSdk 36, NDK 29, build-tools 36)
+# 额外预装传递依赖需要的版本，避免 Gradle 构建时实时下载
 RUN yes | sdkmanager --licenses \
     && sdkmanager \
         "platform-tools" \
         "platforms;android-36" \
+        "platforms;android-35" \
         "build-tools;36.0.0" \
         "ndk;29.0.14206865" \
+        "ndk;28.2.13676358" \
+        "cmake;3.22.1" \
     && rm -rf ${ANDROID_SDK_ROOT}/.temp ${ANDROID_SDK_ROOT}/.knownPackages
 
 # Flutter SDK 3.44.1 (Dart >=3.10.0)
@@ -48,5 +52,10 @@ ENV PATH="${FLUTTER_HOME}/bin:${PATH}"
 RUN git clone --depth 1 --branch ${FLUTTER_VERSION} https://github.com/flutter/flutter.git ${FLUTTER_HOME} \
     && flutter config --no-analytics \
     && flutter precache --android
+
+# 全局禁用 Gradle Daemon（容器内 daemon fork 会导致构建死锁）
+# 降低 JVM 堆上限避免容器 OOM
+RUN mkdir -p /root/.gradle \
+    && printf 'org.gradle.daemon=false\norg.gradle.jvmargs=-Xmx8096m\n' > /root/.gradle/gradle.properties
 
 WORKDIR /app
