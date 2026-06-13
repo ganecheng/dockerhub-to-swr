@@ -24,33 +24,32 @@ RUN $maxRetries = 5; $retryDelay = 60; `
 RUN $env:chocolateyUseWindowsCompression = 'true'; `
     $env:chocolateyIgnoreRebootDetected = 'true'; `
     choco feature enable -n=useRememberedArgumentsForUpgrades; `
-    choco install git -y --no-progress --allow-downgrade; `
-    Remove-Item C:\ProgramData\chocolatey\logs -Recurse -Force -ErrorAction SilentlyContinue; `
-    Remove-Item C:\Users\ContainerAdministrator\AppData\Local\Temp\chocolatey -Recurse -Force -ErrorAction SilentlyContinue
+    choco install git -y --no-progress --allow-downgrade
 
-# Flutter SDK 3.44.1 (Dart >=3.10.0)
+# Flutter SDK - 使用 git clone（参考 gmeligio/flutter-docker-image）
 ARG FLUTTER_VERSION=3.44.1
-ENV FLUTTER_HOME=C:\flutter
-ENV FLUTTER_URL="https://storage.googleapis.com/flutter_infra_release/releases/stable/windows/flutter_windows_${FLUTTER_VERSION}-stable.zip"
-ENV PATH="C:\flutter\bin;${PATH}"
+ENV FLUTTER_ROOT=C:\flutter
+ENV FLUTTER_GIT_URL="unknown source"
 
-# 下载并解压 Flutter（ENV PATH 在下一个 RUN 才生效）
-RUN New-Item -ItemType Directory -Force -Path C:\TEMP | Out-Null; `
-    Invoke-WebRequest -Uri $env:FLUTTER_URL -OutFile C:\TEMP\flutter.zip; `
-    Expand-Archive C:\TEMP\flutter.zip -DestinationPath C:\; `
-    Remove-Item C:\TEMP\flutter.zip -Force
+RUN git clone --depth 1 --branch $env:FLUTTER_VERSION https://github.com/flutter/flutter.git C:\flutter; `
+    git config --global --add safe.directory C:\flutter
 
-# Flutter 配置（PATH 已生效）
-RUN flutter config --no-analytics; `
+# 设置 PATH（ENV 在下一个 RUN 才生效）
+ENV PATH="C:\flutter\bin;C:\flutter\bin\cache\dart-sdk\bin;${PATH}"
+
+# Flutter 配置
+RUN flutter --version; `
+    dart --disable-analytics; `
+    flutter config --no-cli-animations --no-analytics --no-enable-android --no-enable-web --no-enable-linux-desktop --enable-windows-desktop --no-enable-fuchsia --no-enable-custom-devices --no-enable-ios --no-enable-macos-desktop; `
+    flutter doctor --verbose; `
     flutter precache --windows
 
 # 安装 Visual Studio Build Tools 2022 + VC++ 工具链
-# 参考: https://learn.microsoft.com/en-us/visualstudio/install/build-tools-container
-RUN Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vs_buildtools.exe -OutFile C:\TEMP\vs_buildtools.exe; `
-    Start-Process C:\TEMP\vs_buildtools.exe -ArgumentList "--quiet --wait --norestart --nocache --add Microsoft.VisualStudio.Component.VC.CMake.Project --add Microsoft.VisualStudio.Component.Windows10SDK.19041 --add Microsoft.VisualStudio.Workload.VCTools" -Wait; `
-    Remove-Item C:\TEMP\vs_buildtools.exe -Force -ErrorAction SilentlyContinue
+RUN Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vs_buildtools.exe -OutFile C:\vs_buildtools.exe; `
+    Start-Process C:\vs_buildtools.exe -ArgumentList "--quiet --wait --norestart --nocache --add Microsoft.VisualStudio.Component.VC.CMake.Project --add Microsoft.VisualStudio.Component.Windows10SDK.19041 --add Microsoft.VisualStudio.Workload.VCTools" -Wait; `
+    Remove-Item C:\vs_buildtools.exe -Force -ErrorAction SilentlyContinue
 
-# 禁用 MSBuild 节点复用（容器内复用会导致构建卡死）
+# 禁用 MSBuild 节点复用
 RUN setx /M MSBUILDDISABLENODEREUSE 1
 
 WORKDIR C:\app
