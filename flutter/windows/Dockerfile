@@ -65,18 +65,23 @@ RUN [Environment]::SetEnvironmentVariable('PATH', \"${env:PATH};${env:GIT_INSTAL
 RUN $env:GIT_CONFIG_NOSYSTEM=1; git config --system --unset-all include.path
 
 # 安装 VC++ 工具链（必须在 Flutter 初始化之前，否则 flutter precache 无法正确设置 Windows 支持）
-# 安装组件：MSVC v143 + MSVC v142 + CMake + Windows 10/11 SDK
+# 组件说明：
+#   Workload.VCTools         = "Desktop development with C++" 工作负载（Flutter doctor 检查的根标识）
+#   Component.VC.Tools.x86.x64 = MSVC 最新版（v143）
+#   Component.VC.v142          = MSVC v142（Flutter doctor 显式要求）
+#   Component.VC.CMake.Project = C++ CMake tools
+#   Component.Windows10SDK.19041 = Windows 10 SDK
 # 退出码 0 = 成功；3010 = 成功但需重启（容器中视为成功）；其他 = 失败
-# 失败时输出 %TEMP%\dd_*.log 便于排查
 RUN Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vs_buildtools.exe -OutFile C:\vs_buildtools.exe; `
     $vsArgs = @( `
       '--quiet', '--wait', '--norestart', '--nocache', `
       '--installPath', 'C:\BuildTools', `
+      '--add', 'Microsoft.VisualStudio.Workload.VCTools', `
       '--add', 'Microsoft.VisualStudio.Component.VC.Tools.x86.x64', `
-      '--add', 'Microsoft.VisualStudio.Component.VC.14.29.x86.x64', `
+      '--add', 'Microsoft.VisualStudio.Component.VC.v142', `
       '--add', 'Microsoft.VisualStudio.Component.VC.CMake.Project', `
       '--add', 'Microsoft.VisualStudio.Component.Windows10SDK.19041', `
-      '--add', 'Microsoft.VisualStudio.Component.Windows11SDK.22000' `
+      '--includeRecommended' `
     ); `
     $proc = Start-Process C:\vs_buildtools.exe -ArgumentList $vsArgs -Wait -PassThru -NoNewWindow; `
     $code = $proc.ExitCode; `
