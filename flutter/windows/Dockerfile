@@ -65,25 +65,31 @@ RUN [Environment]::SetEnvironmentVariable('PATH', \"${env:PATH};${env:GIT_INSTAL
 RUN $env:GIT_CONFIG_NOSYSTEM=1; git config --system --unset-all include.path
 
 # 安装 VC++ 工具链（必须在 Flutter 初始化之前，否则 flutter precache 无法正确设置 Windows 支持）
-# 安装组件：Desktop C++ workload + MSVC v143 + MSVC v142 + CMake + Windows 10/11 SDK
-# 注意：Start-Process 的 ArgumentList 使用逗号分隔数组形式，避免引号嵌套问题
+# 安装组件：MSVC v143 + MSVC v142 + CMake + Windows 10/11 SDK
+# 退出码 0 = 成功；3010 = 成功但需重启（容器中视为成功）；其他 = 失败
+# 失败时输出 %TEMP%\dd_*.log 便于排查
 RUN Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vs_buildtools.exe -OutFile C:\vs_buildtools.exe; `
-    $args = @( `
+    $vsArgs = @( `
       '--quiet', '--wait', '--norestart', '--nocache', `
-      '--add', 'Microsoft.VisualStudio.Workload.VCTools', `
-      '--includeRecommended', `
+      '--installPath', 'C:\BuildTools', `
       '--add', 'Microsoft.VisualStudio.Component.VC.Tools.x86.x64', `
       '--add', 'Microsoft.VisualStudio.Component.VC.14.29.x86.x64', `
       '--add', 'Microsoft.VisualStudio.Component.VC.CMake.Project', `
       '--add', 'Microsoft.VisualStudio.Component.Windows10SDK.19041', `
       '--add', 'Microsoft.VisualStudio.Component.Windows11SDK.22000' `
     ); `
-    $proc = Start-Process C:\vs_buildtools.exe -ArgumentList $args -Wait -PassThru -NoNewWindow; `
-    if ($proc.ExitCode -ne 0) { `
-      throw \"VS Build Tools 安装失败，退出码: $($proc.ExitCode)\" `
+    $proc = Start-Process C:\vs_buildtools.exe -ArgumentList $vsArgs -Wait -PassThru -NoNewWindow; `
+    $code = $proc.ExitCode; `
+    if ($code -ne 0 -and $code -ne 3010) { `
+      Write-Host \"VS Build Tools 安装失败，退出码: $code，输出日志：\"; `
+      Get-ChildItem $env:TEMP -Filter 'dd_*.log' -ErrorAction SilentlyContinue | ForEach-Object { `
+        Write-Host \"========== $($_.FullName) ==========\"; `
+        Get-Content $_.FullName -ErrorAction SilentlyContinue `
+      }; `
+      throw \"VS Build Tools 安装失败，退出码: $code\" `
     }; `
     Remove-Item C:\vs_buildtools.exe -Force -ErrorAction SilentlyContinue; `
-    Write-Host 'VS Build Tools 安装完成'
+    Write-Host \"VS Build Tools 安装完成（退出码: $code）\"
 
 # 禁用 MSBuild 节点复用，初始化 VC++ 环境变量并写入系统 PATH
 RUN setx /M MSBUILDDISABLENODEREUSE 1; `
