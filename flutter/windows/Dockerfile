@@ -48,9 +48,9 @@ RUN Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vs_buildtools.exe -OutFi
     Start-Process C:\vs_buildtools.exe -ArgumentList \"--quiet --wait --norestart --nocache --add Microsoft.VisualStudio.Workload.VCTools --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows10SDK.19041\" -Wait; `
     Remove-Item C:\vs_buildtools.exe -Force -ErrorAction SilentlyContinue
 
-USER ContainerUser
-
-# 禁用 MSBuild 节点复用
+# 禁用 MSBuild 节点复用（需要管理员权限）
 RUN setx /M MSBUILDDISABLENODEREUSE 1
+
+USER ContainerUser
 
 WORKDIR C:\app
