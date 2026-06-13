@@ -64,6 +64,18 @@ RUN [Environment]::SetEnvironmentVariable('PATH', \"${env:PATH};${env:GIT_INSTAL
 # 修复 MinGit 的循环引用问题
 RUN $env:GIT_CONFIG_NOSYSTEM=1; git config --system --unset-all include.path
 
+# 安装 VC++ 工具链（必须在 Flutter 初始化之前，否则 flutter precache 无法正确设置 Windows 支持）
+# 安装组件：Desktop C++ workload + MSVC v143 + MSVC v142 + CMake + Windows 10 SDK（Flutter 必需）+ Windows 11 SDK
+RUN Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vs_buildtools.exe -OutFile C:\vs_buildtools.exe; `
+    Start-Process C:\vs_buildtools.exe -ArgumentList \"--quiet --wait --norestart --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.VC.14.29.x86.x64 --add Microsoft.VisualStudio.Component.VC.14.29.16.11.x86.x64 --add Microsoft.VisualStudio.Component.VC.CMake.Project --add Microsoft.VisualStudio.Component.Windows10SDK.19041 --add Microsoft.VisualStudio.Component.Windows11SDK.22000\" -Wait; `
+    Remove-Item C:\vs_buildtools.exe -Force -ErrorAction SilentlyContinue
+
+# 禁用 MSBuild 节点复用，并初始化 VC++ 环境变量
+RUN setx /M MSBUILDDISABLENODEREUSE 1; `
+    $vswhere = \"${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe\"; `
+    $vcvars = & $vswhere -latest -property installationPath; `
+    Write-Host \"VS installation: $vcvars\"
+
 # 克隆 Flutter SDK
 RUN git clone --depth 1 --branch \"$env:FLUTTER_VERSION\" https://github.com/flutter/flutter.git \"$env:FLUTTER_ROOT\"; `
     git config --global --add safe.directory \"$env:FLUTTER_ROOT\"; `
@@ -72,11 +84,3 @@ RUN git clone --depth 1 --branch \"$env:FLUTTER_VERSION\" https://github.com/flu
     flutter config --no-cli-animations --no-analytics --no-enable-android --no-enable-web --no-enable-linux-desktop --enable-windows-desktop --no-enable-fuchsia --no-enable-custom-devices --no-enable-ios --no-enable-macos-desktop; `
     flutter doctor --verbose; `
     flutter precache --windows
-
-# 安装 VC++ 工具链（补全 MSVC v142、CMake、Windows SDK）
-RUN Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vs_buildtools.exe -OutFile C:\vs_buildtools.exe; `
-    Start-Process C:\vs_buildtools.exe -ArgumentList \"--quiet --wait --norestart --nocache --add Microsoft.VisualStudio.Workload.VCTools --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.VC.14.29.x86.x64 --add Microsoft.VisualStudio.Component.VC.CMake.Project --add Microsoft.VisualStudio.Component.Windows11SDK.22000\" -Wait; `
-    Remove-Item C:\vs_buildtools.exe -Force -ErrorAction SilentlyContinue
-
-# 禁用 MSBuild 节点复用
-RUN setx /M MSBUILDDISABLENODEREUSE 1
