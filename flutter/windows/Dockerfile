@@ -65,16 +65,40 @@ RUN [Environment]::SetEnvironmentVariable('PATH', \"${env:PATH};${env:GIT_INSTAL
 RUN $env:GIT_CONFIG_NOSYSTEM=1; git config --system --unset-all include.path
 
 # 安装 VC++ 工具链（必须在 Flutter 初始化之前，否则 flutter precache 无法正确设置 Windows 支持）
-# 安装组件：Desktop C++ workload + MSVC v143 + MSVC v142 + CMake + Windows 10 SDK（Flutter 必需）+ Windows 11 SDK
+# 安装组件：Desktop C++ workload + MSVC v143 + MSVC v142 + CMake + Windows 10/11 SDK
+# 注意：Start-Process 的 ArgumentList 使用逗号分隔数组形式，避免引号嵌套问题
 RUN Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vs_buildtools.exe -OutFile C:\vs_buildtools.exe; `
-    Start-Process C:\vs_buildtools.exe -ArgumentList \"--quiet --wait --norestart --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.VC.14.29.x86.x64 --add Microsoft.VisualStudio.Component.VC.14.29.16.11.x86.x64 --add Microsoft.VisualStudio.Component.VC.CMake.Project --add Microsoft.VisualStudio.Component.Windows10SDK.19041 --add Microsoft.VisualStudio.Component.Windows11SDK.22000\" -Wait; `
-    Remove-Item C:\vs_buildtools.exe -Force -ErrorAction SilentlyContinue
+    $args = @( `
+      '--quiet', '--wait', '--norestart', '--nocache', `
+      '--add', 'Microsoft.VisualStudio.Workload.VCTools', `
+      '--includeRecommended', `
+      '--add', 'Microsoft.VisualStudio.Component.VC.Tools.x86.x64', `
+      '--add', 'Microsoft.VisualStudio.Component.VC.14.29.x86.x64', `
+      '--add', 'Microsoft.VisualStudio.Component.VC.CMake.Project', `
+      '--add', 'Microsoft.VisualStudio.Component.Windows10SDK.19041', `
+      '--add', 'Microsoft.VisualStudio.Component.Windows11SDK.22000' `
+    ); `
+    $proc = Start-Process C:\vs_buildtools.exe -ArgumentList $args -Wait -PassThru -NoNewWindow; `
+    if ($proc.ExitCode -ne 0) { `
+      throw \"VS Build Tools 安装失败，退出码: $($proc.ExitCode)\" `
+    }; `
+    Remove-Item C:\vs_buildtools.exe -Force -ErrorAction SilentlyContinue; `
+    Write-Host 'VS Build Tools 安装完成'
 
-# 禁用 MSBuild 节点复用，并初始化 VC++ 环境变量
+# 禁用 MSBuild 节点复用，初始化 VC++ 环境变量并写入系统 PATH
 RUN setx /M MSBUILDDISABLENODEREUSE 1; `
     $vswhere = \"${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe\"; `
-    $vcvars = & $vswhere -latest -property installationPath; `
-    Write-Host \"VS installation: $vcvars\"
+    $vsPath = & $vswhere -latest -property installationPath; `
+    if (-not $vsPath) { throw 'vswhere 未找到 Visual Studio 安装' }; `
+    Write-Host \"VS installation: $vsPath\"; `
+    $msvcPath = Join-Path $vsPath 'VC\Tools\MSVC'; `
+    $msvcVer = (Get-ChildItem $msvcPath -Directory | Sort-Object Name -Descending | Select-Object -First 1).Name; `
+    $hostArch = if ([Environment]::Is64BitOperatingSystem) { 'Hostx64' } else { 'Hostx86' }; `
+    $targetArch = if ([Environment]::Is64BitOperatingSystem) { 'x64' } else { 'x86' }; `
+    $binPath = Join-Path $msvcPath \"$msvcVer\bin\$hostArch\$targetArch\"; `
+    Write-Host \"MSVC tools: $binPath\"; `
+    if (-not (Test-Path $binPath)) { throw \"MSVC 工具路径不存在: $binPath\" }; `
+    [Environment]::SetEnvironmentVariable('PATH', \"${env:PATH};${binPath}\", 'Machine')
 
 # 克隆 Flutter SDK
 RUN git clone --depth 1 --branch \"$env:FLUTTER_VERSION\" https://github.com/flutter/flutter.git \"$env:FLUTTER_ROOT\"; `
