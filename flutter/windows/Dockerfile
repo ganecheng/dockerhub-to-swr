@@ -34,11 +34,14 @@ ENV FLUTTER_HOME=C:\flutter
 ENV FLUTTER_URL="https://storage.googleapis.com/flutter_infra_release/releases/stable/windows/flutter_windows_${FLUTTER_VERSION}-stable.zip"
 ENV PATH="C:\flutter\bin;${PATH}"
 
+# 下载并解压 Flutter（ENV PATH 在下一个 RUN 才生效）
 RUN New-Item -ItemType Directory -Force -Path C:\TEMP | Out-Null; `
     Invoke-WebRequest -Uri $env:FLUTTER_URL -OutFile C:\TEMP\flutter.zip; `
     Expand-Archive C:\TEMP\flutter.zip -DestinationPath C:\; `
-    Remove-Item C:\TEMP\flutter.zip -Force; `
-    flutter config --no-analytics; `
+    Remove-Item C:\TEMP\flutter.zip -Force
+
+# Flutter 配置（PATH 已生效）
+RUN flutter config --no-analytics; `
     flutter precache --windows
 
 # 安装 Visual Studio Build Tools 2022 + VC++ 工具链
