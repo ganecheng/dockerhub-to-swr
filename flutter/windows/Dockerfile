@@ -19,12 +19,12 @@ RUN $installer = \"MinGit-2.54.0-busybox-64-bit.zip\"; `
     $url = \"https://github.com/git-for-windows/git/releases/download/v2.54.0.windows.1/${installer}\"; `
     Invoke-WebRequest -Uri \"$url\" -OutFile \"$installer\"; `
     Expand-Archive -Path \"$installer\" -DestinationPath \"$env:GIT_INSTALLATION_PATH\"; `
-    Remove-Item -Path \"$installer\" 
+    Remove-Item -Path \"$installer\"
 
 USER ContainerAdministrator
 
 # 设置系统 PATH
-RUN [Environment]::SetEnvironmentVariable('PATH', \"${env:PATH};${env:GIT_INSTALLATION_PATH}\cmd;${env:GIT_INSTALLATION_PATH}\usr\bin;${env:FLUTTER_ROOT}\bin;${env:FLUTTER_ROOT}\bin\cache\dart-sdk\bin\", 'Machine')
+RUN [Environment]::SetEnvironmentVariable('PATH', \"${env:PATH};${env:GIT_INSTALLATION_PATH}\cmd;${env:GIT_INSTALLATION_PATH}\usr\bin;${env:FLUTTER_ROOT}\bin;${env:FLUTTER_ROOT}\bin\cache\dart-sdk\bin;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\", 'Machine')
 
 # 修复 MinGit 的循环引用问题
 RUN $env:GIT_CONFIG_NOSYSTEM=1; git config --system --unset-all include.path
@@ -42,10 +42,11 @@ RUN git clone --depth 1 --branch \"$env:FLUTTER_VERSION\" https://github.com/flu
 
 USER ContainerAdministrator
 
-# 安装 Visual Studio Build Tools 2022 + VC++ 工具链
-RUN Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vs_buildtools.exe -OutFile C:\vs_buildtools.exe; `
-    Start-Process C:\vs_buildtools.exe -ArgumentList \"--quiet --wait --norestart --nocache --add Microsoft.VisualStudio.Component.VC.CMake.Project --add Microsoft.VisualStudio.Component.Windows10SDK.19041 --add Microsoft.VisualStudio.Workload.VCTools\" -Wait; `
-    Remove-Item C:\vs_buildtools.exe -Force -ErrorAction SilentlyContinue
+# 使用 Chocolatey 安装 VS Build Tools（比直接下载更稳定）
+RUN $env:chocolateyUseWindowsCompression = 'true'; `
+    $env:chocolateyIgnoreRebootDetected = 'true'; `
+    choco install visualstudio2022buildtools -y --no-progress --allow-downgrade --package-parameters \"--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows10SDK.19041 --add Microsoft.VisualStudio.Component.VC.CMake.Project --passive --locale en-US\"; `
+    Remove-Item C:\ProgramData\chocolatey\logs -Recurse -Force -ErrorAction SilentlyContinue
 
 USER ContainerUser
 
