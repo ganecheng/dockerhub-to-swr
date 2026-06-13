@@ -92,12 +92,12 @@ RUN Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vs_buildtools.exe -OutFi
     Write-Host \"VS Build Tools 安装完成（退出码: $code）\"
 
 # 禁用 MSBuild 节点复用，初始化 VC++ 环境变量并写入系统 PATH
+# 直接使用已知安装路径 C:\BuildTools（vswhere 默认不会扫描非标准路径）
 RUN setx /M MSBUILDDISABLENODEREUSE 1; `
-    $vswhere = \"${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe\"; `
-    $vsPath = & $vswhere -latest -property installationPath; `
-    if (-not $vsPath) { throw 'vswhere 未找到 Visual Studio 安装' }; `
+    $vsPath = 'C:\BuildTools'; `
     Write-Host \"VS installation: $vsPath\"; `
     $msvcPath = Join-Path $vsPath 'VC\Tools\MSVC'; `
+    if (-not (Test-Path $msvcPath)) { throw \"MSVC 目录不存在: $msvcPath（VS Build Tools 安装可能失败）\" }; `
     $msvcVer = (Get-ChildItem $msvcPath -Directory | Sort-Object Name -Descending | Select-Object -First 1).Name; `
     $hostArch = if ([Environment]::Is64BitOperatingSystem) { 'Hostx64' } else { 'Hostx86' }; `
     $targetArch = if ([Environment]::Is64BitOperatingSystem) { 'x64' } else { 'x86' }; `
