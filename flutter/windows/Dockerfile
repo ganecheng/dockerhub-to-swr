@@ -14,17 +14,40 @@ RUN choco install git -y --no-progress; `
     Remove-Item C:\Users\ContainerAdministrator\AppData\Local\Temp\chocolatey -Recurse -Force -ErrorAction SilentlyContinue
 
 # Visual Studio Build Tools 2022 — 仅 Flutter Windows 必需的三个组件
-# 不用完整 VCTools workload（~12GB），避免容器层过大导致 commit 损坏
+# 使用 Windows 10 SDK (19041) 替代 Windows 11 SDK，容器兼容性更好
+# 添加重试逻辑和详细日志以应对网络不稳定
 RUN [System.Net.ServicePointManager]::SecurityProtocol = 3072; `
     New-Item -ItemType Directory -Force -Path C:\TEMP; `
-    Invoke-WebRequest -Uri "https://aka.ms/vs/17/release/vs_BuildTools.exe" `
-        -OutFile C:\TEMP\vs_BuildTools.exe; `
-    C:\TEMP\vs_BuildTools.exe --quiet --wait --norestart `
-        --installPath "C:\BuildTools" `
-        --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
-        --add Microsoft.VisualStudio.Component.Windows11SDK.22621 `
-        --add Microsoft.VisualStudio.Component.VC.CMake.Project; `
-    Remove-Item C:\TEMP\vs_BuildTools.exe -Force -ErrorAction SilentlyContinue
+    $maxRetries = 3; $retryCount = 0; $success = $false; `
+    while (-not $success -and $retryCount -lt $maxRetries) { `
+        try { `
+            Write-Host \"Attempt $(($retryCount + 1)) of $maxRetries - Downloading VS Build Tools...\"; `
+            Invoke-WebRequest -Uri \"https://aka.ms/vs/17/release/vs_BuildTools.exe\" `
+                -OutFile C:\TEMP\vs_BuildTools.exe -UseBasicParsing; `
+            $success = $true; `
+        } catch { `
+            $retryCount++; `
+            if ($retryCount -lt $maxRetries) { Write-Host \"Download failed, retrying in 10 seconds...\"; Start-Sleep -Seconds 10; } `
+            else { throw $_; } `
+        } `
+    }; `
+    Write-Host \"Installing VS Build Tools (this may take 30+ minutes)...\"; `
+    $process = Start-Process -FilePath C:\TEMP\vs_BuildTools.exe `
+        -ArgumentList '--quiet','--wait','--norestart','--nocache',`
+            '--installPath','C:\BuildTools',`
+            '--add','Microsoft.VisualStudio.Component.VC.Tools.x86.x64',`
+            '--add','Microsoft.VisualStudio.Component.Windows10SDK.19041',`
+            '--add','Microsoft.VisualStudio.Component.VC.CMake.Project',`
+            '--log','C:\TEMP\vs_install.log' `
+        -PassThru -NoNewWindow; `
+    $process.WaitForExit(); `
+    if ($process.ExitCode -notin @(0,3010)) { `
+        Write-Host \"Installation failed with exit code: $($process.ExitCode)\"; `
+        if (Test-Path C:\TEMP\vs_install.log) { Get-Content C:\TEMP\vs_install.log -Tail 100; } `
+        throw \"VS Build Tools installation failed\"; `
+    }; `
+    Remove-Item C:\TEMP\vs_BuildTools.exe -Force -ErrorAction SilentlyContinue; `
+    Remove-Item C:\TEMP\vs_install.log -Force -ErrorAction SilentlyContinue
 
 # Flutter SDK 3.44.1 (Dart >=3.10.0)
 ARG FLUTTER_VERSION=3.44.1
