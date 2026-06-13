@@ -28,16 +28,6 @@ RUN $env:chocolateyUseWindowsCompression = 'true'; `
     Remove-Item C:\ProgramData\chocolatey\logs -Recurse -Force -ErrorAction SilentlyContinue; `
     Remove-Item C:\Users\ContainerAdministrator\AppData\Local\Temp\chocolatey -Recurse -Force -ErrorAction SilentlyContinue
 
-# 安装 Visual Studio Build Tools 2022 + VC++ 工具链（直接使用 VS 安装程序）
-RUN New-Item -ItemType Directory -Force -Path C:\TEMP | Out-Null; `
-    Invoke-WebRequest -Uri 'https://aka.ms/vs/17/release/vs_BuildTools.exe' -OutFile C:\TEMP\vs_BuildTools.exe; `
-    $installArgs = '--quiet','--wait','--norestart','--nocache','--add','Microsoft.VisualStudio.Component.VC.Tools.x86.x64','--add','Microsoft.VisualStudio.Component.Windows10SDK.19041','--add','Microsoft.VisualStudio.Component.VC.CMake.Project'; `
-    $p = Start-Process -FilePath C:\TEMP\vs_BuildTools.exe -ArgumentList $installArgs -NoNewWindow -PassThru; `
-    $p.WaitForExit(); `
-    if ($p.ExitCode -ne 0) { throw 'VS Build Tools installation failed with exit code ' + $p.ExitCode }; `
-    Remove-Item C:\TEMP\vs_BuildTools.exe -Force -ErrorAction SilentlyContinue; `
-    Remove-Item 'C:\ProgramData\Package Cache' -Recurse -Force -ErrorAction SilentlyContinue
-
 # Flutter SDK 3.44.1 (Dart >=3.10.0)
 ARG FLUTTER_VERSION=3.44.1
 ENV FLUTTER_HOME=C:\flutter
@@ -51,7 +41,13 @@ RUN New-Item -ItemType Directory -Force -Path C:\TEMP | Out-Null; `
     flutter config --no-analytics; `
     flutter precache --windows
 
-# 禁用 MSBuild 节点复用（容器内复用会导致构建卡死，等效于 Linux 的 Gradle Daemon）
+# 安装 Visual Studio Build Tools 2022 + VC++ 工具链
+# 参考: https://learn.microsoft.com/en-us/visualstudio/install/build-tools-container
+RUN Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vs_buildtools.exe -OutFile C:\TEMP\vs_buildtools.exe; `
+    Start-Process C:\TEMP\vs_buildtools.exe -ArgumentList "--quiet --wait --norestart --nocache --add Microsoft.VisualStudio.Component.VC.CMake.Project --add Microsoft.VisualStudio.Component.Windows10SDK.19041 --add Microsoft.VisualStudio.Workload.VCTools" -Wait; `
+    Remove-Item C:\TEMP\vs_buildtools.exe -Force -ErrorAction SilentlyContinue
+
+# 禁用 MSBuild 节点复用（容器内复用会导致构建卡死）
 RUN setx /M MSBUILDDISABLENODEREUSE 1
 
 WORKDIR C:\app
