@@ -4,12 +4,29 @@ FROM mcr.microsoft.com/windows/servercore:ltsc2022
 
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
-# 系统依赖 — Chocolatey + Git
-RUN Set-ExecutionPolicy Bypass -Scope Process -Force; `
-    [System.Net.ServicePointManager]::SecurityProtocol = 3072; `
-    iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+# 系统依赖 — Chocolatey + Git（带重试逻辑应对网络不稳定）
+RUN $maxRetries = 5; $retryDelay = 30; $success = $false; `
+    for ($i = 1; $i -le $maxRetries; $i++) { `
+        try { `
+            Write-Host \"Attempt $i of $maxRetries - Installing Chocolatey...\"; `
+            Set-ExecutionPolicy Bypass -Scope Process -Force; `
+            [System.Net.ServicePointManager]::SecurityProtocol = 3072; `
+            iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1')); `
+            $success = $true; `
+            break; `
+        } catch { `
+            Write-Host \"Chocolatey install failed: $_\"; `
+            if ($i -lt $maxRetries) { `
+                Write-Host \"Retrying in $retryDelay seconds...\"; `
+                Start-Sleep -Seconds $retryDelay; `
+            } else { `
+                throw \"Failed to install Chocolatey after $maxRetries attempts\"; `
+            } `
+        } `
+    }
 
-RUN choco install git -y --no-progress; `
+RUN $env:chocolateyUseWindowsCompression = 'true'; `
+    choco install git -y --no-progress --allow-downgrade; `
     Remove-Item C:\ProgramData\chocolatey\logs -Recurse -Force -ErrorAction SilentlyContinue; `
     Remove-Item C:\Users\ContainerAdministrator\AppData\Local\Temp\chocolatey -Recurse -Force -ErrorAction SilentlyContinue
 
