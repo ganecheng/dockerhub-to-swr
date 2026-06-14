@@ -87,6 +87,9 @@ RUN $components = @( `
     Remove-Item 'C:\ProgramData\Package Cache' -Recurse -Force -ErrorAction SilentlyContinue; `
     Write-Host \"VS Build Tools 全部组件安装完成（退出码: $code）\"
 
+# 安装 NuGet（Flutter Windows 构建依赖）
+RUN Invoke-WebRequest -Uri https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -OutFile C:\Windows\System32\nuget.exe
+
 # 禁用 MSBuild 节点复用，初始化 VC++ 环境变量并写入系统 PATH
 # 直接使用已知安装路径 C:\BuildTools（vswhere 默认不会扫描非标准路径）
 RUN setx /M MSBUILDDISABLENODEREUSE 1; `
