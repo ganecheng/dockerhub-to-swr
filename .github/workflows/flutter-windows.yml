@@ -9,7 +9,7 @@ env:
 
 jobs:
   main_job:
-    runs-on: windows-2022
+    runs-on: ubuntu-24.04
     env:
       TZ: Asia/Shanghai
     outputs:
@@ -18,11 +18,9 @@ jobs:
     steps:
       - name: generate global_env
         id: global_env
-        shell: powershell
         run: |
-          $ErrorActionPreference = "Stop"
-          $datetime = Get-Date -Format 'yyyyMMdd_HHmmss'
-          echo "current_datetime=$datetime" >> $env:GITHUB_OUTPUT
+          set -ex
+          echo "current_datetime=$(date +'%Y%m%d_%H%M%S')" >> $GITHUB_OUTPUT
 
   windows_container_image_build:
     runs-on: windows-2022
