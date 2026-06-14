@@ -64,37 +64,80 @@ RUN [Environment]::SetEnvironmentVariable('PATH', \"${env:PATH};${env:GIT_INSTAL
 # 修复 MinGit 的循环引用问题
 RUN $env:GIT_CONFIG_NOSYSTEM=1; git config --system --unset-all include.path
 
-# 安装 VC++ 工具链（必须在 Flutter 初始化之前，否则 flutter precache 无法正确设置 Windows 支持）
-# 组件说明：
-#   Workload.VCTools         = "Desktop development with C++" 工作负载（Flutter doctor 检查的根标识）
-#   Component.VC.Tools.x86.x64 = MSVC 最新版（v143）
-#   Component.VC.v142          = MSVC v142（Flutter doctor 显式要求）
-#   Component.VC.CMake.Project = C++ CMake tools
-#   Component.Windows10SDK.19041 = Windows 10 SDK
-# 退出码 0 = 成功；3010 = 成功但需重启（容器中视为成功）；其他 = 失败
-RUN Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vs_buildtools.exe -OutFile C:\vs_buildtools.exe; `
-    $vsArgs = @( `
+# 下载 VS Build Tools 安装器（独立一层）
+# 后续多个 RUN 各装一个组件，让每个组件独占镜像层，
+# 推送时未变化的层可在 registry 直接复用，避免 10GB+ 单层重传。
+# 退出码 0 = 成功；3010 = 成功但需重启（容器内视为成功）；其他 = 失败
+RUN Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vs_buildtools.exe -OutFile C:\vs_buildtools.exe
+
+# 层 A1：注册 VCTools 工作负载（Flutter doctor 检查的根标识）
+RUN $vsArgs = @( `
       '--quiet', '--wait', '--norestart', '--nocache', `
       '--installPath', 'C:\BuildTools', `
-      '--add', 'Microsoft.VisualStudio.Workload.VCTools', `
-      '--add', 'Microsoft.VisualStudio.Component.VC.Tools.x86.x64', `
-      '--add', 'Microsoft.VisualStudio.Component.VC.v142', `
-      '--add', 'Microsoft.VisualStudio.Component.VC.CMake.Project', `
-      '--add', 'Microsoft.VisualStudio.Component.Windows10SDK.19041', `
-      '--includeRecommended' `
+      '--add', 'Microsoft.VisualStudio.Workload.VCTools' `
     ); `
     $proc = Start-Process C:\vs_buildtools.exe -ArgumentList $vsArgs -Wait -PassThru -NoNewWindow; `
     $code = $proc.ExitCode; `
     if ($code -ne 0 -and $code -ne 3010) { `
-      Write-Host \"VS Build Tools 安装失败，退出码: $code，输出日志：\"; `
       Get-ChildItem $env:TEMP -Filter 'dd_*.log' -ErrorAction SilentlyContinue | ForEach-Object { `
-        Write-Host \"========== $($_.FullName) ==========\"; `
-        Get-Content $_.FullName -ErrorAction SilentlyContinue `
+        Write-Host \"========== $($_.FullName) ==========\"; Get-Content $_.FullName -ErrorAction SilentlyContinue `
       }; `
-      throw \"VS Build Tools 安装失败，退出码: $code\" `
+      throw \"Workload.VCTools 安装失败，退出码: $code\" `
+    }; `
+    Remove-Item 'C:\ProgramData\Package Cache' -Recurse -Force -ErrorAction SilentlyContinue; `
+    Write-Host \"Workload.VCTools 安装完成（退出码: $code）\"
+
+# 层 A2：MSVC v143（VC.Tools.x86.x64，最新版 MSVC，~3-4GB）
+RUN $vsArgs = @( `
+      'modify', '--quiet', '--wait', '--norestart', '--nocache', `
+      '--installPath', 'C:\BuildTools', `
+      '--add', 'Microsoft.VisualStudio.Component.VC.Tools.x86.x64' `
+    ); `
+    $proc = Start-Process C:\vs_buildtools.exe -ArgumentList $vsArgs -Wait -PassThru -NoNewWindow; `
+    $code = $proc.ExitCode; `
+    if ($code -ne 0 -and $code -ne 3010) { `
+      Get-ChildItem $env:TEMP -Filter 'dd_*.log' -ErrorAction SilentlyContinue | ForEach-Object { `
+        Write-Host \"========== $($_.FullName) ==========\"; Get-Content $_.FullName -ErrorAction SilentlyContinue `
+      }; `
+      throw \"VC.Tools.x86.x64 安装失败，退出码: $code\" `
+    }; `
+    Remove-Item 'C:\ProgramData\Package Cache' -Recurse -Force -ErrorAction SilentlyContinue; `
+    Write-Host \"VC.Tools.x86.x64 安装完成（退出码: $code）\"
+
+# 层 B：Windows 10 SDK 19041（~2-3GB）
+RUN $vsArgs = @( `
+      'modify', '--quiet', '--wait', '--norestart', '--nocache', `
+      '--installPath', 'C:\BuildTools', `
+      '--add', 'Microsoft.VisualStudio.Component.Windows10SDK.19041' `
+    ); `
+    $proc = Start-Process C:\vs_buildtools.exe -ArgumentList $vsArgs -Wait -PassThru -NoNewWindow; `
+    $code = $proc.ExitCode; `
+    if ($code -ne 0 -and $code -ne 3010) { `
+      Get-ChildItem $env:TEMP -Filter 'dd_*.log' -ErrorAction SilentlyContinue | ForEach-Object { `
+        Write-Host \"========== $($_.FullName) ==========\"; Get-Content $_.FullName -ErrorAction SilentlyContinue `
+      }; `
+      throw \"Windows10SDK.19041 安装失败，退出码: $code\" `
+    }; `
+    Remove-Item 'C:\ProgramData\Package Cache' -Recurse -Force -ErrorAction SilentlyContinue; `
+    Write-Host \"Windows10SDK.19041 安装完成（退出码: $code）\"
+
+# 层 C：CMake 工具（VC.CMake.Project，~几百 MB）
+RUN $vsArgs = @( `
+      'modify', '--quiet', '--wait', '--norestart', '--nocache', `
+      '--installPath', 'C:\BuildTools', `
+      '--add', 'Microsoft.VisualStudio.Component.VC.CMake.Project' `
+    ); `
+    $proc = Start-Process C:\vs_buildtools.exe -ArgumentList $vsArgs -Wait -PassThru -NoNewWindow; `
+    $code = $proc.ExitCode; `
+    if ($code -ne 0 -and $code -ne 3010) { `
+      Get-ChildItem $env:TEMP -Filter 'dd_*.log' -ErrorAction SilentlyContinue | ForEach-Object { `
+        Write-Host \"========== $($_.FullName) ==========\"; Get-Content $_.FullName -ErrorAction SilentlyContinue `
+      }; `
+      throw \"VC.CMake.Project 安装失败，退出码: $code\" `
     }; `
     Remove-Item C:\vs_buildtools.exe -Force -ErrorAction SilentlyContinue; `
-    Write-Host \"VS Build Tools 安装完成（退出码: $code）\"
+    Remove-Item 'C:\ProgramData\Package Cache' -Recurse -Force -ErrorAction SilentlyContinue; `
+    Write-Host \"VC.CMake.Project 安装完成（退出码: $code）\"
 
 # 禁用 MSBuild 节点复用，初始化 VC++ 环境变量并写入系统 PATH
 # 直接使用已知安装路径 C:\BuildTools（vswhere 默认不会扫描非标准路径）
