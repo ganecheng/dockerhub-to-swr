@@ -1,7 +1,7 @@
 # escape=`
 
-# 使用微软预构建镜像（已包含 MSBuild、.NET Framework SDK）
-FROM mcr.microsoft.com/dotnet/framework/sdk:4.8-windowsservercore-ltsc2022
+# 使用 Windows Server Core 基础镜像（不含 .NET SDK，减小约 2-3 GB）
+FROM mcr.microsoft.com/windows/servercore:ltsc2022
 
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
