@@ -1,6 +1,6 @@
 # escape=`
 
-FROM ghcr.io/ganecheng/windows-dev:20260614_182447-windows-x86_64
+FROM ghcr.io/ganecheng/windows-dev:20260614_200825-windows-x86_64
 
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
@@ -25,9 +25,6 @@ RUN git clone --depth 1 --branch "$env:FLUTTER_VERSION" https://github.com/flutt
     # 清理示例和开发文档（节省 ~200MB）
     Remove-Item -Recurse -Force "$env:FLUTTER_ROOT\examples" -ErrorAction SilentlyContinue; `
     Remove-Item -Recurse -Force "$env:FLUTTER_ROOT\dev" -ErrorAction SilentlyContinue; `
-    # 仅保留 Release 模式引擎（节省 ~100-200MB），适用于 CI/CD 构建发布包
-    Remove-Item -Recurse -Force "$env:FLUTTER_ROOT\bin\cache\artifacts\engine\windows-x64" -ErrorAction SilentlyContinue; `
-    Remove-Item -Recurse -Force "$env:FLUTTER_ROOT\bin\cache\artifacts\engine\windows-x64-profile" -ErrorAction SilentlyContinue; `
     # 清理临时缓存
     Remove-Item -Recurse -Force "$env:FLUTTER_ROOT\bin\cache\pkg" -ErrorAction SilentlyContinue; `
     Remove-Item -Recurse -Force "$env:FLUTTER_ROOT\bin\cache\flutter_tools.skps" -ErrorAction SilentlyContinue; `
