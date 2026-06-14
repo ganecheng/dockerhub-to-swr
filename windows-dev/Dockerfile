@@ -58,14 +58,12 @@ RUN [Environment]::SetEnvironmentVariable('PATH', \"${env:PATH};${env:GIT_INSTAL
 # 修复 MinGit 的循环引用问题
 RUN $env:GIT_CONFIG_NOSYSTEM=1; git config --system --unset-all include.path
 
-# 下载 VS Build Tools 安装器
-# 退出码 0 = 成功；3010 = 成功但需重启（容器内视为成功）；其他 = 失败
-RUN Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vs_buildtools.exe -OutFile C:\vs_buildtools.exe
-
-# 一次性安装全部 VS Build Tools 组件（合并为一个 RUN 层，避免分层后体积膨胀）
+# 下载并安装 VS Build Tools 组件（合并为单层，避免分层后体积膨胀）
 # 包含：VCTools 工作负载、MSVC v143、Windows 10 SDK 19041、CMake 工具
 # --nocache 已禁用本地缓存，安装完成后清理所有临时文件
-RUN $components = @( `
+# 退出码 0 = 成功；3010 = 成功但需重启（容器内视为成功）；其他 = 失败
+RUN Invoke-WebRequest -Uri https://aka.ms/vs/17/release/vs_buildtools.exe -OutFile C:\vs_buildtools.exe; `
+    $components = @( `
       'Microsoft.VisualStudio.Workload.VCTools', `
       'Microsoft.VisualStudio.Component.VC.Tools.x86.x64', `
       'Microsoft.VisualStudio.Component.Windows10SDK.19041', `

@@ -13,7 +13,7 @@ ENV PUB_CACHE="C:\pub-cache"
 WORKDIR "C:\app"
 
 # 将 Flutter/Dart 路径追加到系统 PATH（Git 等路径已由基础镜像设置）
-RUN [Environment]::SetEnvironmentVariable('PATH', $env:PATH + ';' + $env:FLUTTER_ROOT + '\bin;' + $env:FLUTTER_ROOT + '\bin\cache\dart-sdk\bin', 'Machine')
+RUN [Environment]::SetEnvironmentVariable('PATH', \"${env:PATH};${env:FLUTTER_ROOT}\bin;${env:FLUTTER_ROOT}\bin\cache\dart-sdk\bin\", 'Machine')
 
 # 克隆 Flutter SDK，预缓存 Windows 引擎，然后清理不必要的文件以减小镜像体积
 RUN git clone --depth 1 --branch "$env:FLUTTER_VERSION" https://github.com/flutter/flutter.git "$env:FLUTTER_ROOT"; `
