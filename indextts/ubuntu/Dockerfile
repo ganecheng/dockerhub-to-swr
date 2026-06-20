@@ -1,4 +1,4 @@
-FROM ubuntu:jammy-20251001
+FROM ubuntu:resolute-20260610
 
 COPY indextts/ubuntu/os_init.sh /os_init.sh
 COPY indextts/ubuntu/os_clean.sh /os_clean.sh

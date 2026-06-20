@@ -1,4 +1,4 @@
-FROM ubuntu:resolute-20260421
+FROM ubuntu:resolute-20260610
 
 ENV TZ=Asia/Shanghai
 ENV DEBIAN_FRONTEND=noninteractive
