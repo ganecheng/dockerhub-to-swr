@@ -1,7 +1,7 @@
 FROM ubuntu:resolute-20260610
 
-COPY indextts/ubuntu/os_init.sh /os_init.sh
-COPY indextts/ubuntu/os_clean.sh /os_clean.sh
+COPY indextts/os_init.sh /os_init.sh
+COPY indextts/os_clean.sh /os_clean.sh
 
 COPY indextts/run.sh /run.sh
 COPY indextts/code.sh /code.sh

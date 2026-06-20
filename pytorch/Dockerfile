@@ -12,8 +12,8 @@ ENV PIP_BREAK_SYSTEM_PACKAGES=1
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-COPY pytorch/ubuntu/os_init.sh /os_init.sh
-COPY pytorch/ubuntu/os_clean.sh /os_clean.sh
+COPY pytorch/os_init.sh /os_init.sh
+COPY pytorch/os_clean.sh /os_clean.sh
 COPY pytorch/install_pytorch.sh /install_pytorch.sh
 
 # 设置时区

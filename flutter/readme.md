@@ -1,6 +1,6 @@
 | 组件                    | 项目 (flutter-music)     | Dockerfile                |
 |-----------------------|------------------------|---------------------------|
-| Flutter SDK           | 3.44.1                 | `3.44.1`                  |
+| Flutter SDK           | 3.44.2                 | `3.44.2`                  |
 | Dart                  | >=3.10.0               | 随 Flutter 捆绑              |
 | JDK                   | 21 (temurin)           | `openjdk-21-jdk-headless` |
 | compileSdk            | 36                     | `platforms;android-36`    |

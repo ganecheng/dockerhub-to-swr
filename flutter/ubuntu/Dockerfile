@@ -56,8 +56,8 @@ RUN sdkmanager "ndk;28.2.13676358" \
 RUN sdkmanager "cmake;3.22.1" \
     && rm -rf ${ANDROID_SDK_ROOT}/.temp ${ANDROID_SDK_ROOT}/.knownPackages
 
-# Flutter SDK 3.44.1 (Dart >=3.10.0)
-ARG FLUTTER_VERSION=3.44.1
+# Flutter SDK 3.44.2 (Dart >=3.10.0)
+ARG FLUTTER_VERSION=3.44.2
 ENV FLUTTER_HOME=/opt/flutter
 ENV PATH="${FLUTTER_HOME}/bin:${PATH}"
 

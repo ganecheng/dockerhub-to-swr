@@ -6,8 +6,8 @@ ENV PIP_BREAK_SYSTEM_PACKAGES=1
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-COPY ace-step/ubuntu/os_init.sh /os_init.sh
-COPY ace-step/ubuntu/os_clean.sh /os_clean.sh
+COPY ace-step/os_init.sh /os_init.sh
+COPY ace-step/os_clean.sh /os_clean.sh
 
 COPY ace-step/run.sh /run.sh
 COPY ace-step/code.sh /code.sh

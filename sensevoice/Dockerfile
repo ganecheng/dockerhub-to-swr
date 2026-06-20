@@ -1,7 +1,7 @@
 FROM ubuntu:resolute-20260610
 
-COPY sensevoice/ubuntu/os_init.sh /os_init.sh
-COPY sensevoice/ubuntu/os_clean.sh /os_clean.sh
+COPY sensevoice/os_init.sh /os_init.sh
+COPY sensevoice/os_clean.sh /os_clean.sh
 
 COPY sensevoice/run.sh /run.sh
 COPY sensevoice/code.sh /code.sh

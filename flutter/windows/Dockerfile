@@ -4,7 +4,7 @@ FROM ghcr.io/ganecheng/windows-dev:20260614_200825-windows-x86_64
 
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
-ARG FLUTTER_VERSION=3.44.1
+ARG FLUTTER_VERSION=3.44.2
 
 ENV FLUTTER_ROOT="C:\flutter"
 ENV FLUTTER_GIT_URL="unknown source"
