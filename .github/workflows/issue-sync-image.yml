@@ -1,4 +1,4 @@
-name: issue-sync
+name: issue-sync-image
 
 on:
   issues:
@@ -18,10 +18,10 @@ permissions:
 jobs:
   build:
     name: issue-sync
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: git checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: welcome
         run: |
@@ -33,17 +33,6 @@ jobs:
           uname -a
           docker images
           df -h
-          # 最新的执行机空间较大, 暂时停止清理磁盘
-      #      - name: clean disk
-      #        run: |
-      #          uname -a
-      #          docker images
-      #          df -h
-      #          sudo rm -rf /usr/share/dotnet
-      #          sudo rm -rf /usr/local/lib/android
-      #          sudo rm -rf /opt/ghc
-      #          sudo rm -rf /usr/share/swift
-      #          df -h
 
       - name: add label sync-image
         if: contains(github.event.issue.body, 'sync-image')
@@ -132,7 +121,7 @@ jobs:
           docker save $(cat images.txt) | gzip > images.tar.gz
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: images.tar.gz
           path: images.tar.gz

@@ -9,7 +9,7 @@ env:
 
 jobs:
   main_job:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     env:
       TZ: Asia/Shanghai
     outputs:
@@ -23,7 +23,7 @@ jobs:
           echo "current_datetime=$(date +'%Y%m%d_%H%M%S')" >> $GITHUB_OUTPUT
 
   ubuntu_container_image_build:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: main_job
     env:
       TZ: Asia/Shanghai
@@ -61,7 +61,7 @@ jobs:
           df -h
 
       - name: git checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: login ghcr
         uses: docker/login-action@v3
@@ -97,7 +97,7 @@ jobs:
           df -h
 
   openeuler_container_image_build:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: main_job
     env:
       TZ: Asia/Shanghai
@@ -135,7 +135,7 @@ jobs:
           df -h
 
       - name: git checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: login ghcr
         uses: docker/login-action@v3

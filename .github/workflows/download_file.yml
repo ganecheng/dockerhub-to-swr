@@ -15,10 +15,10 @@ env:
 jobs:
   build:
     name: download_file
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: git checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: DockerHub to SWR
         run: |
@@ -29,7 +29,7 @@ jobs:
           curl -o file ${images}
           
           current_datetime=$(date +'%Y%m%d_%H%M%S')
-          docker build -t swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/file:${current_datetime} -f Dockerfile_download_file .
+          docker build -t swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/file:${current_datetime} -f download_file/Dockerfile .
           
           docker push swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/file:${current_datetime}
 

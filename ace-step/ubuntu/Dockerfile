@@ -1,4 +1,4 @@
-FROM ubuntu:noble-20260324
+FROM ubuntu:resolute-20260610
 
 # 忽略 PEP 668 的安全检查
 ENV PIP_BREAK_SYSTEM_PACKAGES=1

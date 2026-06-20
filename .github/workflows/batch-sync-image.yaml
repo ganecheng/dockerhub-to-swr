@@ -10,12 +10,12 @@ env:
 jobs:
   build:
     name: DockerHub to SWR
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
     steps:
       - name: git checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: DockerHub to SWR
         run: |
           docker login -u cn-southwest-2@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.cn-southwest-2.myhuaweicloud.com
-          sh sync-image.sh
+          sh batch_sync_image/batch-sync-image.sh
