@@ -29,9 +29,9 @@ jobs:
           curl -o file ${images}
           
           current_datetime=$(date +'%Y%m%d_%H%M%S')
-          docker build -t swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/file:${current_datetime} -f download_file/Dockerfile .
+          docker build -t swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/file:${current_datetime}-x86_64 -f download_file/Dockerfile .
           
-          docker push swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/file:${current_datetime}
+          docker push swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/file:${current_datetime}-x86_64
 
       - name: Clean up intermediate files
         run: |

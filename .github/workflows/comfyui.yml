@@ -56,10 +56,10 @@ jobs:
           docker login -u cn-southwest-2@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.cn-southwest-2.myhuaweicloud.com
           set -ex
           
-          artifact_image_url=swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/comfyui:${current_datetime}-ubuntu-x86_64
-          ghcr_image_url=ghcr.io/${current_user}/comfyui:${current_datetime}-ubuntu-x86_64
+          artifact_image_url=swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/comfyui:${current_datetime}-x86_64
+          ghcr_image_url=ghcr.io/${current_user}/comfyui:${current_datetime}-x86_64
           
-          docker build -f comfyui/ubuntu/Dockerfile --no-cache -t ${artifact_image_url} .
+          docker build -f comfyui/Dockerfile --no-cache -t ${artifact_image_url} .
           docker tag ${artifact_image_url} ${ghcr_image_url}
           
           docker images
@@ -72,7 +72,7 @@ jobs:
           ls -alh
           df -h
           
-          docker push ghcr.io/${current_user}/comfyui:${current_datetime}-ubuntu-x86_64
+          docker push ghcr.io/${current_user}/comfyui:${current_datetime}-x86_64
           
           ls -alh
           df -h
