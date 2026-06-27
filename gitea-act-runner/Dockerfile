@@ -45,7 +45,7 @@ RUN <<EOF
   echo "#################################################"
   echo "Installing required packages..."
   echo "#################################################"
-  apt-get install --no-install-recommends -y adduser binutils ca-certificates curl sudo tini nodejs npm
+  apt-get install --no-install-recommends -y adduser binutils ca-certificates curl sudo tini nodejs npm jq
 
   minimize /usr/bin/tini-static
 
