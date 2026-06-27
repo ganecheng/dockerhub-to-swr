@@ -1,0 +1,145 @@
+#!/usr/bin/env bash
+#
+# SPDX-FileCopyrightText: © Vegard IT GmbH (https://vegardit.com)
+# SPDX-FileContributor: Sebastian Thomschke
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-ArtifactOfProjectHomePage: https://github.com/vegardit/docker-gitea-act-runner
+
+set -euo pipefail
+
+function log() {
+  local level=${1:-INFO}
+  level=${level^^}
+  shift
+  local prefix
+  prefix="$(date "+%Y-%m-%d %H:%M:%S") $level"
+  if (( $# )); then
+    printf '%s %s\n' "$prefix" "$*"
+  else
+    while IFS= read -r line; do
+      printf '%s %s\n' "$prefix" "$line"
+    done
+  fi
+}
+
+log INFO "Effective user: $(id)"
+
+cd /data || exit 1
+
+
+#################################################
+# load custom init script if specified
+#################################################
+if [[ -f "$INIT_SH_FILE" ]]; then
+  log INFO "Loading [$INIT_SH_FILE]..."
+  source "$INIT_SH_FILE"
+fi
+
+
+#################################################
+# render config file
+#################################################
+if [[ -z ${GITEA_RUNNER_LABELS:-} ]]; then
+  GITEA_RUNNER_LABELS=$GITEA_RUNNER_LABELS_DEFAULT
+fi
+
+effective_config_file=/tmp/gitea_runner_config.yml
+rm -f "$effective_config_file"
+if [[ ${GITEA_RUNNER_LOG_EFFECTIVE_CONFIG:-false} == "true" ]]; then
+  log INFO "Effective runner config [$effective_config_file]:"
+  echo "==========================================================="
+  while IFS= read -r line; do
+    line=${line//\"/\\\"}
+    line=${line//\`/\\\`}
+    eval "echo \"$line\"" | tee -a "$effective_config_file"
+  done < "$GITEA_RUNNER_CONFIG_TEMPLATE_FILE"
+  echo "==========================================================="
+else
+  while IFS= read -r line; do
+    line=${line//\"/\\\"}
+    line=${line//\`/\\\`}
+    eval "echo \"$line\"" >> "$effective_config_file"
+  done < "$GITEA_RUNNER_CONFIG_TEMPLATE_FILE"
+fi
+
+
+#################################################
+# register act runner if required
+#################################################
+if [[ ! -s ${GITEA_RUNNER_REGISTRATION_FILE:-.runner} ]]; then
+  if [[ -z ${GITEA_RUNNER_REGISTRATION_TOKEN:-} ]]; then
+    read -r GITEA_RUNNER_REGISTRATION_TOKEN < "$GITEA_RUNNER_REGISTRATION_TOKEN_FILE"
+  fi
+
+  log INFO "Trying to register runner with Gitea..."
+  log INFO "  GITEA_INSTANCE_URL=$GITEA_INSTANCE_URL"
+  log INFO "  GITEA_RUNNER_NAME=$GITEA_RUNNER_NAME"
+  log INFO "  GITEA_RUNNER_REGISTRATION_TOKEN=${GITEA_RUNNER_REGISTRATION_TOKEN//?/*}"
+  log INFO "  GITEA_RUNNER_LABELS=$GITEA_RUNNER_LABELS"
+  if [[ $GITEA_RUNNER_EPHEMERAL == "true" || $GITEA_RUNNER_EPHEMERAL == "1" ]]; then
+    log INFO "  GITEA_RUNNER_EPHEMERAL=$GITEA_RUNNER_EPHEMERAL (runner will exit after completing one job)"
+  fi
+  wait_until=$(( $(date +%s) + GITEA_RUNNER_REGISTRATION_TIMEOUT ))
+  while true; do
+    register_args=(
+      --instance "$GITEA_INSTANCE_URL"
+      --token    "$GITEA_RUNNER_REGISTRATION_TOKEN"
+      --name     "$GITEA_RUNNER_NAME"
+      --labels   "$GITEA_RUNNER_LABELS"
+      --config   "$effective_config_file"
+      --no-interactive
+    )
+    if [[ $GITEA_RUNNER_EPHEMERAL == "true" || $GITEA_RUNNER_EPHEMERAL == "1" ]]; then
+      register_args+=(--ephemeral)
+    fi
+    if gitea-runner register "${register_args[@]}"; then
+      break;
+    fi
+    if [ "$(date +%s)" -ge $wait_until ]; then
+      log ERROR "Runner registration failed."
+      exit 1
+    fi
+    sleep "$GITEA_RUNNER_REGISTRATION_RETRY_INTERVAL"
+  done
+fi
+
+
+#################################################
+# unset all variables named GITEA_... to prevent deprecation warning
+#################################################
+unset $(env | grep "^GITEA_" | cut -d= -f1)
+
+
+#################################################
+# run the Gitea Actions runner
+#################################################
+gitea-runner daemon --config "$effective_config_file" &
+gitea_runner_pid=$!
+
+function shutdown_act() {
+  log INFO "Stopping gitea-runner..."
+  (set -x; kill -SIGTERM "$gitea_runner_pid" || true)
+}
+
+function shutdown_docker() {
+  log INFO "Stopping docker engine..."
+  (set -x; service docker stop)
+  while [[ -e /proc/$DOCKER_PID ]]; do
+    log INFO "Waiting for docker engine to shutdown..."
+    sleep 2
+  done
+}
+
+trap "shutdown_act; shutdown_docker" INT TERM HUP QUIT
+
+while [[ -e /proc/$DOCKER_PID && -e /proc/$gitea_runner_pid ]]; do
+  sleep 1
+done
+
+if [[ -e /proc/$DOCKER_PID ]]; then
+  shutdown_docker
+else
+  log ERROR "Docker engine unexpectly ended."
+  shutdown_act
+fi
+exit 1
