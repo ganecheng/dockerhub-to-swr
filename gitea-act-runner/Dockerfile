@@ -36,7 +36,7 @@ RUN <<EOF
   apt-get update
   (set -x; apt-get install --no-install-recommends -y docker-ce docker-buildx-plugin docker-compose-plugin containerd.io)
 
-  docker info
+  docker --version && docker compose version && docker buildx version && runc --version
 
   if [[ -f /etc/init.d/docker ]] && grep -q "ulimit -Hn" /etc/init.d/docker; then
     sed -i 's/ulimit -Hn/ulimit -n/g' /etc/init.d/docker
