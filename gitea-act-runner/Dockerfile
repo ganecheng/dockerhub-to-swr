@@ -22,7 +22,7 @@ RUN <<EOF
   echo "Installing required packages..."
   echo "#################################################"
   apt-get update
-  apt-get install --no-install-recommends -y ca-certificates curl wget tini nodejs npm jq
+  apt-get install --no-install-recommends -y ca-certificates curl wget tini nodejs npm jq git gnupg
 
   echo "#################################################"
   echo "Downloading Gitea Runner..."
@@ -50,21 +50,14 @@ RUN <<EOF
   echo "#################################################"
   echo "Installing docker engine..."
   echo "#################################################"
-  # git needed by buildx
-  apt-get install --no-install-recommends -y git
-  # https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository
-  apt-get install --no-install-recommends -y gnupg
   install -m 0755 -d /etc/apt/keyrings
   curl "https://download.docker.com/linux/ubuntu/gpg" | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
   chmod a+r /etc/apt/keyrings/docker.gpg
 
-  ARCH="$(dpkg --print-architecture)"
   OS_CODENAME="$(source /etc/os-release && echo "$VERSION_CODENAME")"
-  echo "deb [arch=$ARCH signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $OS_CODENAME stable" > /etc/apt/sources.list.d/docker.list
+  echo "deb [arch=$arch signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $OS_CODENAME stable" > /etc/apt/sources.list.d/docker.list
   apt-get update
   (set -x; apt-get install --no-install-recommends -y docker-ce docker-buildx-plugin docker-compose-plugin containerd.io fuse-overlayfs)
-  apt-get remove -y gnupg
-  apt-get autoremove -y
 
   docker --version
   docker compose version
@@ -97,6 +90,7 @@ RUN <<EOF
   echo "Cleanup..."
   echo "#################################################"
   apt-get clean autoclean
+  apt-get remove -y gnupg
   apt-get autoremove --purge -y
   rm -rf /var/cache/{apt,debconf} \
      /var/lib/apt/lists/* \
