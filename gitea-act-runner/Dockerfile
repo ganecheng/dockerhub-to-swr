@@ -18,22 +18,19 @@ RUN <<EOF
 
   arch=$(dpkg --print-architecture)
 
-  echo "Installing required packages..."
   # 安装基础依赖：证书、下载工具、tini（PID 1 进程管理）、Node.js、git
   apt-get update
   apt-get install --no-install-recommends -y ca-certificates curl wget tini nodejs npm git gnupg
 
   # 下载并安装 Gitea Runner 二进制文件
-  echo "Downloading gitea-runner... "
   curl "https://gitea.com/gitea/runner/releases/download/v${GITEA_RUNNER_VERSION}/gitea-runner-${GITEA_RUNNER_VERSION}-linux-${arch}" -o /usr/local/bin/gitea-runner
   chmod 755 /usr/local/bin/gitea-runner
   gitea-runner --version
 
   # 安装 Docker 引擎（用于在容器内构建和运行镜像）
-  echo "Installing docker engine..."
   install -m 0755 -d /etc/apt/keyrings
   curl "https://download.docker.com/linux/ubuntu/gpg" | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-  chmod a+r /etc/apt/keyrings/docker.gpg
+  chmod 644 /etc/apt/keyrings/docker.gpg
 
   # 根据系统代号添加 Docker 官方 APT 源
   OS_CODENAME="$(source /etc/os-release && echo "$VERSION_CODENAME")"
@@ -61,8 +58,8 @@ RUN <<EOF
   chmod +x /usr/local/bin/dind-hack
 
   # 清理缓存和临时文件，减小镜像体积
-  echo "Cleanup..."
-  apt-get purge -y gnupg && apt-get autoremove --purge -y
+  apt-get purge --autoremove -y gnupg
+  rm -f /etc/apt/sources.list.d/docker.list /etc/apt/keyrings/docker.gpg
   rm -rf /var/cache/{apt,debconf} /var/lib/apt/lists/* /var/log/{apt,alternatives.log,bootstrap.log,dpkg.log} /tmp/* /var/tmp/*
 
 EOF
