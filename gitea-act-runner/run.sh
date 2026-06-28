@@ -98,24 +98,12 @@ fi
 
 effective_config_file=/tmp/gitea_runner_config.yml
 rm -f "$effective_config_file"
-if [[ ${GITEA_RUNNER_LOG_EFFECTIVE_CONFIG:-false} == "true" ]]; then
-  log INFO "Effective runner config [$effective_config_file]:"
-  echo "==========================================================="
-  # 逐行读取模板, 用 eval 进行变量展开后写入配置文件 (同时打印到控制台)
-  while IFS= read -r line; do
-    line=${line//\"/\\\"}
-    line=${line//\`/\\\`}
-    eval "echo \"$line\"" | tee -a "$effective_config_file"
-  done < "$GITEA_RUNNER_CONFIG_TEMPLATE_FILE"
-  echo "==========================================================="
-else
-  # 同样逐行渲染, 但不打印到控制台
-  while IFS= read -r line; do
-    line=${line//\"/\\\"}
-    line=${line//\`/\\\`}
-    eval "echo \"$line\"" >> "$effective_config_file"
-  done < "$GITEA_RUNNER_CONFIG_TEMPLATE_FILE"
-fi
+# 逐行读取模板, 用 eval 进行变量展开后写入配置文件
+while IFS= read -r line; do
+  line=${line//\"/\\\"}
+  line=${line//\`/\\\`}
+  eval "echo \"$line\"" >> "$effective_config_file"
+done < "$GITEA_RUNNER_CONFIG_TEMPLATE_FILE"
 
 #################################################################
 # 注册 runner (若未注册过则向 Gitea 实例注册)

@@ -73,7 +73,7 @@ ENV \
   GITEA_RUNNER_REGISTRATION_RETRY_INTERVAL=3
 
 # 复制启动脚本和配置模板到镜像
-COPY gitea-act-runner/*.sh /opt/
+COPY gitea-act-runner/run.sh /opt/
 COPY gitea-act-runner/config.template.yaml /opt/
 
 # Runner 数据卷（注册令牌、配置等）
