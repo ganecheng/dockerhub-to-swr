@@ -20,7 +20,7 @@ RUN <<EOF
 
   # 安装基础依赖：证书、下载工具、tini（PID 1 进程管理）、Node.js、git
   apt-get update
-  apt-get install --no-install-recommends -y ca-certificates curl wget tini nodejs npm git gnupg
+  apt-get install --no-install-recommends -y ca-certificates curl tini nodejs npm git
 
   # 下载并安装 Gitea Runner 二进制文件
   curl "https://gitea.com/gitea/runner/releases/download/v${GITEA_RUNNER_VERSION}/gitea-runner-${GITEA_RUNNER_VERSION}-linux-${arch}" -o /usr/local/bin/gitea-runner
@@ -29,12 +29,12 @@ RUN <<EOF
 
   # 安装 Docker 引擎（用于在容器内构建和运行镜像）
   install -m 0755 -d /etc/apt/keyrings
-  curl "https://download.docker.com/linux/ubuntu/gpg" | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-  chmod 644 /etc/apt/keyrings/docker.gpg
+  curl "https://download.docker.com/linux/ubuntu/gpg" -o /etc/apt/keyrings/docker.asc
+  chmod a+r /etc/apt/keyrings/docker.asc
 
   # 根据系统代号添加 Docker 官方 APT 源
   OS_CODENAME="$(source /etc/os-release && echo "$VERSION_CODENAME")"
-  echo "deb [arch=$arch signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $OS_CODENAME stable" > /etc/apt/sources.list.d/docker.list
+  echo "deb [arch=$arch signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $OS_CODENAME stable" > /etc/apt/sources.list.d/docker.list
   apt-get update
   # 安装 Docker CE、Buildx 插件、Compose 插件、containerd
   (set -x; apt-get install --no-install-recommends -y docker-ce docker-buildx-plugin docker-compose-plugin containerd.io)
@@ -58,8 +58,7 @@ RUN <<EOF
   chmod +x /usr/local/bin/dind-hack
 
   # 清理缓存和临时文件，减小镜像体积
-  apt-get purge --autoremove -y gnupg
-  rm -f /etc/apt/sources.list.d/docker.list /etc/apt/keyrings/docker.gpg
+  rm -f /etc/apt/sources.list.d/docker.list /etc/apt/keyrings/docker.asc
   rm -rf /var/cache/{apt,debconf} /var/lib/apt/lists/* /var/log/{apt,alternatives.log,bootstrap.log,dpkg.log} /tmp/* /var/tmp/*
 
 EOF
