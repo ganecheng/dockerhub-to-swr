@@ -1,11 +1,4 @@
-#syntax=docker/dockerfile:1
 # see https://github.com/moby/buildkit/blob/master/frontend/dockerfile/docs/reference.md
-# see https://docs.docker.com/engine/reference/builder/#syntax
-#
-# SPDX-FileCopyrightText: © Vegard IT GmbH (https://vegardit.com)
-# SPDX-FileContributor: Sebastian Thomschke
-# SPDX-License-Identifier: Apache-2.0
-# SPDX-ArtifactOfProjectHomePage: https://github.com/vegardit/docker-gitea-act-runner
 
 # https://hub.docker.com/_/ubuntu/tags?name=24.04
 ARG BASE_IMAGE=ubuntu:24.04
@@ -19,19 +12,6 @@ SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 ARG GITEA_RUNNER_VERSION
 
 RUN <<EOF
-  echo "#################################################"
-  echo "Installing latest OS updates..."
-  echo "#################################################"
-  apt-get update
-  apt-get upgrade -y
-
-  function minimize() {
-    ls -l "$@"
-    echo "Stripping [$*]..."
-    command strip --strip-unneeded "$@"
-    ls -l "$@"
-  }
-
   function curl() {
     command curl -sSfL --connect-timeout 10 --max-time 30 --retry 3 --retry-all-errors "$@"
   }
@@ -45,9 +25,7 @@ RUN <<EOF
   echo "#################################################"
   echo "Installing required packages..."
   echo "#################################################"
-  apt-get install --no-install-recommends -y adduser binutils ca-certificates curl sudo tini nodejs npm jq
-
-  minimize /usr/bin/tini-static
+  apt-get install --no-install-recommends -y ca-certificates curl wget tini nodejs npm jq
 
   echo "#################################################"
   echo "Downloading Gitea Runner..."
@@ -70,7 +48,6 @@ RUN <<EOF
     curl "$gitea_runner_download_fallback_url" -o /usr/local/bin/gitea-runner
   fi
   chmod 755 /usr/local/bin/gitea-runner
-  minimize /usr/local/bin/gitea-runner
   gitea-runner --version
 
   echo "#################################################"
@@ -91,13 +68,6 @@ RUN <<EOF
   (set -x; apt-get install --no-install-recommends -y docker-ce docker-buildx-plugin docker-compose-plugin containerd.io fuse-overlayfs)
   apt-get remove -y gnupg
   apt-get autoremove -y
-
-  minimize \
-    /usr/bin/containerd* \
-    /usr/bin/ctr \
-    /usr/bin/docker* \
-    /usr/bin/runc \
-    /usr/libexec/docker/cli-plugins/*
 
   docker --version
   docker compose version
@@ -129,7 +99,6 @@ RUN <<EOF
   echo "#################################################"
   echo "Cleanup..."
   echo "#################################################"
-  apt-get remove -y binutils curl
   apt-get clean autoclean
   apt-get autoremove --purge -y
   rm -rf /var/cache/{apt,debconf} \
@@ -142,21 +111,10 @@ EOF
 # Default configuration: can be overridden at the docker command line
 ENV \
   INIT_SH_FILE='' \
-  #
   GITEA_RUNNER_CONFIG_TEMPLATE_FILE='/opt/config.template.yaml' \
-  #
   GITEA_RUNNER_NAME='' \
   GITEA_RUNNER_LABELS='' \
-  #
-  # https://gitea.com/gitea/runner-images
-  # https://github.com/catthehacker/docker_images#images-available
-  # https://hub.docker.com/r/catthehacker/ubuntu/tags?name=act-
-  GITEA_RUNNER_LABELS_DEFAULT='\
-ubuntu-latest:docker://ghcr.io/catthehacker/ubuntu:act-latest,\
-ubuntu-24.04:docker://ghcr.io/catthehacker/ubuntu:act-24.04,\
-ubuntu-22.04:docker://ghcr.io/catthehacker/ubuntu:act-22.04,\
-ubuntu-20.04:docker://ghcr.io/catthehacker/ubuntu:act-20.04' \
-  #
+  GITEA_RUNNER_LABELS_DEFAULT='ubuntu-latest,ubuntu-24.04' \
   GITEA_RUNNER_EPHEMERAL=false \
   GITEA_RUNNER_REGISTRATION_TIMEOUT=30 \
   GITEA_RUNNER_REGISTRATION_RETRY_INTERVAL=5
