@@ -51,10 +51,8 @@ RUN <<EOF
   update-alternatives --set iptables /usr/sbin/iptables-legacy
   update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
 
-  # 下载与当前 Docker 版本匹配的 dind（Docker-in-Docker）hack 脚本
-  docker_version=$(docker --version | cut -d ' ' -f3 | cut -d ',' -f1)
-  dind_hack_url="https://raw.githubusercontent.com/moby/moby/v${docker_version}/hack/dind"
-  curl "$dind_hack_url" -o /usr/local/bin/dind-hack
+  # 下载 dind 辅助脚本
+  curl "https://raw.githubusercontent.com/moby/moby/master/hack/dind" -o /usr/local/bin/dind-hack
   chmod +x /usr/local/bin/dind-hack
 
   # 清理缓存和临时文件，减小镜像体积
