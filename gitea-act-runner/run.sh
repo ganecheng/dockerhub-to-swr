@@ -119,25 +119,27 @@ if [[ ! -s ${GITEA_RUNNER_REGISTRATION_FILE:-.runner} ]]; then
   log INFO "  GITEA_RUNNER_NAME=$GITEA_RUNNER_NAME"
   log INFO "  GITEA_RUNNER_REGISTRATION_TOKEN=${GITEA_RUNNER_REGISTRATION_TOKEN//?/*}"  # token 用星号遮掩
   log INFO "  GITEA_RUNNER_LABELS=$GITEA_RUNNER_LABELS"
-  if [[ $GITEA_RUNNER_EPHEMERAL == "true" || $GITEA_RUNNER_EPHEMERAL == "1" ]]; then
+  # 构建注册参数 (循环内不变, 移出避免重复构建)
+  register_args=(
+    --instance "$GITEA_INSTANCE_URL"
+    --token    "$GITEA_RUNNER_REGISTRATION_TOKEN"
+    --name     "$GITEA_RUNNER_NAME"
+    --labels   "$GITEA_RUNNER_LABELS"
+    --config   "$effective_config_file"
+    --no-interactive
+  )
+  # 判断是否为临时模式 (完成一个任务后自动退出)
+  is_ephemeral=false
+  [[ $GITEA_RUNNER_EPHEMERAL == "true" || $GITEA_RUNNER_EPHEMERAL == "1" ]] && is_ephemeral=true
+  if $is_ephemeral; then
     log INFO "  GITEA_RUNNER_EPHEMERAL=$GITEA_RUNNER_EPHEMERAL (runner will exit after completing one job)"
+    register_args+=(--ephemeral)
   fi
   # 带超时的重试注册循环
   wait_until=$(( $(date +%s) + GITEA_RUNNER_REGISTRATION_TIMEOUT ))
   while true; do
-    register_args=(
-      --instance "$GITEA_INSTANCE_URL"
-      --token    "$GITEA_RUNNER_REGISTRATION_TOKEN"
-      --name     "$GITEA_RUNNER_NAME"
-      --labels   "$GITEA_RUNNER_LABELS"
-      --config   "$effective_config_file"
-      --no-interactive
-    )
-    if [[ $GITEA_RUNNER_EPHEMERAL == "true" || $GITEA_RUNNER_EPHEMERAL == "1" ]]; then
-      register_args+=(--ephemeral)  # 临时模式: 完成一个任务后自动退出
-    fi
     if gitea-runner register "${register_args[@]}"; then
-      break;
+      break
     fi
     if [ "$(date +%s)" -ge $wait_until ]; then
       log ERROR "Runner registration failed."
