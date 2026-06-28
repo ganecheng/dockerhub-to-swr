@@ -1,11 +1,9 @@
-# see https://github.com/moby/buildkit/blob/master/frontend/dockerfile/docs/reference.md
 FROM ubuntu:resolute-20260610
 
 ARG DEBIAN_FRONTEND=noninteractive
+ARG GITEA_RUNNER_VERSION=1.0.8
 
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
-
-ARG GITEA_RUNNER_VERSION
 
 RUN <<EOF
   function curl() {
@@ -13,37 +11,16 @@ RUN <<EOF
   }
 
   arch=$(dpkg --print-architecture)
-  case "$arch" in
-    amd64|arm64) gitea_arch=$arch ;;
-    *) echo "Unsupported arch: $arch"; exit 1;;
-  esac
 
   echo "#################################################"
   echo "Installing required packages..."
   echo "#################################################"
   apt-get update
-  apt-get install --no-install-recommends -y ca-certificates curl wget tini nodejs npm jq git gnupg
+  apt-get install --no-install-recommends -y ca-certificates curl wget tini nodejs npm git gnupg
 
   echo "#################################################"
-  echo "Downloading Gitea Runner..."
-  echo "#################################################"
-  GITEA_RUNNER_VERSION=$(curl -sSf 'https://gitea.com/api/v1/repos/gitea/runner/releases?draft=false&pre-release=false&limit=1' | jq -r '.[0].tag_name | ltrimstr("v")')
-  if [[ $GITEA_RUNNER_VERSION == "nightly" ]]; then
-    gitea_runner_download_url="https://dl.gitea.com/gitea-runner/nightly/gitea-runner-${GITEA_RUNNER_VERSION}-linux-${gitea_arch}"
-    gitea_runner_download_fallback_url=""
-  else
-    gitea_runner_release_url="https://gitea.com/gitea/runner/releases/download/v${GITEA_RUNNER_VERSION}"
-    gitea_runner_download_url="${gitea_runner_release_url}/gitea-runner-${GITEA_RUNNER_VERSION}-linux-${gitea_arch}"
-    gitea_runner_download_fallback_url="${gitea_runner_release_url}/act_runner-${GITEA_RUNNER_VERSION}-linux-${gitea_arch}"
-  fi
-  echo "Downloading [$gitea_runner_download_url]..."
-  if ! curl "$gitea_runner_download_url" -o /usr/local/bin/gitea-runner; then
-    if [[ -z $gitea_runner_download_fallback_url ]]; then
-      exit 1
-    fi
-    echo "Download failed, retrying legacy release asset [$gitea_runner_download_fallback_url]..."
-    curl "$gitea_runner_download_fallback_url" -o /usr/local/bin/gitea-runner
-  fi
+  echo "Downloading [gitea-runner ${GITEA_RUNNER_VERSION}]..."
+  curl "https://gitea.com/gitea/runner/releases/download/v${GITEA_RUNNER_VERSION}/gitea-runner-${GITEA_RUNNER_VERSION}-linux-${arch}" -o /usr/local/bin/gitea-runner
   chmod 755 /usr/local/bin/gitea-runner
   gitea-runner --version
 
@@ -57,12 +34,9 @@ RUN <<EOF
   OS_CODENAME="$(source /etc/os-release && echo "$VERSION_CODENAME")"
   echo "deb [arch=$arch signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $OS_CODENAME stable" > /etc/apt/sources.list.d/docker.list
   apt-get update
-  (set -x; apt-get install --no-install-recommends -y docker-ce docker-buildx-plugin docker-compose-plugin containerd.io fuse-overlayfs)
+  (set -x; apt-get install --no-install-recommends -y docker-ce docker-buildx-plugin docker-compose-plugin containerd.io)
 
-  docker --version
-  docker compose version
-  docker buildx version
-  runc --version
+  docker info
 
   if [[ -f /etc/init.d/docker ]] && grep -q "ulimit -Hn" /etc/init.d/docker; then
     sed -i 's/ulimit -Hn/ulimit -n/g' /etc/init.d/docker
@@ -73,9 +47,9 @@ RUN <<EOF
 
   docker_version=$(docker --version | cut -d ' ' -f3 | cut -d ',' -f1)
   dind_hack_url="https://raw.githubusercontent.com/moby/moby/v${docker_version}/hack/dind"
-  if ! curl -o /dev/null -f -s "$dind_hack_url"; then
+  if ! curl -o /dev/null "$dind_hack_url"; then
     alt_url="https://raw.githubusercontent.com/moby/moby/docker-v${docker_version}/hack/dind"
-    if curl -o /dev/null -f -s "$alt_url"; then
+    if curl -o /dev/null "$alt_url"; then
       dind_hack_url="$alt_url"
     else
       echo "❌ Could not find dind hack script for Docker version ${docker_version}" >&2
