@@ -23,7 +23,7 @@ function log() {
 #################################################################
 # 打印启动横幅和环境信息
 #################################################################
-if [[ ${1:-} == "" ]]; then
+if [[ $# -eq 0 ]]; then
   cat <<'EOF'
    _____ _ _               _____
   / ____(_) |             |  __ \
@@ -43,7 +43,7 @@ EOF
   awk '/32 host/ { if(uniq[ip]++ && ip != "127.0.0.1") print " - " ip } {ip=$2}' /proc/net/fib_trie
   log INFO "Config environment variables: "
   # 输出 GITEA_/ACT_ 开头的环境变量，对敏感信息（TOKEN/SECRET/PASSWORD）脱敏
-  env | grep '^GITEA_\|^ACT_' | sort | sed -E 's/^([^=]*(TOKEN|SECRET|PASSWORD)[^=]*=).*/\1******/I' | sed -e 's/^/ - /'
+  env | grep '^GITEA_\|^ACT_' | sort | sed -E 's/^([^=]*(TOKEN|SECRET|PASSWORD)[^=]*=).*/\1******/I; s/^/ - /'
 fi
 
 
@@ -129,9 +129,7 @@ if [[ ! -s ${GITEA_RUNNER_REGISTRATION_FILE:-.runner} ]]; then
     --no-interactive
   )
   # 判断是否为临时模式 (完成一个任务后自动退出)
-  is_ephemeral=false
-  [[ $GITEA_RUNNER_EPHEMERAL == "true" || $GITEA_RUNNER_EPHEMERAL == "1" ]] && is_ephemeral=true
-  if $is_ephemeral; then
+  if [[ $GITEA_RUNNER_EPHEMERAL == "true" || $GITEA_RUNNER_EPHEMERAL == "1" ]]; then
     log INFO "  GITEA_RUNNER_EPHEMERAL=$GITEA_RUNNER_EPHEMERAL (runner will exit after completing one job)"
     register_args+=(--ephemeral)
   fi
@@ -152,7 +150,7 @@ fi
 #################################################################
 # 清除所有 GITEA_ 开头的环境变量, 避免触发弃用警告
 #################################################################
-unset $(env | grep "^GITEA_" | cut -d= -f1)
+unset "${!GITEA_@}"
 
 #################################################################
 # 启动 Gitea Actions runner 守护进程并等待退出
