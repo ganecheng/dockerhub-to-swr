@@ -1,9 +1,5 @@
 # see https://github.com/moby/buildkit/blob/master/frontend/dockerfile/docs/reference.md
-
-# https://hub.docker.com/_/ubuntu/tags?name=24.04
-ARG BASE_IMAGE=ubuntu:24.04
-
-FROM ${BASE_IMAGE}
+FROM ubuntu:resolute-20260610
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -25,6 +21,7 @@ RUN <<EOF
   echo "#################################################"
   echo "Installing required packages..."
   echo "#################################################"
+  apt-get update
   apt-get install --no-install-recommends -y ca-certificates curl wget tini nodejs npm jq
 
   echo "#################################################"
@@ -114,7 +111,7 @@ ENV \
   GITEA_RUNNER_CONFIG_TEMPLATE_FILE='/opt/config.template.yaml' \
   GITEA_RUNNER_NAME='' \
   GITEA_RUNNER_LABELS='' \
-  GITEA_RUNNER_LABELS_DEFAULT='ubuntu-latest,ubuntu-24.04' \
+  GITEA_RUNNER_LABELS_DEFAULT='ubuntu-latest,ubuntu-26.04' \
   GITEA_RUNNER_EPHEMERAL=false \
   GITEA_RUNNER_REGISTRATION_TIMEOUT=30 \
   GITEA_RUNNER_REGISTRATION_RETRY_INTERVAL=5
