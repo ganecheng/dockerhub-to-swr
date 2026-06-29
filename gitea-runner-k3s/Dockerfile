@@ -6,7 +6,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 # 构建参数：Gitea Runner 版本号
 ARG GITEA_RUNNER_VERSION=1.0.8
 # 构建参数：k3s 版本号，留空时下载最新发布版二进制文件
-ARG K3S_VERSION='v1.34.9+k3s1'
+ARG K3S_VERSION='v1.34.4+k3s1'
 
 # 使用 bash 严格模式执行 RUN 指令（出错即停、禁止未定义变量、管道失败传递）
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
@@ -98,6 +98,7 @@ Suites: resolute resolute-updates resolute-security
 Components: main universe restricted
 Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
 EOF_APT
+  apt-get update
 
 EOF
 
