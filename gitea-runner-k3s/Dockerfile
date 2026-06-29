@@ -89,6 +89,16 @@ RUN <<EOF
   rm -f /etc/apt/sources.list.d/docker.list /etc/apt/keyrings/docker.asc
   rm -rf /var/cache/{apt,debconf} /var/lib/apt/lists/* /var/log/{apt,alternatives.log,bootstrap.log,dpkg.log} /tmp/* /var/tmp/*
 
+  # 设置华为云镜像站作为默认 APT 源
+  rm -rf /etc/apt/sources.list.d/*
+  cat >>/etc/apt/sources.list.d/ubuntu_HuaweiCloud.sources <<'EOF_APT'
+Types: deb
+URIs: https://mirrors.huaweicloud.com/ubuntu/
+Suites: resolute resolute-updates resolute-security
+Components: main universe restricted
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+EOF_APT
+
 EOF
 
 # 默认环境变量：均可在 docker run 时覆盖
