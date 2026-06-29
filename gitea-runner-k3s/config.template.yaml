@@ -1,0 +1,171 @@
+# 基于 https://gitea.com/gitea/runner/src/tag/v1.0.2/internal/pkg/config/config.example.yaml
+
+# Runner 进程自身的日志配置（消息输出到 stderr）。
+# 此项不控制工作流步骤输出如何流式传输到 Gitea UI；
+# 那部分请通过下方的 runner.log_report_* 来调整。
+log:
+  # logrus 日志级别：trace, debug, info, warn, error, fatal, panic。
+  # trace 和 debug 会启用调用者/文件:行号信息。省略时默认：info。
+  level: ${GITEA_RUNNER_LOG_LEVEL:-info}
+
+runner:
+  # 注册结果的存储位置。
+  file: '${GITEA_RUNNER_REGISTRATION_FILE:-/data/.runner}'
+  # 同一时间并发执行多少个任务。
+  capacity: ${GITEA_RUNNER_MAX_PARALLEL_JOBS:-1}
+  # 运行任务时注入的额外环境变量。
+  envs:
+    ${GITEA_RUNNER_ENV_VAR_1_NAME:-KUBECONFIG}: '${GITEA_RUNNER_ENV_VAR_1_VALUE:-/etc/rancher/k3s/k3s.yaml}' # GITEA_RUNNER_ENV_VAR_1
+    ${GITEA_RUNNER_ENV_VAR_2_NAME:-GITEA_RUNNER_ENV_VAR_2}: '${GITEA_RUNNER_ENV_VAR_2_VALUE:-}' # GITEA_RUNNER_ENV_VAR_2
+    ${GITEA_RUNNER_ENV_VAR_3_NAME:-GITEA_RUNNER_ENV_VAR_3}: '${GITEA_RUNNER_ENV_VAR_3_VALUE:-}' # GITEA_RUNNER_ENV_VAR_3
+    ${GITEA_RUNNER_ENV_VAR_4_NAME:-GITEA_RUNNER_ENV_VAR_4}: '${GITEA_RUNNER_ENV_VAR_4_VALUE:-}' # GITEA_RUNNER_ENV_VAR_4
+    ${GITEA_RUNNER_ENV_VAR_5_NAME:-GITEA_RUNNER_ENV_VAR_5}: '${GITEA_RUNNER_ENV_VAR_5_VALUE:-}' # GITEA_RUNNER_ENV_VAR_5
+    ${GITEA_RUNNER_ENV_VAR_6_NAME:-GITEA_RUNNER_ENV_VAR_6}: '${GITEA_RUNNER_ENV_VAR_6_VALUE:-}' # GITEA_RUNNER_ENV_VAR_6
+    ${GITEA_RUNNER_ENV_VAR_7_NAME:-GITEA_RUNNER_ENV_VAR_7}: '${GITEA_RUNNER_ENV_VAR_7_VALUE:-}' # GITEA_RUNNER_ENV_VAR_7
+    ${GITEA_RUNNER_ENV_VAR_8_NAME:-GITEA_RUNNER_ENV_VAR_8}: '${GITEA_RUNNER_ENV_VAR_8_VALUE:-}' # GITEA_RUNNER_ENV_VAR_8
+    ${GITEA_RUNNER_ENV_VAR_9_NAME:-GITEA_RUNNER_ENV_VAR_9}: '${GITEA_RUNNER_ENV_VAR_9_VALUE:-}' # GITEA_RUNNER_ENV_VAR_9
+  # 从文件加载的额外环境变量。
+  # 如果为空或文件不存在，则会被忽略。
+  env_file: '${GITEA_RUNNER_ENV_FILE:-/data/.env}'
+  # 任务完成超时时间。
+  # 注意：Gitea 实例本身也有超时限制（默认 3h）。
+  # 如果 Gitea 实例的超时时间比这里短，任务可能会被 Gitea 实例提前终止。
+  timeout: '${GITEA_RUNNER_JOB_TIMEOUT:-3h}'
+  # Runner 关闭时等待运行中任务完成的最长时间。
+  # 超过此超时时间仍未完成的任务将被取消。
+  shutdown_timeout: ${GITEA_RUNNER_SHUTDOWN_TIMEOUT:-0s}
+  # 是否跳过验证 Gitea 实例的 TLS 证书。
+  insecure: ${GITEA_INSTANCE_INSECURE:-false}
+  # 从 Gitea 实例获取任务的超时时间。
+  fetch_timeout: '${GITEA_RUNNER_FETCH_TIMEOUT:-5s}'
+  # 从 Gitea 实例获取任务的间隔时间。
+  fetch_interval: '${GITEA_RUNNER_FETCH_INTERVAL:-2s}'
+  # 从 Gitea 实例获取任务的最大间隔时间。
+  # Runner 空闲时使用指数退避策略，逐步增加间隔直到此最大值。
+  # 设为 0 或与 fetch_interval 相同可禁用退避。
+  fetch_interval_max: '${GITEA_RUNNER_FETCH_INTERVAL_MAX:-2s}'
+  # 空闲时，清理超过此时长的过期 bind-workdir 任务目录。
+  # 将 workdir_cleanup_age 或 idle_cleanup_interval 设为 0（或任何非正数）
+  # 可完全禁用 workdir 清理。
+  workdir_cleanup_age: '${GITEA_RUNNER_WORKDIR_CLEANUP_AGE:-24h}'
+  # 空闲时清理过期 bind-workdir 的执行周期。
+  idle_cleanup_interval: '${GITEA_RUNNER_IDLE_CLEANUP_INTERVAL:-10m}'
+  # 向 Gitea 实例定期刷新日志的基本间隔。
+  # 如果缓冲区达到 log_report_batch_size 或 log_report_max_latency 在首行缓冲后到期，
+  # 日志可能会提前发送。
+  log_report_interval: '${GITEA_RUNNER_LOG_REPORT_INTERVAL:-5s}'
+  # 单行日志等待发送的最大时间。
+  # 确保即使只有一行日志也能在此时间内出现在前端。
+  # 必须小于 log_report_interval 才能生效。
+  log_report_max_latency: '${GITEA_RUNNER_LOG_MAX_LATENCY:-3s}'
+  # 当缓冲区达到此行数时立即刷新日志。
+  # 确保突发输出（如 npm install）能及时送达。
+  log_report_batch_size: ${GITEA_RUNNER_BATCH_SIZE:-100}
+  # 向 Gitea 实例报告任务状态（步骤状态、计时）的间隔。
+  # 步骤状态变化（开始/停止）时也会立即报告。
+  state_report_interval: '${GITEA_RUNNER_STATE_REPORT_INTERVAL:-5s}'
+  # github_mirror 用于指定拉取 action 仓库时的 GitHub 镜像地址。
+  # 当使用类似 `uses: actions/checkout@v4` 且 DEFAULT_ACTIONS_URL 设为 github、
+  # 且 github_mirror 不为空时生效。此时会将 https://github.com 替换为此处的值，
+  # 适用于特殊网络环境。
+  github_mirror: '${GITEA_RUNNER_GITHUB_MIRROR:-}'
+  # Runner 的标签用于决定它可以运行哪些任务，以及如何运行。
+  # 如："macos-arm64:host" 或 "ubuntu-latest:docker://docker.gitea.com/runner-images:ubuntu-latest"
+  # 更多 Gitea 提供的镜像见 https://gitea.com/docker.gitea.com/runner-images 。
+  # 注册时如果为空，会提示输入标签。
+  # 执行 `daemon` 时如果为空，会使用 .runner 文件中的标签。
+  labels: [ "${GITEA_RUNNER_LABELS//,/","}" ]
+
+cache:
+  # 启用缓存服务器以使用 actions/cache。
+  enabled: ${ACT_CACHE_SERVER_ENABLED:-true}
+  # 缓存数据的存储目录。
+  # 如果为空，缓存数据将存储在 $HOME/.cache/actcache。
+  dir: '${ACT_CACHE_SERVER_DIR:-/data/cache/server}'
+  # 缓存服务器的主机地址。
+  # 这不是监听地址，而是任务容器连接用的地址。
+  # 所以 0.0.0.0 不是好选择，留空可自动检测。
+  host: '${ACT_CACHE_SERVER_HOST:-}'
+  # 缓存服务器的端口。
+  # 0 表示使用随机可用端口。
+  port: ${ACT_CACHE_SERVER_PORT:-0}
+  # 外部缓存服务器 URL。仅在 enabled 为 true 时有效。
+  # 如果指定，runner 将使用此 URL 作为 ACTIONS_CACHE_URL，而非自行启动服务器。
+  # URL 通常应以 "/" 结尾。
+  # 需要下方的 external_secret 在此 runner 和缓存服务器上设置为相同的值。
+  external_server: '${ACT_CACHE_SERVER_EXTERNAL_URL:-}'
+  # 此 runner 与外部 `gitea-runner cache-server` 之间的共享密钥。使用 external_server
+  # （或 `gitea-runner cache-server`）时必填：runner 会向缓存服务器预注册每个任务的
+  # ACTIONS_RUNTIME_TOKEN，缓存服务器会强制执行 Bearer 认证和按仓库的缓存隔离。
+  external_secret: '${ACT_CACHE_SERVER_EXTERNAL_SECRET:-}'
+
+container:
+  # 指定容器连接的网络。
+  # 可以是 host、bridge 或自定义网络的名称。
+  # k3s 的 kubeconfig 默认指向 127.0.0.1:6443，使用 host 网络可让任务容器直接访问 runner 内的 k3s API。
+  # 已废弃：`network_mode` 仍为旧配置所接受；请改用 `network`。
+  network: '${GITEA_RUNNER_JOB_CONTAINER_NETWORK:-host}'
+  # 启动任务容器时是否使用特权模式（Docker-in-Docker 需要特权模式）。
+  privileged: ${GITEA_RUNNER_JOB_CONTAINER_PRIVILEGED:-false}
+  # 容器启动时使用的其他选项（如 --add-host=my.gitea.url:host-gateway）。
+  # 默认只读挂载 k3s kubeconfig，便于任务容器内的 kubectl 直接访问本机 k3s。
+  options: '${GITEA_RUNNER_JOB_CONTAINER_OPTIONS:---volume /etc/rancher/k3s/k3s.yaml:/etc/rancher/k3s/k3s.yaml:ro}'
+  # 任务工作目录的父目录。
+  # 注意：路径无需以 '/' 开头，runner 会自动添加。
+  # 如果路径以 '/' 开头，'/' 会被去除。
+  # 例如，如果父目录是 /path/to/my/dir，workdir_parent 应设为 path/to/my/dir
+  # 如果为空，将使用 /workspace。
+  # 此路径下的纯数字子目录保留给任务工作区，可能被空闲清理移除。
+  workdir_parent: ${GITEA_RUNNER_JOB_CONTAINER_WORKDIR_PARENT:-/workspace}
+  # 可以将卷（包括绑定挂载）挂载到容器中。支持 Glob 语法，见 https://github.com/gobwas/glob
+  # 可以指定多个卷。如果列表为空，则不能挂载任何卷。
+  # 例如，如果只允许容器挂载 `data` 卷和 `/src` 下的所有 json 文件，应将配置改为：
+  # valid_volumes:
+  #   - data
+  #   - /src/*.json
+  # 如果想允许任意卷，请使用以下配置：
+  # valid_volumes:
+  #   - '**'
+  valid_volumes:
+    - '${GITEA_RUNNER_VALID_VOLUME_1:-/etc/rancher/k3s/k3s.yaml}' # GITEA_RUNNER_VALID_VOLUME_1
+    - '${GITEA_RUNNER_VALID_VOLUME_2:-/dev/null}' # GITEA_RUNNER_VALID_VOLUME_2
+    - '${GITEA_RUNNER_VALID_VOLUME_3:-/dev/null}' # GITEA_RUNNER_VALID_VOLUME_3
+    - '${GITEA_RUNNER_VALID_VOLUME_4:-/dev/null}' # GITEA_RUNNER_VALID_VOLUME_4
+    - '${GITEA_RUNNER_VALID_VOLUME_5:-/dev/null}' # GITEA_RUNNER_VALID_VOLUME_5
+    - '${GITEA_RUNNER_VALID_VOLUME_6:-/dev/null}' # GITEA_RUNNER_VALID_VOLUME_6
+    - '${GITEA_RUNNER_VALID_VOLUME_7:-/dev/null}' # GITEA_RUNNER_VALID_VOLUME_7
+    - '${GITEA_RUNNER_VALID_VOLUME_8:-/dev/null}' # GITEA_RUNNER_VALID_VOLUME_8
+    - '${GITEA_RUNNER_VALID_VOLUME_9:-/dev/null}' # GITEA_RUNNER_VALID_VOLUME_9
+  # 用指定的地址覆盖 docker 客户端主机。
+  # 如果为空，runner 会自动查找可用的 docker 主机。
+  # 如果为 "-"，runner 会自动查找可用的 docker 主机，但不会将 docker 主机挂载到任务容器和服务容器中。
+  # 如果不为空且不为 "-"，则使用指定的 docker 主机。如果不可用将返回错误。
+  docker_host: '${GITEA_RUNNER_JOB_CONTAINER_DOCKER_HOST:-}'
+  # 即使镜像已存在也强制拉取 docker 镜像
+  force_pull: ${GITEA_RUNNER_JOB_CONTAINER_FORCE_PULL:-true}
+  # 即使镜像已存在也强制重新构建 docker 镜像
+  force_rebuild: ${GITEA_RUNNER_JOB_CONTAINER_FORCE_REBUILD:-false}
+  # 即使 runner 不需要，也始终要求 docker 守护进程可达
+  require_docker: ${GITEA_RUNNER_JOB_REQUIRE_DOCKER:-false}
+  # 当 require_docker 或 runner 需要 docker 时，等待 docker 守护进程可达的超时时间
+  docker_timeout: ${GITEA_RUNNER_JOB_CONTAINER_TIMEOUT:-0s}
+  # 将工作区绑定到主机文件系统而非使用 Docker 卷。
+  # 在 Docker-in-Docker（DinD）场景下，当任务使用 docker compose 进行绑定挂载
+  # （如 ".:/app"）时需要启用此项，因为基于卷的工作区无法从 DinD 守护进程的
+  # 文件系统中访问。启用时，需确保工作区父目录也已挂载到 runner 容器中
+  # 并在 valid_volumes 中列出。
+  bind_workdir: ${GITEA_RUNNER_JOB_CONTAINER_BIND_WORKDIR:-false}
+
+host:
+  # 任务工作目录的父目录。
+  # 如果为空，将使用 $HOME/.cache/act/。
+  workdir_parent: '${GITEA_RUNNER_HOST_WORKDIR_PARENT:-/data/cache/actions}'
+
+metrics:
+  # 启用 Prometheus 指标端点。
+  # 启用后，指标通过 http://<addr>/metrics 提供，健康检查在 /healthz。
+  enabled: ${GITEA_RUNNER_METRICS_ENABLED:-false}
+  # 指标 HTTP 服务器的监听地址。
+  # 默认仅监听 localhost。设为 ":9101" 可允许外部访问，
+  # 但需确保端口有防火墙保护，因为没有任何认证机制。
+  addr: '${GITEA_RUNNER_METRICS_ADDR:-127.0.0.1:9101}'
