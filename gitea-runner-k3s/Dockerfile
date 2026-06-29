@@ -5,7 +5,7 @@ FROM ubuntu:resolute-20260610
 ARG DEBIAN_FRONTEND=noninteractive
 # 构建参数：Gitea Runner 版本号
 ARG GITEA_RUNNER_VERSION=1.0.8
-# 构建参数：k3s 版本号，留空时使用安装脚本默认稳定版
+# 构建参数：k3s 版本号，留空时下载最新发布版二进制文件
 ARG K3S_VERSION=''
 
 # 使用 bash 严格模式执行 RUN 指令（出错即停、禁止未定义变量、管道失败传递）
@@ -44,12 +44,31 @@ RUN <<EOF
   # 验证 Docker 各组件安装成功
   docker --version && docker compose version && docker buildx version && runc --version
 
-  # 安装 k3s 二进制文件，不安装 systemd/openrc 服务
-  install_env=(INSTALL_K3S_SKIP_START=true INSTALL_K3S_SKIP_ENABLE=true INSTALL_K3S_EXEC='server')
+  # 直接下载 k3s 二进制文件，避免官方安装脚本在容器构建阶段要求 systemd/openrc
+  case "$arch" in
+    amd64)
+      k3s_arch=''
+      ;;
+    arm64)
+      k3s_arch='-arm64'
+      ;;
+    armhf)
+      k3s_arch='-armhf'
+      ;;
+    *)
+      echo "Unsupported architecture: $arch" >&2
+      exit 1
+      ;;
+  esac
   if [[ -n "$K3S_VERSION" ]]; then
-    install_env+=(INSTALL_K3S_VERSION="$K3S_VERSION")
+    k3s_url="https://github.com/k3s-io/k3s/releases/download/${K3S_VERSION}/k3s${k3s_arch}"
+  else
+    k3s_url="https://github.com/k3s-io/k3s/releases/latest/download/k3s${k3s_arch}"
   fi
-  env "${install_env[@]}" sh -c "$(curl https://get.k3s.io)"
+  echo "Downloading k3s from $k3s_url"
+  curl "$k3s_url" -o /usr/local/bin/k3s
+  chmod 755 /usr/local/bin/k3s
+  ln -sf /usr/local/bin/k3s /usr/local/bin/kubectl
   k3s --version
   kubectl version --client=true
 
