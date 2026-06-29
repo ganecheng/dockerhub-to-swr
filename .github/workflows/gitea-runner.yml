@@ -1,4 +1,4 @@
-name: gitea-act-runner
+name: gitea-runner
 
 on:
   workflow_dispatch:
@@ -59,27 +59,17 @@ jobs:
         run: |
           set -exuo pipefail
           
-          # resolve gitea act runner version (latest stable release)
-          gitea_runner_effective_version=$(curl -sSf 'https://gitea.com/api/v1/repos/gitea/runner/releases?draft=false&pre-release=false&limit=1' | jq -r '.[0].tag_name | ltrimstr("v")')
+          artifact_image_url=swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/gitea-runner:${current_datetime}-x86_64
+          ghcr_image_url=ghcr.io/${current_user}/gitea-runner:${current_datetime}-x86_64
           
-          artifact_image_url=swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/gitea-act-runner:${current_datetime}-x86_64
-          ghcr_image_url=ghcr.io/${current_user}/gitea-act-runner:${current_datetime}-x86_64
-          
-          docker build -f gitea-act-runner/Dockerfile --no-cache -t ${artifact_image_url} .
+          docker build -f gitea-runner/Dockerfile --no-cache -t ${artifact_image_url} .
           docker tag ${artifact_image_url} ${ghcr_image_url}
           
           docker images
           docker history ${artifact_image_url}
-          df -h
           pwd
+          df -h
           
           docker push ${artifact_image_url}
-
-          ls -alh
-          df -h
-          
-          docker push ghcr.io/${current_user}/gitea-act-runner:${current_datetime}-x86_64
-          
-          ls -alh
-          df -h
+          docker push ${ghcr_image_url}
 
