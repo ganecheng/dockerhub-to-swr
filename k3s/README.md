@@ -29,6 +29,7 @@ docker exec k3s kubectl get nodes -o wide
 
 - 启动时一定会启动 k3s。
 - k3s 固定使用 Docker 作为容器引擎，启动时始终传入 `--docker`。
+- 镜像内置 k3s airgap 镜像包，启动时会恢复到 `/var/lib/rancher/k3s/agent/images` 并导入 Docker。
 - 默认禁用 k3s 的 `traefik`：`K3S_EXTRA_ARGS='--disable=traefik'`
 - 默认保留 k3s 内置 `servicelb`，便于测试 `LoadBalancer` Service。
 - 默认 kubeconfig：`/etc/rancher/k3s/k3s.yaml`

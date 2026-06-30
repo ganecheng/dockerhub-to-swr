@@ -20,7 +20,7 @@ RUN <<EOF
 
   # 安装基础依赖：证书、下载工具、tini（PID 1 进程管理）和 k3s/Docker 运行所需工具
   apt-get update
-  apt-get install --no-install-recommends -y ca-certificates curl tini iproute2 iptables kmod procps
+  apt-get install --no-install-recommends -y ca-certificates curl tini iproute2 iptables kmod procps zstd
 
   # 安装 Docker 引擎（用于在容器内构建和运行镜像）
   install -m 0755 -d /etc/apt/keyrings
@@ -41,12 +41,11 @@ RUN <<EOF
   case "$arch" in
     amd64)
       k3s_arch=''
+      k3s_airgap_arch='-amd64'
       ;;
     arm64)
       k3s_arch='-arm64'
-      ;;
-    armhf)
-      k3s_arch='-armhf'
+      k3s_airgap_arch='-arm64'
       ;;
     *)
       echo "Unsupported architecture: $arch" >&2
@@ -55,8 +54,10 @@ RUN <<EOF
   esac
   if [[ -n "$K3S_VERSION" ]]; then
     k3s_url="https://github.com/k3s-io/k3s/releases/download/${K3S_VERSION}/k3s${k3s_arch}"
+    k3s_airgap_url="https://github.com/k3s-io/k3s/releases/download/${K3S_VERSION}/k3s-airgap-images${k3s_airgap_arch}.tar.zst"
   else
     k3s_url="https://github.com/k3s-io/k3s/releases/latest/download/k3s${k3s_arch}"
+    k3s_airgap_url="https://github.com/k3s-io/k3s/releases/latest/download/k3s-airgap-images${k3s_airgap_arch}.tar.zst"
   fi
   echo "Downloading k3s from $k3s_url"
   curl "$k3s_url" -o /usr/local/bin/k3s
@@ -64,6 +65,11 @@ RUN <<EOF
   ln -sf /usr/local/bin/k3s /usr/local/bin/kubectl
   k3s --version
   kubectl version --client=true
+
+  # 内置 k3s airgap 镜像包，启动脚本会恢复到 k3s 数据目录并导入 Docker。
+  install -d /opt/k3s
+  echo "Downloading k3s airgap images from $k3s_airgap_url"
+  curl "$k3s_airgap_url" -o /opt/k3s/k3s-airgap-images.tar.zst
 
   # 修复 init.d/docker 中硬句柄限制的问题（部分系统会导致 Docker 启动失败）
   if [[ -f /etc/init.d/docker ]] && grep -q "ulimit -Hn" /etc/init.d/docker; then

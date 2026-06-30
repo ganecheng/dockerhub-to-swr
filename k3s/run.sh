@@ -61,11 +61,22 @@ while ! docker stats --no-stream &>/dev/null; do
   log INFO "Waiting for Docker engine to start..."
   sleep 2
   tail -n 1 /var/log/docker.log
- done
+done
 export DOCKER_PID=$(</var/run/docker.pid)
 echo "==========================================================="
 docker version
 echo "==========================================================="
+
+#################################################################
+# 准备 k3s airgap 镜像
+#################################################################
+install -d /var/lib/rancher/k3s/agent/images
+if [[ -f /opt/k3s/k3s-airgap-images.tar.zst ]]; then
+  log INFO "Restoring k3s airgap images to rancher data directory..."
+  cp /opt/k3s/k3s-airgap-images.tar.zst /var/lib/rancher/k3s/agent/images/
+  log INFO "Loading k3s airgap images into Docker..."
+  zstd -dc /opt/k3s/k3s-airgap-images.tar.zst | docker load
+fi
 
 #################################################################
 # 启动 k3s 单节点集群
