@@ -27,24 +27,23 @@ function is_truthy() {
 #################################################################
 if [[ $# -eq 0 ]]; then
   cat <<'EOF'
-   _____ _ _               _____                              _  _______     
-  / ____(_) |             |  __ \                            | |/ / ____|    
- | |  __ _| |_ ___  __ _  | |__) |   _ _ __  _ __   ___ _ __ | ' / (___      
- | | |_ | | __/ _ \/ _` | |  _  / | | | '_ \| '_ \ / _ \ '__||  < \___ \     
- | |__| | | ||  __/ (_| | | | \ \ |_| | | | | | | |  __/ |   | . \____) |    
-  \_____|_|\__\___|\__,_| |_|  \_\__,_|_| |_|_| |_|\___|_|   |_|\_\_____/    
+  _    _____
+ | | _|___ / ___
+ | |/ / |_ \/ __|
+ |   < ___) \__ \
+ |_|\_\____/|___/
 EOF
 
   echo
 
-  log INFO "$(gitea-runner --version)"
+  log INFO "$(docker --version)"
   log INFO "$(k3s --version | head -n 1)"
   log INFO "Timezone: $(date +"%Z %z")"
   log INFO "Hostname: $(hostname -f)"
   log INFO "IP Addresses: "
   awk '/32 host/ { if(uniq[ip]++ && ip != "127.0.0.1") print " - " ip } {ip=$2}' /proc/net/fib_trie
   log INFO "Config environment variables: "
-  env | grep '^GITEA_\|^ACT_\|^K3S_' | sort | sed -E 's/^([^=]*(TOKEN|SECRET|PASSWORD)[^=]*=).*/\1******/I; s/^/ - /'
+  env | grep '^DOCKER_\|^K3S_\|^KUBECONFIG=\|^INIT_SH_FILE=' | sort | sed -E 's/^([^=]*(TOKEN|SECRET|PASSWORD)[^=]*=).*/\1******/I; s/^/ - /'
 fi
 
 #################################################################
@@ -63,10 +62,6 @@ export DOCKER_PID=$(</var/run/docker.pid)
 echo "==========================================================="
 docker info
 echo "==========================================================="
-
-if [[ -z ${GITEA_RUNNER_JOB_CONTAINER_DOCKER_HOST:-} ]]; then
-  export GITEA_RUNNER_JOB_CONTAINER_DOCKER_HOST=${DOCKER_HOST:-unix:///var/run/docker.sock}
-fi
 
 #################################################################
 # 启动 k3s 单节点集群
@@ -107,88 +102,12 @@ else
 fi
 
 #################################################################
-# 启动 Gitea Act Runner 主进程
-#################################################################
-log INFO "Effective user: $(id)"
-
-cd /data || exit 1
-
-#################################################################
 # 加载自定义初始化脚本 (如指定了 INIT_SH_FILE)
 #################################################################
 if [[ -f "$INIT_SH_FILE" ]]; then
   log INFO "Loading [$INIT_SH_FILE]..."
   source "$INIT_SH_FILE"
 fi
-
-#################################################################
-# 从模板渲染配置文件 (用环境变量替换模板中的占位符)
-#################################################################
-if [[ -z ${GITEA_RUNNER_LABELS:-} ]]; then
-  GITEA_RUNNER_LABELS=$GITEA_RUNNER_LABELS_DEFAULT
-fi
-
-effective_config_file=/tmp/gitea_runner_config.yml
-rm -f "$effective_config_file"
-while IFS= read -r line; do
-  line=${line//\"/\\\"}
-  line=${line//\`/\\\`}
-  eval "echo \"$line\"" >> "$effective_config_file"
-done < "$GITEA_RUNNER_CONFIG_TEMPLATE_FILE"
-
-#################################################################
-# 注册 runner (若未注册过则向 Gitea 实例注册)
-#################################################################
-if [[ ! -s ${GITEA_RUNNER_REGISTRATION_FILE:-.runner} ]]; then
-  if [[ -z ${GITEA_RUNNER_REGISTRATION_TOKEN:-} ]]; then
-    read -r GITEA_RUNNER_REGISTRATION_TOKEN < "$GITEA_RUNNER_REGISTRATION_TOKEN_FILE"
-  fi
-
-  log INFO "Trying to register runner with Gitea..."
-  log INFO "  GITEA_INSTANCE_URL=$GITEA_INSTANCE_URL"
-  log INFO "  GITEA_RUNNER_NAME=$GITEA_RUNNER_NAME"
-  log INFO "  GITEA_RUNNER_REGISTRATION_TOKEN=${GITEA_RUNNER_REGISTRATION_TOKEN//?/*}"
-  log INFO "  GITEA_RUNNER_LABELS=$GITEA_RUNNER_LABELS"
-  register_args=(
-    --instance "$GITEA_INSTANCE_URL"
-    --token    "$GITEA_RUNNER_REGISTRATION_TOKEN"
-    --name     "$GITEA_RUNNER_NAME"
-    --labels   "$GITEA_RUNNER_LABELS"
-    --config   "$effective_config_file"
-    --no-interactive
-  )
-  if [[ $GITEA_RUNNER_EPHEMERAL == "true" || $GITEA_RUNNER_EPHEMERAL == "1" ]]; then
-    log INFO "  GITEA_RUNNER_EPHEMERAL=$GITEA_RUNNER_EPHEMERAL (runner will exit after completing one job)"
-    register_args+=(--ephemeral)
-  fi
-  wait_until=$(( $(date +%s) + GITEA_RUNNER_REGISTRATION_TIMEOUT ))
-  while true; do
-    if gitea-runner register "${register_args[@]}"; then
-      break
-    fi
-    if [ "$(date +%s)" -ge $wait_until ]; then
-      log ERROR "Runner registration failed."
-      exit 1
-    fi
-    sleep "$GITEA_RUNNER_REGISTRATION_RETRY_INTERVAL"
-  done
-fi
-
-#################################################################
-# 清除所有 GITEA_ 开头的环境变量, 避免触发弃用警告
-#################################################################
-unset "${!GITEA_@}"
-
-#################################################################
-# 启动 Gitea Actions runner 守护进程并等待退出
-#################################################################
-gitea-runner daemon --config "$effective_config_file" &
-gitea_runner_pid=$!
-
-function shutdown_act() {
-  log INFO "Stopping gitea-runner..."
-  (set -x; kill -SIGTERM "$gitea_runner_pid" || true)
-}
 
 function shutdown_k3s() {
   if [[ -n $k3s_pid && -e /proc/$k3s_pid ]]; then
@@ -210,25 +129,30 @@ function shutdown_docker() {
   done
 }
 
-trap "shutdown_act; shutdown_k3s; shutdown_docker" INT TERM HUP QUIT
-
-while [[ -e /proc/$DOCKER_PID && -e /proc/$gitea_runner_pid ]]; do
-  if [[ -n $k3s_pid && ! -e /proc/$k3s_pid ]]; then
-    log ERROR "k3s server unexpectly ended."
-    shutdown_act
-    shutdown_docker
-    exit 1
-  fi
-  sleep 1
-done
-
-if [[ -e /proc/$DOCKER_PID ]]; then
-  shutdown_act
+function shutdown_all() {
   shutdown_k3s
   shutdown_docker
+}
+
+trap "shutdown_all; exit 0" INT TERM HUP QUIT
+
+if [[ -n $k3s_pid ]]; then
+  while [[ -e /proc/$DOCKER_PID && -e /proc/$k3s_pid ]]; do
+    sleep 1
+  done
+
+  if [[ ! -e /proc/$k3s_pid ]]; then
+    log ERROR "k3s server unexpectedly ended."
+    shutdown_docker
+  else
+    log ERROR "Docker engine unexpectedly ended."
+    shutdown_k3s
+  fi
 else
-  log ERROR "Docker engine unexpectly ended."
-  shutdown_act
-  shutdown_k3s
+  while [[ -e /proc/$DOCKER_PID ]]; do
+    sleep 1
+  done
+  log ERROR "Docker engine unexpectedly ended."
 fi
+
 exit 1

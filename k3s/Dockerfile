@@ -3,8 +3,6 @@ FROM ubuntu:resolute-20260610
 
 # 构建参数：禁止 apt 交互式提示
 ARG DEBIAN_FRONTEND=noninteractive
-# 构建参数：Gitea Runner 版本号
-ARG GITEA_RUNNER_VERSION=1.0.8
 # 构建参数：k3s 版本号，留空时下载最新发布版二进制文件
 ARG K3S_VERSION='v1.34.4+k3s1'
 
@@ -20,14 +18,9 @@ RUN <<EOF
 
   arch=$(dpkg --print-architecture)
 
-  # 安装基础依赖：证书、下载工具、tini（PID 1 进程管理）、Node.js、git、iptables 工具
+  # 安装基础依赖：证书、下载工具、tini（PID 1 进程管理）和 k3s/Docker 运行所需工具
   apt-get update
-  apt-get install --no-install-recommends -y ca-certificates curl tini nodejs npm git iproute2 iptables kmod procps
-
-  # 下载并安装 Gitea Runner 二进制文件
-  curl "https://gitea.com/gitea/runner/releases/download/v${GITEA_RUNNER_VERSION}/gitea-runner-${GITEA_RUNNER_VERSION}-linux-${arch}" -o /usr/local/bin/gitea-runner
-  chmod 755 /usr/local/bin/gitea-runner
-  gitea-runner --version
+  apt-get install --no-install-recommends -y ca-certificates curl tini iproute2 iptables kmod procps
 
   # 安装 Docker 引擎（用于在容器内构建和运行镜像）
   install -m 0755 -d /etc/apt/keyrings
@@ -105,25 +98,15 @@ EOF
 # 默认环境变量：均可在 docker run 时覆盖
 ENV \
   INIT_SH_FILE='' \
-  GITEA_RUNNER_CONFIG_TEMPLATE_FILE='/opt/config.template.yaml' \
-  GITEA_RUNNER_NAME='' \
-  GITEA_RUNNER_LABELS='' \
-  GITEA_RUNNER_LABELS_DEFAULT='ubuntu-latest,ubuntu-26.04,k3s' \
-  GITEA_RUNNER_EPHEMERAL=false \
-  GITEA_RUNNER_REGISTRATION_TIMEOUT=30 \
-  GITEA_RUNNER_REGISTRATION_RETRY_INTERVAL=3 \
   K3S_ENABLED=true \
   K3S_KUBECONFIG_MODE=644 \
   K3S_USE_DOCKER=true \
   K3S_EXTRA_ARGS='--disable=traefik' \
   KUBECONFIG='/etc/rancher/k3s/k3s.yaml'
 
-# 复制启动脚本和配置模板到镜像
+# 复制启动脚本到镜像
 COPY k3s/run.sh /opt/
-COPY k3s/config.template.yaml /opt/
 
-# Runner 数据卷（注册令牌、配置等）
-VOLUME /data
 # Docker 数据卷（镜像、容器层存储）
 VOLUME /var/lib/docker
 # k3s 数据卷（集群状态等）
