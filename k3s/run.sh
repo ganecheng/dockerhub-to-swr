@@ -79,41 +79,32 @@ if [[ -f /opt/k3s/k3s-airgap-images.tar.zst ]]; then
 fi
 
 #################################################################
-# 启动 k3s 单节点集群
+# 启动 k3s 节点
 #################################################################
 k3s_pid=''
-log INFO "Starting k3s server..."
+log INFO "Starting k3s..."
 install -d /etc/rancher/k3s /var/lib/rancher/k3s
 rm -f /run/k3s/containerd/containerd.pid
-read -r -a k3s_extra_args <<< "${K3S_EXTRA_ARGS:-}"
-k3s server \
-  --write-kubeconfig "${KUBECONFIG:-/etc/rancher/k3s/k3s.yaml}" \
-  --write-kubeconfig-mode "${K3S_KUBECONFIG_MODE:-644}" \
-  --docker \
-  "${k3s_extra_args[@]}" &
+read -r -a k3s_extra_args <<< "${K3S_EXTRA_ARGS:-server}"
+k3s "${k3s_extra_args[@]}" --docker &
 k3s_pid=$!
 
 wait_until=$(( $(date +%s) + ${K3S_STARTUP_TIMEOUT:-120} ))
-while ! kubectl get nodes &>/dev/null; do
-  if ! [[ -e /proc/$k3s_pid ]]; then
-    log ERROR "k3s server exited before becoming ready."
-    exit 1
-  fi
+while ! [[ -e /proc/$k3s_pid ]]; do
   if [[ $(date +%s) -ge $wait_until ]]; then
-    log ERROR "Timed out waiting for k3s server to become ready."
+    log ERROR "Timed out waiting for k3s process to start."
     exit 1
   fi
-  log INFO "Waiting for k3s server to start..."
+  log INFO "Waiting for k3s process to start..."
   sleep 2
 done
-kubectl get nodes -o wide
 
 function shutdown_k3s() {
   if [[ -n $k3s_pid && -e /proc/$k3s_pid ]]; then
-    log INFO "Stopping k3s server..."
+    log INFO "Stopping k3s..."
     (set -x; kill -SIGTERM "$k3s_pid" || true)
     while [[ -e /proc/$k3s_pid ]]; do
-      log INFO "Waiting for k3s server to shutdown..."
+      log INFO "Waiting for k3s to shutdown..."
       sleep 2
     done
   fi
@@ -141,7 +132,7 @@ if [[ -n $k3s_pid ]]; then
   done
 
   if [[ ! -e /proc/$k3s_pid ]]; then
-    log ERROR "k3s server unexpectedly ended."
+    log ERROR "k3s unexpectedly ended."
     shutdown_docker
   else
     log ERROR "Docker engine unexpectedly ended."

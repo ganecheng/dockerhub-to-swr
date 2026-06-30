@@ -101,13 +101,6 @@ EOF_APT
 
 EOF
 
-# 默认环境变量：均可在 docker run 时覆盖
-ENV \
-  INIT_SH_FILE='' \
-  K3S_KUBECONFIG_MODE=644 \
-  K3S_EXTRA_ARGS='--disable=traefik' \
-  KUBECONFIG='/etc/rancher/k3s/k3s.yaml'
-
 # 复制启动脚本到镜像
 COPY k3s/run.sh /opt/
 
