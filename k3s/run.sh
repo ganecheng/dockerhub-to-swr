@@ -21,7 +21,7 @@ function log() {
 #################################################################
 # 加载自定义初始化脚本 (如指定了 INIT_SH_FILE)
 #################################################################
-if [[ -f "$INIT_SH_FILE" ]]; then
+if [[ -n "${INIT_SH_FILE:-}" && -f "$INIT_SH_FILE" ]]; then
   log INFO "Loading [$INIT_SH_FILE]..."
   source "$INIT_SH_FILE"
 fi
