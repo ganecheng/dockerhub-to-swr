@@ -18,9 +18,13 @@ function log() {
   fi
 }
 
-function is_truthy() {
-  [[ ${1:-} == "true" || ${1:-} == "1" || ${1:-} == "yes" ]]
-}
+#################################################################
+# 加载自定义初始化脚本 (如指定了 INIT_SH_FILE)
+#################################################################
+if [[ -f "$INIT_SH_FILE" ]]; then
+  log INFO "Loading [$INIT_SH_FILE]..."
+  source "$INIT_SH_FILE"
+fi
 
 #################################################################
 # 打印启动横幅和环境信息
@@ -60,54 +64,38 @@ while ! docker stats --no-stream &>/dev/null; do
  done
 export DOCKER_PID=$(</var/run/docker.pid)
 echo "==========================================================="
-docker info
+docker version
 echo "==========================================================="
 
 #################################################################
 # 启动 k3s 单节点集群
 #################################################################
 k3s_pid=''
-if is_truthy "${K3S_ENABLED:-true}"; then
-  log INFO "Starting k3s server..."
-  install -d /etc/rancher/k3s /var/lib/rancher/k3s
-  rm -f /run/k3s/containerd/containerd.pid
-  k3s_runtime_args=()
-  if is_truthy "${K3S_USE_DOCKER:-true}"; then
-    k3s_runtime_args+=(--docker)
+log INFO "Starting k3s server..."
+install -d /etc/rancher/k3s /var/lib/rancher/k3s
+rm -f /run/k3s/containerd/containerd.pid
+read -r -a k3s_extra_args <<< "${K3S_EXTRA_ARGS:-}"
+k3s server \
+  --write-kubeconfig "${KUBECONFIG:-/etc/rancher/k3s/k3s.yaml}" \
+  --write-kubeconfig-mode "${K3S_KUBECONFIG_MODE:-644}" \
+  --docker \
+  "${k3s_extra_args[@]}" &
+k3s_pid=$!
+
+wait_until=$(( $(date +%s) + ${K3S_STARTUP_TIMEOUT:-120} ))
+while ! kubectl get nodes &>/dev/null; do
+  if ! [[ -e /proc/$k3s_pid ]]; then
+    log ERROR "k3s server exited before becoming ready."
+    exit 1
   fi
-  read -r -a k3s_extra_args <<< "${K3S_EXTRA_ARGS:-}"
-  k3s server \
-    --write-kubeconfig "${KUBECONFIG:-/etc/rancher/k3s/k3s.yaml}" \
-    --write-kubeconfig-mode "${K3S_KUBECONFIG_MODE:-644}" \
-    "${k3s_runtime_args[@]}" \
-    "${k3s_extra_args[@]}" &
-  k3s_pid=$!
-
-  wait_until=$(( $(date +%s) + ${K3S_STARTUP_TIMEOUT:-120} ))
-  while ! kubectl get nodes &>/dev/null; do
-    if ! [[ -e /proc/$k3s_pid ]]; then
-      log ERROR "k3s server exited before becoming ready."
-      exit 1
-    fi
-    if [[ $(date +%s) -ge $wait_until ]]; then
-      log ERROR "Timed out waiting for k3s server to become ready."
-      exit 1
-    fi
-    log INFO "Waiting for k3s server to start..."
-    sleep 2
-  done
-  kubectl get nodes -o wide
-else
-  log INFO "K3S_ENABLED=$K3S_ENABLED, skipping k3s startup."
-fi
-
-#################################################################
-# 加载自定义初始化脚本 (如指定了 INIT_SH_FILE)
-#################################################################
-if [[ -f "$INIT_SH_FILE" ]]; then
-  log INFO "Loading [$INIT_SH_FILE]..."
-  source "$INIT_SH_FILE"
-fi
+  if [[ $(date +%s) -ge $wait_until ]]; then
+    log ERROR "Timed out waiting for k3s server to become ready."
+    exit 1
+  fi
+  log INFO "Waiting for k3s server to start..."
+  sleep 2
+done
+kubectl get nodes -o wide
 
 function shutdown_k3s() {
   if [[ -n $k3s_pid && -e /proc/$k3s_pid ]]; then

@@ -31,11 +31,11 @@ RUN <<EOF
   OS_CODENAME="$(source /etc/os-release && echo "$VERSION_CODENAME")"
   echo "deb [arch=$arch signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $OS_CODENAME stable" > /etc/apt/sources.list.d/docker.list
   apt-get update
-  # 安装 Docker CE、Buildx 插件、Compose 插件；containerd.io 是 Docker CE 的运行依赖，k3s 默认通过 --docker 使用 Docker。
-  (set -x; apt-get install --no-install-recommends -y docker-ce docker-buildx-plugin docker-compose-plugin containerd.io)
+  # 安装 Docker CE；containerd.io 是 Docker CE 的运行依赖，k3s 默认通过 --docker 使用 Docker。
+  (set -x; apt-get install --no-install-recommends -y docker-ce containerd.io)
 
   # 验证 Docker 各组件安装成功
-  docker --version && docker compose version && docker buildx version && runc --version
+  docker --version && runc --version
 
   # 直接下载 k3s 二进制文件，避免官方安装脚本在容器构建阶段要求 systemd/openrc
   case "$arch" in
@@ -98,9 +98,7 @@ EOF
 # 默认环境变量：均可在 docker run 时覆盖
 ENV \
   INIT_SH_FILE='' \
-  K3S_ENABLED=true \
   K3S_KUBECONFIG_MODE=644 \
-  K3S_USE_DOCKER=true \
   K3S_EXTRA_ARGS='--disable=traefik' \
   KUBECONFIG='/etc/rancher/k3s/k3s.yaml'
 
