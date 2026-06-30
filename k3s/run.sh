@@ -19,6 +19,18 @@ function log() {
 }
 
 #################################################################
+# 导入自签名 CA 证书
+#################################################################
+if [[ -d /opt/cloud/security/cert/ca ]]; then
+  log INFO "Installing custom CA certificates..."
+  install -d /usr/local/share/ca-certificates/cloud
+  find /opt/cloud/security/cert/ca -type f -print0 | while IFS= read -r -d '' file; do
+    install -m 0644 "$file" "/usr/local/share/ca-certificates/cloud/$(basename "$file").crt"
+  done
+  update-ca-certificates
+fi
+
+#################################################################
 # 加载自定义初始化脚本 (如指定了 INIT_SH_FILE)
 #################################################################
 if [[ -n "${INIT_SH_FILE:-}" && -f "$INIT_SH_FILE" ]]; then
