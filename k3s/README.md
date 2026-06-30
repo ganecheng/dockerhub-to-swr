@@ -1,4 +1,4 @@
-# gitea-runner-k3s
+# k3s
 
 在 `gitea-runner` 基础上扩展的 CI 测试镜像，用于在同一个特权容器内运行：
 
@@ -13,14 +13,14 @@
 容器需要以特权模式运行，并建议挂载独立数据卷保存 runner、Docker 和 k3s 状态：
 
 ```bash
-docker run --privileged --name gitea-runner-k3s \
+docker run --privileged --name k3s \
   -e GITEA_INSTANCE_URL=https://gitea.example.com \
   -e GITEA_RUNNER_REGISTRATION_TOKEN=replace-me \
-  -e GITEA_RUNNER_NAME=gitea-runner-k3s \
-  -v gitea-runner-k3s-data:/data \
-  -v gitea-runner-k3s-docker:/var/lib/docker \
-  -v gitea-runner-k3s-rancher:/var/lib/rancher/k3s \
-  swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/gitea-runner-k3s:tag
+  -e GITEA_RUNNER_NAME=k3s \
+  -v k3s-data:/data \
+  -v k3s-docker:/var/lib/docker \
+  -v k3s-rancher:/var/lib/rancher/k3s \
+  swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/k3s:tag
 ```
 
 ## 默认行为

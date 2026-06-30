@@ -119,8 +119,8 @@ ENV \
   KUBECONFIG='/etc/rancher/k3s/k3s.yaml'
 
 # 复制启动脚本和配置模板到镜像
-COPY gitea-runner-k3s/run.sh /opt/
-COPY gitea-runner-k3s/config.template.yaml /opt/
+COPY k3s/run.sh /opt/
+COPY k3s/config.template.yaml /opt/
 
 # Runner 数据卷（注册令牌、配置等）
 VOLUME /data
