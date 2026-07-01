@@ -130,11 +130,9 @@ if [[ ! -s ${GITEA_RUNNER_REGISTRATION_FILE:-.runner} ]]; then
     --config   "$effective_config_file"
     --no-interactive
   )
-  # 判断是否为临时模式 (完成一个任务后自动退出)
-  if [[ $GITEA_RUNNER_EPHEMERAL == "true" || $GITEA_RUNNER_EPHEMERAL == "1" ]]; then
-    log INFO "  GITEA_RUNNER_EPHEMERAL=$GITEA_RUNNER_EPHEMERAL (runner will exit after completing one job)"
-    register_args+=(--ephemeral)
-  fi
+  # 固定为临时模式 (完成一个任务后自动退出，不可覆盖)
+  log INFO "  Ephemeral mode enabled (runner will exit after completing one job)"
+  register_args+=(--ephemeral)
   # 带超时的重试注册循环
   wait_until=$(( $(date +%s) + GITEA_RUNNER_REGISTRATION_TIMEOUT ))
   while true; do
