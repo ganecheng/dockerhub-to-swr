@@ -48,14 +48,15 @@ fi
 
 
 #################################################################
-# 启动 Docker 守护进程
+# 启动 Docker 守护进程（通过 SysV init 脚本管理）
 #################################################################
 log INFO "Starting Docker engine..."
 # 清除可能残留的 PID 文件，避免 Docker 误认为已在运行
 rm -f /var/run/docker.pid /run/docker/containerd/containerd.pid
+# 配置 cgroup v2 嵌套、挂载 securityfs、设置共享挂载传播等容器内运行环境
 /usr/local/bin/dind-hack true
-dockerd > /var/log/docker.log 2>&1 &
-DOCKER_PID=$!
+# 通过 service 启动 dockerd，由 /etc/init.d/docker 管理 PID 文件和守护进程
+service docker start
 # 轮询等待 Docker 引擎就绪
 while ! docker stats --no-stream &>/dev/null; do
   log INFO "Waiting for Docker engine to start..."
@@ -164,11 +165,12 @@ function shutdown_act() {
   (set -x; kill -SIGTERM "$gitea_runner_pid" || true)
 }
 
-# 优雅停止 Docker 引擎并等待其退出
+# 优雅停止 Docker 引擎（通过 init 脚本）
 function shutdown_docker() {
   log INFO "Stopping docker engine..."
-  (set -x; kill "$DOCKER_PID" || true)
-  while [[ -e /proc/$DOCKER_PID ]]; do
+  service docker stop
+  # 等待 dockerd 完全退出
+  while service docker status >/dev/null 2>&1; do
     log INFO "Waiting for docker engine to shutdown..."
     sleep 2
   done
@@ -178,12 +180,12 @@ function shutdown_docker() {
 trap "shutdown_act; shutdown_docker" INT TERM HUP QUIT
 
 # 等待 Docker 引擎或 runner 任一进程退出
-while [[ -e /proc/$DOCKER_PID && -e /proc/$gitea_runner_pid ]]; do
+while service docker status >/dev/null 2>&1 && [[ -e /proc/$gitea_runner_pid ]]; do
   sleep 1
 done
 
 # 若 runner 先退出而 Docker 仍在运行, 则停止 Docker; 反之亦然
-if [[ -e /proc/$DOCKER_PID ]]; then
+if service docker status >/dev/null 2>&1; then
   shutdown_docker
 else
   log ERROR "Docker engine unexpectly ended."
