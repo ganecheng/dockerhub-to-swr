@@ -156,7 +156,7 @@ unset "${!GITEA_@}"
 #################################################################
 # 启动 Gitea Actions runner 守护进程
 #################################################################
-gitea-runner daemon --config "$effective_config_file" &
+gitea-runner daemon --config "$effective_config_file" > /tmp/gitea-runner-daemon.log 2>&1 &
 gitea_runner_pid=$!
 
 # 计算超时时间戳（默认 60 分钟）
@@ -169,16 +169,26 @@ log INFO "Container timeout: ${runner_timeout_minutes}m (will exit after $(date 
 trap "log INFO 'Received signal, exiting...'; exit 1" INT TERM HUP QUIT
 
 # 主循环：等待 runner 完成/异常退出/超时
+task_detected=false
 while true; do
   # 检查 runner 是否存活
   if ! kill -0 "$gitea_runner_pid" 2>/dev/null; then
     log INFO "Gitea runner process exited."
     break
   fi
+
+  # 检测 daemon 日志中是否出现任务接收标记（task N repo / Running job）
+  # 仅第一次检测到时刷新超时 deadline，确保任务有充分的执行时间
+  if [[ $task_detected == false ]] && grep -qiE "task [0-9]+ repo|Running job" /tmp/gitea-runner-daemon.log 2>/dev/null; then
+    task_detected=true
+    deadline=$(( $(date +%s) + timeout_seconds ))
+    log INFO "Task received from server, timeout extended for task duration."
+  fi
+
   # 检查超时
   now=$(date +%s)
   if [[ $now -ge $deadline ]]; then
-    log INFO "Container timeout (${GITEA_RUNNER_TIMEOUT_MINUTES}m) reached, exiting."
+    log INFO "Container idle timeout (${runner_timeout_minutes}m) reached, exiting."
     break
   fi
   sleep 60
