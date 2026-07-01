@@ -48,15 +48,16 @@ fi
 
 
 #################################################################
-# 启动 Docker 守护进程（通过 SysV init 脚本管理）
+# 启动 Docker 守护进程（直接后台启动）
 #################################################################
 log INFO "Starting Docker engine..."
 # 清除可能残留的 PID 文件，避免 Docker 误认为已在运行
 rm -f /var/run/docker.pid /run/docker/containerd/containerd.pid
 # 配置 cgroup v2 嵌套、挂载 securityfs、设置共享挂载传播等容器内运行环境
 /usr/local/bin/dind-hack true
-# 通过 service 启动 dockerd，由 /etc/init.d/docker 管理 PID 文件和守护进程
-service docker start
+# 后台启动 dockerd，由内核在容器销毁时回收
+dockerd -p /var/run/docker.pid > /var/log/docker.log 2>&1 &
+DOCKER_PID=$!
 # 轮询等待 Docker 引擎就绪
 while ! docker stats --no-stream &>/dev/null; do
   log INFO "Waiting for Docker engine to start..."
@@ -154,50 +155,35 @@ fi
 unset "${!GITEA_@}"
 
 #################################################################
-# 启动 Gitea Actions runner 守护进程并等待退出
+# 启动 Gitea Actions runner 守护进程
 #################################################################
 gitea-runner daemon --config "$effective_config_file" &
 gitea_runner_pid=$!
 
-# 优雅停止 runner
-function shutdown_act() {
-  log INFO "Stopping gitea-runner..."
-  (set -x; kill -SIGTERM "$gitea_runner_pid" || true)
-}
+# 计算超时时间戳（默认 60 分钟）
+timeout_seconds=$((GITEA_RUNNER_TIMEOUT_MINUTES * 60))
+start_time=$(date +%s)
+deadline=$((start_time + timeout_seconds))
+log INFO "Container timeout: ${GITEA_RUNNER_TIMEOUT_MINUTES}m (will exit after $(date -d "@$deadline" '+%H:%M:%S'))"
 
-# 优雅停止 Docker 引擎（通过 init 脚本），最多等 60 秒
-function shutdown_docker() {
-  log INFO "Stopping docker engine..."
-  service docker stop
-  local timeout=60
-  while true; do
-    if ! service docker status >/dev/null 2>&1; then
-      log INFO "Docker engine stopped."
-      return 0
-    fi
-    if [[ $timeout -le 0 ]]; then
-      log ERROR "Docker engine did not stop within 60 seconds, exit forcefully."
-      return 1
-    fi
-    log INFO "Waiting for docker engine to shutdown... (${timeout}s timeout)"
-    sleep 2
-    timeout=$((timeout - 2))
-  done
-}
+# 捕获退出信号：直接结束，容器销毁后内核自动回收子进程
+trap "log INFO 'Received signal, exiting...'; exit 1" INT TERM HUP QUIT
 
-# 捕获退出信号: 先停 runner 再停 Docker
-trap "shutdown_act; shutdown_docker" INT TERM HUP QUIT
-
-# 等待 Docker 引擎或 runner 任一进程退出
-while service docker status >/dev/null 2>&1 && [[ -e /proc/$gitea_runner_pid ]]; do
-  sleep 1
+# 主循环：等待 runner 完成/异常退出/超时
+while true; do
+  # 检查 runner 是否存活
+  if ! kill -0 "$gitea_runner_pid" 2>/dev/null; then
+    log INFO "Gitea runner process exited."
+    break
+  fi
+  # 检查超时
+  now=$(date +%s)
+  if [[ $now -ge $deadline ]]; then
+    log INFO "Container timeout (${GITEA_RUNNER_TIMEOUT_MINUTES}m) reached, exiting."
+    break
+  fi
+  sleep 60
 done
 
-# 若 runner 先退出而 Docker 仍在运行, 则停止 Docker; 反之亦然
-if service docker status >/dev/null 2>&1; then
-  shutdown_docker
-else
-  log ERROR "Docker engine unexpectly ended."
-  shutdown_act
-fi
+log INFO "Container exiting, kernel will clean up all child processes."
 exit 1

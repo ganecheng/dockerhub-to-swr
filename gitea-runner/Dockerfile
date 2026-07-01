@@ -68,14 +68,12 @@ ENV \
   GITEA_RUNNER_LABELS_DEFAULT='ubuntu-latest,ubuntu-26.04' \
   GITEA_RUNNER_EPHEMERAL=false \
   GITEA_RUNNER_REGISTRATION_TIMEOUT=30 \
-  GITEA_RUNNER_REGISTRATION_RETRY_INTERVAL=3
+  GITEA_RUNNER_REGISTRATION_RETRY_INTERVAL=3 \
+  GITEA_RUNNER_TIMEOUT_MINUTES=60
 
 # 复制启动脚本和配置模板到镜像
 COPY gitea-runner/run.sh /opt/
 COPY gitea-runner/config.template.yaml /opt/
-# SysV init 脚本 — 使 service docker start/stop 可靠管理 dockerd 进程
-COPY gitea-runner/etc_init.d_docker /etc/init.d/docker
-RUN chmod 755 /etc/init.d/docker
 
 # Runner 数据卷（注册令牌、配置等）
 VOLUME /data
