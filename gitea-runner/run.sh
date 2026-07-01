@@ -148,8 +148,9 @@ if [[ ! -s ${GITEA_RUNNER_REGISTRATION_FILE:-.runner} ]]; then
 fi
 
 #################################################################
-# 清除所有 GITEA_ 开头的环境变量, 避免触发弃用警告
+# 保存超时配置（unset 后仍可使用），然后清除所有 GITEA_ 环境变量
 #################################################################
+runner_timeout_minutes=$GITEA_RUNNER_TIMEOUT_MINUTES
 unset "${!GITEA_@}"
 
 #################################################################
@@ -159,10 +160,10 @@ gitea-runner daemon --config "$effective_config_file" &
 gitea_runner_pid=$!
 
 # 计算超时时间戳（默认 60 分钟）
-timeout_seconds=$((GITEA_RUNNER_TIMEOUT_MINUTES * 60))
+timeout_seconds=$((runner_timeout_minutes * 60))
 start_time=$(date +%s)
 deadline=$((start_time + timeout_seconds))
-log INFO "Container timeout: ${GITEA_RUNNER_TIMEOUT_MINUTES}m (will exit after $(date -d "@$deadline" '+%H:%M:%S'))"
+log INFO "Container timeout: ${runner_timeout_minutes}m (will exit after $(date -d "@$deadline" '+%H:%M:%S'))"
 
 # 捕获退出信号：直接结束，容器销毁后内核自动回收子进程
 trap "log INFO 'Received signal, exiting...'; exit 1" INT TERM HUP QUIT
