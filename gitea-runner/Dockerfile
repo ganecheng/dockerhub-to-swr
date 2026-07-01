@@ -61,6 +61,7 @@ EOF
 
 # 默认环境变量：均可在 docker run 时覆盖
 ENV \
+  TZ='Asia/Shanghai' \
   INIT_SH_FILE='' \
   GITEA_RUNNER_CONFIG_TEMPLATE_FILE='/opt/config.template.yaml' \
   GITEA_RUNNER_NAME='' \
