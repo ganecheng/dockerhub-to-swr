@@ -19,6 +19,8 @@ RUN <<EOF
   }
 
   arch=$(dpkg --print-architecture)
+  # Docker 静态二进制使用 uname 架构命名（amd64 → x86_64, arm64 → aarch64）
+  docker_arch=$(uname -m)
 
   # 将 /bin/sh 指向 bash（dash 不支持 source 命令，Gitea Runner 内部脚本依赖 bash 特性）
   ln -sf /bin/bash /bin/sh
@@ -33,7 +35,7 @@ RUN <<EOF
   gitea-runner --version
 
   # 下载并解压 Docker 静态二进制
-  curl "https://download.docker.com/linux/static/stable/${arch}/docker-${DOCKER_VERSION}.tgz" -o /tmp/docker.tgz
+  curl "https://download.docker.com/linux/static/stable/${docker_arch}/docker-${DOCKER_VERSION}.tgz" -o /tmp/docker.tgz
   tar -xzf /tmp/docker.tgz -C /usr/local/bin --strip-components=1
   rm -f /tmp/docker.tgz
 
