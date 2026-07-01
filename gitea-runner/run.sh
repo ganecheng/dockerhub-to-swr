@@ -165,14 +165,23 @@ function shutdown_act() {
   (set -x; kill -SIGTERM "$gitea_runner_pid" || true)
 }
 
-# 优雅停止 Docker 引擎（通过 init 脚本）
+# 优雅停止 Docker 引擎（通过 init 脚本），最多等 60 秒
 function shutdown_docker() {
   log INFO "Stopping docker engine..."
   service docker stop
-  # 等待 dockerd 完全退出
-  while service docker status >/dev/null 2>&1; do
-    log INFO "Waiting for docker engine to shutdown..."
+  local timeout=60
+  while true; do
+    if ! service docker status >/dev/null 2>&1; then
+      log INFO "Docker engine stopped."
+      return 0
+    fi
+    if [[ $timeout -le 0 ]]; then
+      log ERROR "Docker engine did not stop within 60 seconds, exit forcefully."
+      return 1
+    fi
+    log INFO "Waiting for docker engine to shutdown... (${timeout}s timeout)"
     sleep 2
+    timeout=$((timeout - 2))
   done
 }
 
