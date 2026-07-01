@@ -5,6 +5,8 @@ FROM ubuntu:resolute-20260610
 ARG DEBIAN_FRONTEND=noninteractive
 # 构建参数：Gitea Runner 版本号
 ARG GITEA_RUNNER_VERSION=1.0.8
+# 构建参数：Docker 引擎版本号（静态二进制）
+ARG DOCKER_VERSION=28.5.2
 
 # 使用 bash 严格模式执行 RUN 指令（出错即停、禁止未定义变量、管道失败传递）
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
@@ -30,25 +32,13 @@ RUN <<EOF
   chmod 755 /usr/local/bin/gitea-runner
   gitea-runner --version
 
-  # 安装 Docker 引擎（用于在容器内构建和运行镜像）
-  install -m 0755 -d /etc/apt/keyrings
-  curl "https://download.docker.com/linux/ubuntu/gpg" -o /etc/apt/keyrings/docker.asc
-  chmod a+r /etc/apt/keyrings/docker.asc
+  # 下载并解压 Docker 静态二进制
+  curl "https://download.docker.com/linux/static/stable/${arch}/docker-${DOCKER_VERSION}.tgz" -o /tmp/docker.tgz
+  tar -xzf /tmp/docker.tgz -C /usr/local/bin --strip-components=1
+  rm -f /tmp/docker.tgz
 
-  # 根据系统代号添加 Docker 官方 APT 源
-  OS_CODENAME="$(source /etc/os-release && echo "$VERSION_CODENAME")"
-  echo "deb [arch=$arch signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $OS_CODENAME stable" > /etc/apt/sources.list.d/docker.list
-  apt-get update
-  # 安装 Docker CE、Buildx 插件、Compose 插件、containerd
-  (set -x; apt-get install --no-install-recommends -y docker-ce docker-buildx-plugin docker-compose-plugin containerd.io)
-
-  # 验证 Docker 各组件安装成功
-  docker --version && docker compose version && docker buildx version && runc --version
-
-  # 修复 init.d/docker 中硬句柄限制的问题（部分系统会导致 Docker 启动失败）
-  if [[ -f /etc/init.d/docker ]] && grep -q "ulimit -Hn" /etc/init.d/docker; then
-    sed -i 's/ulimit -Hn/ulimit -n/g' /etc/init.d/docker
-  fi
+  # 验证 Docker 版本
+  docker --version
 
   # 切换 iptables 为 legacy 模式，兼容性更好
   update-alternatives --set iptables /usr/sbin/iptables-legacy
@@ -63,14 +53,12 @@ RUN <<EOF
   echo '{"experimental":true}' > /etc/docker/daemon.json
 
   # 清理缓存和临时文件，减小镜像体积
-  rm -f /etc/apt/sources.list.d/docker.list /etc/apt/keyrings/docker.asc
   rm -rf /var/cache/{apt,debconf} /var/lib/apt/lists/* /var/log/{apt,alternatives.log,bootstrap.log,dpkg.log} /tmp/* /var/tmp/*
 
 EOF
 
 # 默认环境变量：均可在 docker run 时覆盖
 ENV \
-  DOCKER_BUILDKIT=0 \
   INIT_SH_FILE='' \
   GITEA_RUNNER_CONFIG_TEMPLATE_FILE='/opt/config.template.yaml' \
   GITEA_RUNNER_NAME='' \

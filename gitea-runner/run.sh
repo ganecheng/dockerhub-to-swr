@@ -54,14 +54,14 @@ log INFO "Starting Docker engine..."
 # 清除可能残留的 PID 文件，避免 Docker 误认为已在运行
 rm -f /var/run/docker.pid /run/docker/containerd/containerd.pid
 /usr/local/bin/dind-hack true
-service docker start
+dockerd > /var/log/docker.log 2>&1 &
+DOCKER_PID=$!
 # 轮询等待 Docker 引擎就绪
 while ! docker stats --no-stream &>/dev/null; do
   log INFO "Waiting for Docker engine to start..."
   sleep 2
   tail -n 1 /var/log/docker.log
 done
-export DOCKER_PID=$(</var/run/docker.pid)
 echo "==========================================================="
 docker info
 echo "==========================================================="
@@ -167,7 +167,7 @@ function shutdown_act() {
 # 优雅停止 Docker 引擎并等待其退出
 function shutdown_docker() {
   log INFO "Stopping docker engine..."
-  (set -x; service docker stop)
+  (set -x; kill "$DOCKER_PID" || true)
   while [[ -e /proc/$DOCKER_PID ]]; do
     log INFO "Waiting for docker engine to shutdown..."
     sleep 2
