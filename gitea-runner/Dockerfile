@@ -18,6 +18,9 @@ RUN <<EOF
 
   arch=$(dpkg --print-architecture)
 
+  # 将 /bin/sh 指向 bash（dash 不支持 source 命令，Gitea Runner 内部脚本依赖 bash 特性）
+  ln -sf /bin/bash /bin/sh
+
   # 安装基础依赖：证书、下载工具、tini（PID 1 进程管理）、Node.js、git
   apt-get update
   apt-get install --no-install-recommends -y ca-certificates curl tini nodejs npm git
