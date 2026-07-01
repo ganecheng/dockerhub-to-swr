@@ -58,6 +58,10 @@ RUN <<EOF
   curl "https://raw.githubusercontent.com/moby/moby/master/hack/dind" -o /usr/local/bin/dind-hack
   chmod +x /usr/local/bin/dind-hack
 
+  # 配置 Docker daemon 开启 experimental 模式（支持 --squash）
+  install -m 0755 -d /etc/docker
+  echo '{"experimental":true}' > /etc/docker/daemon.json
+
   # 清理缓存和临时文件，减小镜像体积
   rm -f /etc/apt/sources.list.d/docker.list /etc/apt/keyrings/docker.asc
   rm -rf /var/cache/{apt,debconf} /var/lib/apt/lists/* /var/log/{apt,alternatives.log,bootstrap.log,dpkg.log} /tmp/* /var/tmp/*
@@ -66,6 +70,7 @@ EOF
 
 # 默认环境变量：均可在 docker run 时覆盖
 ENV \
+  DOCKER_BUILDKIT=0 \
   INIT_SH_FILE='' \
   GITEA_RUNNER_CONFIG_TEMPLATE_FILE='/opt/config.template.yaml' \
   GITEA_RUNNER_NAME='' \
