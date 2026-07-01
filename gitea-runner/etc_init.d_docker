@@ -10,8 +10,9 @@
 # Short-Description: Docker daemon
 #
 # This script manages dockerd via its own PID file (/var/run/docker.pid).
-# dockerd daemonizes itself when started without --foreground, so we do NOT
-# append a shell '&' — the daemon handles backgrounding internally.
+# The '&' on the start line is a safety net: in DinD environments dockerd may
+# not daemonize reliably, and the PID file (-p) is the authoritative source
+# for process management, not $!.
 
 ### BEGIN INIT INFO
 # Provides:          docker
@@ -62,10 +63,12 @@ start() {
   rm -f "$PIDFILE"
 
   printf '  [INFO] Starting Docker... '
-  # dockerd without --foreground daemonizes automatically, writes its PID to
-  # $PIDFILE via -p, and detaches from the terminal.  The '>>' redirect
-  # captures startup stderr before the fork.
-  $DOCKER $DOCKER_OPTS >> "$LOGFILE" 2>&1
+  # Start dockerd in background with PID file tracking.  dockerd without
+  # --foreground usually daemonizes on its own, but in DinD/Kubernetes
+  # environments this may not work reliably.  The '&' guarantees the shell
+  # returns immediately, and the PID file (created by -p) is the authoritative
+  # handle for stop/status — NOT $!.
+  $DOCKER $DOCKER_OPTS >> "$LOGFILE" 2>&1 &
 
   # Give dockerd a moment to finish daemonizing and create the PID file.
   sleep 2
