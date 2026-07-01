@@ -122,8 +122,10 @@ stop() {
 status() {
   if _read_pid >/dev/null; then
     echo "  [INFO] Docker is running (PID $(_read_pid))."
+    return 0
   else
     echo "  [INFO] Docker is not running."
+    return 3
   fi
 }
 
