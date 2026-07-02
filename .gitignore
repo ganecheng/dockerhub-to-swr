@@ -36,3 +36,5 @@ root*
 
 .flattened-pom.xml
 **/.flattened-pom.xml
+
+.qwen
