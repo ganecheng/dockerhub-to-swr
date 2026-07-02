@@ -31,7 +31,8 @@ RUN <<EOF
   apt-get install --no-install-recommends -y \
     ca-certificates curl dos2unix iptables tini nodejs npm git \
     locales-all libfreetype6 net-tools findutils util-linux zip unzip bc fontconfig sudo jq openssl \
-    iproute2 iputils-ping telnet bind9-dnsutils wget
+    iproute2 iputils-ping telnet bind9-dnsutils wget \
+    zstd xz-utils bzip2 gzip
 
   # 下载并安装 Gitea Runner 二进制文件
   curl "https://gitea.com/gitea/runner/releases/download/v${GITEA_RUNNER_VERSION}/gitea-runner-${GITEA_RUNNER_VERSION}-linux-${arch}" -o /usr/local/bin/gitea-runner
