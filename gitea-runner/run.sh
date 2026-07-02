@@ -195,4 +195,4 @@ while true; do
 done
 
 log INFO "Container exiting, kernel will clean up all child processes."
-exit 1
+exit 0
