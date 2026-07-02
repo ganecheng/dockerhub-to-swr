@@ -26,8 +26,12 @@ RUN <<EOF
   ln -sf /bin/bash /bin/sh
 
   # 安装基础依赖：证书、下载工具、tini（PID 1 进程管理）、Node.js、git
+  # 以及常用运行时工具（语言包、字体、网络诊断、压缩、jq/openssl 等）
   apt-get update
-  apt-get install --no-install-recommends -y ca-certificates curl dos2unix iptables tini nodejs npm git
+  apt-get install --no-install-recommends -y \
+    ca-certificates curl dos2unix iptables tini nodejs npm git \
+    locales-all libfreetype6 net-tools findutils util-linux zip unzip bc fontconfig sudo jq openssl \
+    iproute2 iputils-ping telnet bind9-dnsutils wget
 
   # 下载并安装 Gitea Runner 二进制文件
   curl "https://gitea.com/gitea/runner/releases/download/v${GITEA_RUNNER_VERSION}/gitea-runner-${GITEA_RUNNER_VERSION}-linux-${arch}" -o /usr/local/bin/gitea-runner
