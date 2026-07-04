@@ -13,12 +13,12 @@ gitea-runner/               ← 基础镜像 (Dockerfile)
 │   ├── java25.sh           # Temurin JDK 25 + Maven
 │   ├── graalvm-jdk21.sh    # Oracle GraalVM JDK 21 + Maven
 │   ├── graalvm-jdk25.sh    # Oracle GraalVM JDK 25 + Maven
-│   └── test.sh             # Temurin JDK 25 + JMeter
+│   └── jmeter.sh           # Temurin JDK 25 + JMeter
 ├── Dockerfile.java21       ← gitea-runner-java21
 ├── Dockerfile.java25       ← gitea-runner-java25
 ├── Dockerfile.graalvm-jdk21  ← gitea-runner-graalvm-jdk21
 ├── Dockerfile.graalvm-jdk25  ← gitea-runner-graalvm-jdk25
-└── Dockerfile.test         ← gitea-runner-test
+└── Dockerfile.jmeter       ← gitea-runner-jmeter
 ```
 
 ## 镜像列表
@@ -30,7 +30,7 @@ gitea-runner/               ← 基础镜像 (Dockerfile)
 | `gitea-runner-java25` | `Dockerfile.java25` | + Temurin JDK 25 + Maven | `java-25` |
 | `gitea-runner-graalvm-jdk21` | `Dockerfile.graalvm-jdk21` | + GraalVM JDK 21 + Maven | `graalvm-jdk-21` |
 | `gitea-runner-graalvm-jdk25` | `Dockerfile.graalvm-jdk25` | + GraalVM JDK 25 + Maven | `graalvm-jdk-25` |
-| `gitea-runner-test` | `Dockerfile.test` | + Temurin JDK 25 + JMeter | `jmeter` |
+| `gitea-runner-jmeter` | `Dockerfile.jmeter` | + Temurin JDK 25 + JMeter | `jmeter` |
 
 ## 本地构建
 

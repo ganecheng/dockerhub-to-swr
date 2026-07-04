@@ -1,8 +1,8 @@
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE}
 
-COPY gitea-runner/modules/common.sh gitea-runner/modules/test.sh /tmp/
-RUN bash /tmp/test.sh && rm -f /tmp/*.sh
+COPY gitea-runner/modules/common.sh gitea-runner/modules/jmeter.sh /tmp/
+RUN bash /tmp/jmeter.sh && rm -f /tmp/*.sh
 
 ENV JAVA_HOME=/opt/jdk-25 \
     JMETER_HOME=/opt/jmeter \
