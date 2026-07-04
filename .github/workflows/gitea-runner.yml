@@ -22,7 +22,7 @@ jobs:
           set -ex
           echo "current_datetime=$(date +'%Y%m%d_%H%M%S')" >> $GITHUB_OUTPUT
 
-  ubuntu_container_image_build:
+  build_base:
     runs-on: ubuntu-24.04
     needs: main_job
     timeout-minutes: 30
@@ -34,13 +34,7 @@ jobs:
       - name: clean disk
         run: |
           set -ex
-          pwd
-          id
-          uname -a
-          docker info
-          docker images
-          df -h
-          docker images
+          pwd; id; uname -a; docker info; docker images; df -h
 
       - name: git checkout
         uses: actions/checkout@v6
@@ -55,21 +49,67 @@ jobs:
       - name: Login to SWR
         run: docker login -u cn-southwest-2@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.cn-southwest-2.myhuaweicloud.com
 
-      - name: build container image
+      - name: build and push base image
         run: |
           set -exuo pipefail
-          
-          artifact_image_url=swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/gitea-runner:${current_datetime}-x86_64
-          ghcr_image_url=ghcr.io/${current_user}/gitea-runner:${current_datetime}-x86_64
-          
-          docker build -f gitea-runner/Dockerfile --no-cache -t ${artifact_image_url} .
-          docker tag ${artifact_image_url} ${ghcr_image_url}
-          
+
+          base_tag=gitea-runner:${current_datetime}-x86_64
+          artifact_base=swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/${base_tag}
+          ghcr_base=ghcr.io/${current_user}/${base_tag}
+
+          docker build -f gitea-runner/Dockerfile --no-cache -t ${artifact_base} -t ${ghcr_base} .
+          docker push ${artifact_base}
+          docker push ${ghcr_base}
+
           docker images
-          docker history ${artifact_image_url}
-          pwd
           df -h
-          
-          docker push ${artifact_image_url}
-          docker push ${ghcr_image_url}
+
+  build_extensions:
+    runs-on: ubuntu-24.04
+    needs: [main_job, build_base]
+    timeout-minutes: 30
+    env:
+      TZ: Asia/Shanghai
+      current_datetime: ${{ needs.main_job.outputs.current_datetime }}
+      current_user: ${{ needs.main_job.outputs.current_user }}
+    strategy:
+      fail-fast: false
+      matrix:
+        extension: [java21, java25, graalvm-jdk21, graalvm-jdk25, test]
+    steps:
+      - name: git checkout
+        uses: actions/checkout@v6
+
+      - name: login ghcr
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Login to SWR
+        run: docker login -u cn-southwest-2@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.cn-southwest-2.myhuaweicloud.com
+
+      - name: build and push extension image
+        run: |
+          set -exuo pipefail
+
+          ext=${{ matrix.extension }}
+          base_tag=gitea-runner:${current_datetime}-x86_64
+
+          # 从 GHCR 拉取基础镜像
+          docker pull ghcr.io/${current_user}/${base_tag}
+          docker tag ghcr.io/${current_user}/${base_tag} gitea-runner:base
+
+          ext_tag=gitea-runner-${ext}:${current_datetime}-x86_64
+          artifact_ext=swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/${ext_tag}
+          ghcr_ext=ghcr.io/${current_user}/${ext_tag}
+
+          echo ">>> Building gitea-runner-${ext}..."
+          docker build -f gitea-runner/Dockerfile.${ext} --build-arg BASE_IMAGE=gitea-runner:base --no-cache -t ${artifact_ext} -t ${ghcr_ext} .
+          docker push ${artifact_ext}
+          docker push ${ghcr_ext}
+
+          docker images
+          df -h
 
