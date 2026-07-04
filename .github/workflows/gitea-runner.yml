@@ -77,7 +77,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        extension: [ java21, java25, graalvm-jdk21, graalvm-jdk25, jmeter ]
+        extension: [ jdk21, jdk25, graalvm-jdk21, graalvm-jdk25, jmeter ]
     steps:
       - name: git checkout
         uses: actions/checkout@v6

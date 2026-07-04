@@ -1,0 +1,10 @@
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+
+COPY gitea-runner/modules/common.sh gitea-runner/modules/jdk25.sh gitea-runner/modules/settings.xml /tmp/
+RUN bash /tmp/jdk25.sh && rm -f /tmp/*.sh /tmp/settings.xml
+
+ENV JAVA_HOME=/opt/jdk-25 \
+    MAVEN_HOME=/opt/maven \
+    PATH="/opt/jdk-25/bin:/opt/maven/bin:${PATH}" \
+    GITEA_RUNNER_LABELS_DEFAULT='ubuntu-latest,ubuntu-26.04,jdk-25'
