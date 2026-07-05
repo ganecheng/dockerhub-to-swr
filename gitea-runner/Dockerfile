@@ -36,7 +36,8 @@ RUN <<EOF
     ca-certificates curl dos2unix iptables tini git \
     locales-all libfreetype6 net-tools findutils util-linux zip unzip bc fontconfig sudo jq openssl \
     iproute2 iputils-ping telnet bind9-dnsutils wget \
-    zstd xz-utils bzip2 gzip vim
+    zstd xz-utils bzip2 gzip vim tree \
+    python3 python3-pip
 
   # 安装 Node.js（自带 npm）via 官方预编译二进制
   curl "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-${node_arch}.tar.xz" -o /tmp/node.tar.xz
@@ -44,6 +45,10 @@ RUN <<EOF
   rm -f /tmp/node.tar.xz
   node --version
   npm --version
+
+  # 验证 Python 安装
+  python3 --version
+  pip3 --version
 
   # 下载并安装 Gitea Runner 二进制文件
   curl "https://gitea.com/gitea/runner/releases/download/v${GITEA_RUNNER_VERSION}/gitea-runner-${GITEA_RUNNER_VERSION}-linux-${arch}" -o /usr/local/bin/gitea-runner
@@ -81,6 +86,9 @@ ENV \
   INIT_SH_FILE='' \
   CA_CERT_DIR='/opt/cloud/security/cert/ca' \
   NPM_REGISTRY='https://mirrors.huaweicloud.com/repository/npm/' \
+  APT_MIRROR_URI='https://mirrors.huaweicloud.com/ubuntu/' \
+  PIP_INDEX_URL='https://mirrors.huaweicloud.com/repository/pypi/simple' \
+  PIP_TRUSTED_HOST='mirrors.huaweicloud.com' \
   GITEA_RUNNER_CONFIG_TEMPLATE_FILE='/opt/config.template.yaml' \
   GITEA_RUNNER_NAME='' \
   GITEA_RUNNER_LABELS='' \

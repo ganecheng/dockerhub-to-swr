@@ -78,6 +78,44 @@ fi
 
 
 #################################################################
+# 配置 Ubuntu APT 国内镜像站
+#################################################################
+if [[ ! -f /etc/apt/sources.list.d/huaweicloud.sources ]]; then
+  log INFO "Configuring APT mirror: ${APT_MIRROR_URI}"
+  cat > /etc/apt/sources.list.d/huaweicloud.sources <<EOF
+Types: deb
+URIs: ${APT_MIRROR_URI}
+Suites: resolute resolute-updates resolute-security
+Components: main universe restricted
+Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
+EOF
+  # 移除原始源文件避免重复源
+  rm -f /etc/apt/sources.list.d/ubuntu.sources
+  apt-get update
+else
+  log INFO "APT mirror already configured (huaweicloud.sources exists), skipping..."
+fi
+
+
+#################################################################
+# 配置 Python PIP 国内镜像站
+#################################################################
+if [[ ! -f /root/.config/pip/pip.conf ]]; then
+  log INFO "Configuring PIP mirror: ${PIP_INDEX_URL}"
+  mkdir -p /root/.config/pip/
+  cat > /root/.config/pip/pip.conf <<EOF
+[global]
+index = ${PIP_INDEX_URL%/simple}
+index-url = ${PIP_INDEX_URL}
+trusted-host = ${PIP_TRUSTED_HOST}
+user = true
+EOF
+else
+  log INFO "Using existing /root/.config/pip/pip.conf ..."
+fi
+
+
+#################################################################
 # 配置 NPM 默认镜像仓库
 #################################################################
 npm config set registry "${NPM_REGISTRY}"

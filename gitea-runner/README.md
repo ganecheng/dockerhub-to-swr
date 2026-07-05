@@ -25,7 +25,7 @@ gitea-runner/               ← 基础镜像 (Dockerfile)
 
 | 镜像名称 | Dockerfile | 包含组件 | Runner 标签 |
 |---------|-----------|---------|------------|
-| `gitea-runner` | `Dockerfile` | Ubuntu + Docker + Gitea Runner + 常用工具 | `ubuntu-latest,ubuntu-26.04` |
+| `gitea-runner` | `Dockerfile` | Ubuntu + Docker + Gitea Runner + Node.js + Python + 常用工具 | `ubuntu-latest,ubuntu-26.04` |
 | `gitea-runner-jdk21` | `Dockerfile.jdk21` | + Temurin JDK 21 + Maven | `jdk-21` |
 | `gitea-runner-jdk25` | `Dockerfile.jdk25` | + Temurin JDK 25 + Maven | `jdk-25` |
 | `gitea-runner-graalvm-jdk21` | `Dockerfile.graalvm-jdk21` | + GraalVM JDK 21 + Maven | `graalvm-jdk-21` |
@@ -52,6 +52,19 @@ docker build -f gitea-runner/Dockerfile.jdk21 --build-arg BASE_IMAGE=gitea-runne
 
 1. 在 `modules/` 下创建安装脚本（可复用 `common.sh` 中的函数）
 2. 创建对应的 `Dockerfile.{name}`，复制脚本并设置环境变量
+
+## 国内镜像站配置
+
+容器启动时自动配置国内镜像站（通过环境变量可覆盖默认值）：
+
+| 镜像站 | 环境变量 | 默认值 |
+|-------|---------|-------|
+| Ubuntu APT | `APT_MIRROR_URI` | `https://mirrors.huaweicloud.com/ubuntu/` |
+| Python PIP | `PIP_INDEX_URL` | `https://mirrors.huaweicloud.com/repository/pypi/simple` |
+| Python PIP (信任主机) | `PIP_TRUSTED_HOST` | `mirrors.huaweicloud.com` |
+| NPM | `NPM_REGISTRY` | `https://mirrors.huaweicloud.com/repository/npm/` |
+
+所有镜像站仅在首次启动时配置（检测到已存在配置文件则跳过），可安全重启。
 
 ## 自定义 CA 证书
 
