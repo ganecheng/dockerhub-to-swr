@@ -48,7 +48,7 @@ function install_graalvm_jdk() {
 
   # native-image 需要 C/C++ 编译器和开发头文件
   apt-get update
-  apt-get install --no-install-recommends -y gcc g++ zlib1g-dev libstdc++-dev
+  apt-get install --no-install-recommends -y gcc g++ zlib1g-dev
   rm -rf /var/lib/apt/lists/*
 
   curl "https://download.oracle.com/graalvm/${version}/latest/graalvm-jdk-${version}_linux-${jdk_arch}_bin.tar.gz" -o /tmp/graalvm.tar.gz
