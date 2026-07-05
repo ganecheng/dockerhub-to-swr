@@ -52,3 +52,22 @@ docker build -f gitea-runner/Dockerfile.jdk21 --build-arg BASE_IMAGE=gitea-runne
 
 1. 在 `modules/` 下创建安装脚本（可复用 `common.sh` 中的函数）
 2. 创建对应的 `Dockerfile.{name}`，复制脚本并设置环境变量
+
+## 自定义 CA 证书
+
+容器启动时会自动导入自定义 CA 证书（在 Docker 守护进程启动前完成，以便 dockerd 拉取 HTTPS 镜像时即可使用）。
+
+### 使用方法
+
+将 PEM 格式的证书文件挂载到 `CA_CERT_DIR`（默认 `/opt/cloud/security/cert/ca`），启动时逐个导入：
+
+- **系统侧**：拷贝到 `/usr/local/share/ca-certificates/` 后运行 `update-ca-certificates` 刷新 `/etc/ssl/certs/ca-certificates.crt`
+- **Java 侧**：通过 `keytool` 导入到 `${JAVA_HOME}/lib/security/cacerts`（仅扩展镜像有 JAVA_HOME）
+
+```bash
+docker run -v /path/to/my-certs:/opt/cloud/security/cert/ca:ro ...
+# 或自定义目录
+docker run -e CA_CERT_DIR=/etc/my-certs -v /path/to/my-certs:/etc/my-certs:ro ...
+```
+
+> 证书文件应为 PEM 格式（以 `-----BEGIN CERTIFICATE-----` 开头）；所有文件按文件名顺序导入并赋予 `ca-1`、`ca-2`... 的别名。

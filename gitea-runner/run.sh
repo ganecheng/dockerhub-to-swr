@@ -48,6 +48,43 @@ fi
 
 
 #################################################################
+# 导入自定义 CA 证书（若挂载目录存在证书文件）
+# 系统侧：拷贝到 /usr/local/share/ca-certificates/ 后运行 update-ca-certificates
+# Java 侧：通过 keytool 导入 JDK truststore（仅当 JAVA_HOME 可用时）
+#################################################################
+if [[ -d "${CA_CERT_DIR}" ]] && [[ -n "$(ls -A "${CA_CERT_DIR}" 2>/dev/null)" ]]; then
+  log INFO "Importing CA certificates from ${CA_CERT_DIR} ..."
+  counter=0
+  for file in "${CA_CERT_DIR}"/*; do
+    [[ -f "$file" ]] || continue
+    counter=$((counter + 1))
+    # 系统侧证书：拷贝到标准目录后由 update-ca-certificates 刷新证书束
+    install -m 0644 "$file" "/usr/local/share/ca-certificates/ca-${counter}.crt"
+    # Java 侧证书：导入 JDK truststore（基础镜像无 JAVA_HOME 时跳过）
+    if [[ -n "${JAVA_HOME:-}" && -x "${JAVA_HOME}/bin/keytool" ]]; then
+      "${JAVA_HOME}/bin/keytool" -importcert \
+        -alias "ca-${counter}" \
+        -file "$file" \
+        -keystore "${JAVA_HOME}/lib/security/cacerts" \
+        -storepass changeit \
+        -noprompt
+    fi
+  done
+  update-ca-certificates
+  log INFO "Imported ${counter} CA certificate(s)."
+else
+  log INFO "No CA certificates to import (directory ${CA_CERT_DIR} empty or missing)."
+fi
+
+
+#################################################################
+# 配置 NPM 默认镜像仓库
+#################################################################
+npm config set registry "${NPM_REGISTRY}"
+log INFO "NPM registry set to ${NPM_REGISTRY}"
+
+
+#################################################################
 # 启动 Docker 守护进程（直接后台启动）
 #################################################################
 log INFO "Starting Docker engine..."

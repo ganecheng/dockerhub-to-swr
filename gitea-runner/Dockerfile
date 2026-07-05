@@ -68,6 +68,8 @@ EOF
 ENV \
   TZ='Asia/Shanghai' \
   INIT_SH_FILE='' \
+  CA_CERT_DIR='/opt/cloud/security/cert/ca' \
+  NPM_REGISTRY='https://mirrors.huaweicloud.com/repository/npm/' \
   GITEA_RUNNER_CONFIG_TEMPLATE_FILE='/opt/config.template.yaml' \
   GITEA_RUNNER_NAME='' \
   GITEA_RUNNER_LABELS='' \
