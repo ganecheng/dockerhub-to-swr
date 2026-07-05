@@ -45,6 +45,12 @@ function install_graalvm_jdk() {
   jdk_arch=$(detect_jdk_arch)
 
   echo ">>> Installing Oracle GraalVM JDK ${version} (arch: ${jdk_arch})..."
+
+  # native-image 需要 C/C++ 编译器和开发头文件
+  apt-get update
+  apt-get install --no-install-recommends -y gcc g++ zlib1g-dev libstdc++-dev
+  rm -rf /var/lib/apt/lists/*
+
   curl "https://download.oracle.com/graalvm/${version}/latest/graalvm-jdk-${version}_linux-${jdk_arch}_bin.tar.gz" -o /tmp/graalvm.tar.gz
   mkdir -p "/opt/graalvm-jdk-${version}"
   tar -xzf /tmp/graalvm.tar.gz --strip-components=1 -C "/opt/graalvm-jdk-${version}"
