@@ -7,6 +7,8 @@ ARG DEBIAN_FRONTEND=noninteractive
 ARG GITEA_RUNNER_VERSION=1.0.8
 # 构建参数：Docker 引擎版本号（静态二进制）
 ARG DOCKER_VERSION=28.5.2
+# 构建参数：Node.js 版本号
+ARG NODE_VERSION=24.18.0
 
 # 使用 bash 严格模式执行 RUN 指令（出错即停、禁止未定义变量、管道失败传递）
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
@@ -21,18 +23,27 @@ RUN <<EOF
   arch=$(dpkg --print-architecture)
   # Docker 静态二进制使用 uname 架构命名（amd64 → x86_64, arm64 → aarch64）
   docker_arch=$(uname -m)
+  # Node.js 预编译二进制使用自身命名（amd64 → x64, arm64 → arm64）
+  node_arch=$([ "${arch}" = "amd64" ] && echo "x64" || echo "${arch}")
 
   # 将 /bin/sh 指向 bash（dash 不支持 source 命令，Gitea Runner 内部脚本依赖 bash 特性）
   ln -sf /bin/bash /bin/sh
 
-  # 安装基础依赖：证书、下载工具、tini（PID 1 进程管理）、Node.js、git
+  # 安装基础依赖：证书、下载工具、tini（PID 1 进程管理）、git
   # 以及常用运行时工具（语言包、字体、网络诊断、压缩、jq/openssl 等）
   apt-get update
   apt-get install --no-install-recommends -y \
-    ca-certificates curl dos2unix iptables tini nodejs npm git \
+    ca-certificates curl dos2unix iptables tini git \
     locales-all libfreetype6 net-tools findutils util-linux zip unzip bc fontconfig sudo jq openssl \
     iproute2 iputils-ping telnet bind9-dnsutils wget \
-    zstd xz-utils bzip2 gzip
+    zstd xz-utils bzip2 gzip vim
+
+  # 安装 Node.js（自带 npm）via 官方预编译二进制
+  curl "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-${node_arch}.tar.xz" -o /tmp/node.tar.xz
+  tar -xf /tmp/node.tar.xz -C /usr/local --strip-components=1 --no-same-owner
+  rm -f /tmp/node.tar.xz
+  node --version
+  npm --version
 
   # 下载并安装 Gitea Runner 二进制文件
   curl "https://gitea.com/gitea/runner/releases/download/v${GITEA_RUNNER_VERSION}/gitea-runner-${GITEA_RUNNER_VERSION}-linux-${arch}" -o /usr/local/bin/gitea-runner
