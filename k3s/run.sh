@@ -2,6 +2,9 @@
 
 set -euo pipefail
 
+# 提升文件描述符上限（k3s/kubelet/etcd 需要大量 fd 和 inotify watch）
+ulimit -n 1048576 2>/dev/null || true
+
 # 日志函数：统一输出格式，支持带级别的前缀
 function log() {
   local level=${1:-INFO}
@@ -91,6 +94,12 @@ if [[ -f /opt/k3s/k3s-airgap-images.tar.zst ]]; then
 fi
 
 #################################################################
+# 调整 inotify 内核参数（k3s/kubelet 依赖 inotify 监听文件变化）
+#################################################################
+sysctl -w fs.inotify.max_user_watches=524288 2>/dev/null || true
+sysctl -w fs.inotify.max_user_instances=512   2>/dev/null || true
+
+#################################################################
 # 启动 k3s 节点
 #################################################################
 k3s_pid=''
@@ -102,12 +111,20 @@ k3s "${k3s_extra_args[@]}" --docker &
 k3s_pid=$!
 
 wait_until=$(( $(date +%s) + ${K3S_STARTUP_TIMEOUT:-120} ))
-while ! [[ -e /proc/$k3s_pid ]]; do
-  if [[ $(date +%s) -ge $wait_until ]]; then
-    log ERROR "Timed out waiting for k3s process to start."
+while true; do
+  if [[ ! -e /proc/$k3s_pid ]]; then
+    log ERROR "k3s process exited during startup."
     exit 1
   fi
-  log INFO "Waiting for k3s process to start..."
+  if [[ $(date +%s) -ge $wait_until ]]; then
+    log ERROR "Timed out waiting for k3s to become ready."
+    exit 1
+  fi
+  if k3s kubectl get --raw='/readyz' &>/dev/null; then
+    log INFO "k3s is ready."
+    break
+  fi
+  log INFO "Waiting for k3s to become ready..."
   sleep 2
 done
 
