@@ -76,6 +76,13 @@ RUN <<EOF
     sed -i 's/ulimit -Hn/ulimit -n/g' /etc/init.d/docker
   fi
 
+  # 将 Docker data-root 设置到 /var/lib/rancher/k3s/docker，
+  # 使其落在 k3s 的 PVC 之下，只需持久化一个目录即可保留集群状态和容器数据
+  install -d /etc/docker
+  cat > /etc/docker/daemon.json <<'EOF_DOCKER'
+{"data-root": "/var/lib/rancher/k3s/docker"}
+EOF_DOCKER
+
   # 切换 iptables 为 legacy 模式，兼容性更好
   update-alternatives --set iptables /usr/sbin/iptables-legacy
   update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
@@ -104,9 +111,7 @@ EOF
 # 复制启动脚本到镜像
 COPY k3s/run.sh /opt/
 
-# Docker 数据卷（镜像、容器层存储）
-VOLUME /var/lib/docker
-# k3s 数据卷（集群状态等）
+# k3s 数据卷（集群状态 + Docker 容器数据，通过 daemon.json 指向同一目录）
 VOLUME /var/lib/rancher/k3s
 
 # 使用 tini 作为 PID 1，正确处理信号和僵尸进程
