@@ -21,7 +21,8 @@ gitea-runner/                       ← 基础镜像 (Dockerfile)
 ├── Dockerfile.jdk25                # gitea-runner-jdk25
 ├── Dockerfile.graalvm-jdk21        # gitea-runner-graalvm-jdk21
 ├── Dockerfile.graalvm-jdk25        # gitea-runner-graalvm-jdk25
-└── Dockerfile.jmeter               # gitea-runner-jmeter
+├── Dockerfile.jmeter               # gitea-runner-jmeter
+└── Dockerfile.flutter-ubuntu       # gitea-runner-flutter-ubuntu
 ```
 
 ## 镜像列表
@@ -34,6 +35,7 @@ gitea-runner/                       ← 基础镜像 (Dockerfile)
 | `gitea-runner-graalvm-jdk21` | `Dockerfile.graalvm-jdk21` | + GraalVM JDK 21 + Maven 3.9.9 + gcc/g++/zlib1g-dev (native-image) | `ubuntu-latest,ubuntu-26.04,graalvm-jdk-21` |
 | `gitea-runner-graalvm-jdk25` | `Dockerfile.graalvm-jdk25` | + GraalVM JDK 25 + Maven 3.9.9 + gcc/g++/zlib1g-dev (native-image) | `ubuntu-latest,ubuntu-26.04,graalvm-jdk-25` |
 | `gitea-runner-jmeter` | `Dockerfile.jmeter` | + Temurin JDK 25 + JMeter 5.6.3 | `ubuntu-latest,ubuntu-26.04,jmeter` |
+| `gitea-runner-flutter-ubuntu` | `Dockerfile.flutter-ubuntu` | + Flutter 3.44.2 + Android SDK (compileSdk 36, NDK 29, build-tools 36) + OpenJDK 21 | `ubuntu-latest,ubuntu-26.04,flutter-ubuntu` |
 
 > 扩展镜像在基础标签之上追加各自的功能标签，无需重复声明基础标签。
 
