@@ -257,7 +257,7 @@ while true; do
   if [[ $task_detected == false ]] && grep -qiE "task [0-9]+ repo|Running job" /tmp/gitea-runner-daemon.log 2>/dev/null; then
     task_detected=true
     deadline=$(( $(date +%s) + timeout_seconds ))
-    log INFO "Task received from server, timeout extended for task duration."
+    log INFO "Task received from server, timeout extended to ${runner_timeout_minutes}m (will exit after $(date -d "@$deadline" '+%H:%M:%S'))"
   fi
 
   # 检查超时
