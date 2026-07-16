@@ -23,6 +23,10 @@ RUN <<EOF
     zstd xz-utils bzip2 gzip vim tree \
     python3 python3-pip
 
+  # 验证 Python 安装
+  python3 --version
+  pip3 --version
+
   # 设置中文环境
   locale-gen zh_CN.UTF-8 en_US.UTF-8
 

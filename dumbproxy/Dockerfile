@@ -1,11 +1,8 @@
 # 基础镜像：Ubuntu 26.04 (resolute)
-FROM ghcr.io/ganecheng/ubuntu:20260716_170033-x86_64
+FROM ghcr.io/ganecheng/ubuntu:20260716_224412-x86_64
 
 # 构建参数：dumbproxy 版本号
 ARG DUMBPROXY_VERSION=1.51.1
-
-# 使用 bash 严格模式执行 RUN 指令（出错即停、禁止未定义变量、管道失败传递）
-SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 
 # 下载并安装 dumbproxy 二进制文件
 RUN <<EOF
