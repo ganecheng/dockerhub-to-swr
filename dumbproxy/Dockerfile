@@ -1,15 +1,13 @@
 # 基础镜像：Ubuntu 26.04 (resolute)
-FROM ubuntu:resolute-20260610
+FROM ghcr.io/ganecheng/ubuntu:20260716_170033-x86_64
 
-# 构建参数：禁止 apt 交互式提示
-ARG DEBIAN_FRONTEND=noninteractive
 # 构建参数：dumbproxy 版本号
 ARG DUMBPROXY_VERSION=1.51.1
 
 # 使用 bash 严格模式执行 RUN 指令（出错即停、禁止未定义变量、管道失败传递）
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 
-# 单个 RUN 层完成所有安装，减少镜像层数和体积
+# 下载并安装 dumbproxy 二进制文件
 RUN <<EOF
   # 封装 curl：统一超时和重试策略
   function curl() {
@@ -18,20 +16,6 @@ RUN <<EOF
 
   arch=$(dpkg --print-architecture)
 
-  # 将 /bin/sh 指向 bash（dash 不支持 source 命令，Gitea Runner 内部脚本依赖 bash 特性）
-  ln -sf /bin/bash /bin/sh
-
-  # 安装基础依赖：证书、下载工具、tini（PID 1 进程管理）、git
-  # 以及常用运行时工具（语言包、字体、网络诊断、压缩、jq/openssl 等）
-  apt-get update
-  apt-get install --no-install-recommends -y \
-    ca-certificates curl dos2unix iptables tini git \
-    locales-all libfreetype6 net-tools findutils util-linux zip unzip bc fontconfig sudo jq openssl \
-    iproute2 iputils-ping telnet bind9-dnsutils wget \
-    zstd xz-utils bzip2 gzip vim tree \
-    python3 python3-pip
-
-  # 下载并安装 dumbproxy 二进制文件
   case "$arch" in
     amd64)
       dumbproxy_arch='linux-amd64'
@@ -59,8 +43,7 @@ RUN <<EOF
 EOF
 
 # 默认环境变量：均可在 docker run 时覆盖
-ENV TZ='Asia/Shanghai' \
-    CA_CERT_DIR='/opt/cloud/security/cert/ca'
+ENV CA_CERT_DIR='/opt/cloud/security/cert/ca'
 
 # 复制启动脚本到镜像
 COPY dumbproxy/run.sh /opt/
