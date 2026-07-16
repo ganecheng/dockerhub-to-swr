@@ -26,6 +26,18 @@ RUN <<EOF
   # 设置中文环境
   locale-gen zh_CN.UTF-8 en_US.UTF-8
 
+  # 裁剪掉非中英文支持
+  find /usr/lib/locale/* -maxdepth 0 -type d ! -name "zh_CN*" ! -name "en_US*" -exec rm -rf {} \;
+
+  # 创建默认目录
+  mkdir -pv /opt/cloud/{bin,logs,config,security,web,data,tmp}
+
+  # 支持ll命令, 启用颜色显示
+  echo 'alias ls="ls --color=auto"' >> /etc/bash.bashrc
+  echo 'alias l="ls -alh"' >> /etc/bash.bashrc
+  echo 'alias ll="ls -alh"' >> /etc/bash.bashrc
+  echo 'alias lll="ls -alh"' >> /etc/bash.bashrc
+
   # 清理缓存和临时文件，减小镜像体积
   rm -rf /var/cache/{apt,debconf} /var/lib/apt/lists/* /var/log/{apt,alternatives.log,bootstrap.log,dpkg.log} /tmp/* /var/tmp/*
 
@@ -34,18 +46,6 @@ EOF
 # 默认环境变量
 ENV TZ='Asia/Shanghai'
 ENV LANG=zh_CN.UTF-8
-
-# 裁剪掉非中英文支持
-RUN find /usr/lib/locale/* -maxdepth 0 -type d ! -name "zh_CN*" ! -name "en_US*" -exec rm -rf {} \;
-
-# 创建默认目录
-RUN mkdir -pv /opt/cloud /opt/cloud/{bin,logs,config,security,web,data,tmp}
-
-# 支持ll命令, 启用颜色显示
-RUN echo 'alias ls="ls --color=auto"' >> /etc/bash.bashrc
-RUN echo 'alias l="ls -alh"' >> /etc/bash.bashrc
-RUN echo 'alias ll="ls -alh"' >> /etc/bash.bashrc
-RUN echo 'alias lll="ls -alh"' >> /etc/bash.bashrc
 
 # 使用 tini 作为 PID 1，正确处理信号和僵尸进程
 ENTRYPOINT ["/usr/bin/tini", "--"]
