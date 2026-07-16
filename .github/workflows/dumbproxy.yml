@@ -30,6 +30,7 @@ jobs:
       TZ: Asia/Shanghai
       current_datetime: ${{ needs.main_job.outputs.current_datetime }}
       current_user: ${{ needs.main_job.outputs.current_user }}
+      BUILDX_NO_DEFAULT_ATTESTATIONS: 1
     steps:
       - name: clean disk
         run: |
