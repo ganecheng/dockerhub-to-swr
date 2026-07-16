@@ -1,8 +1,8 @@
 # 基础镜像：Ubuntu 26.04 (resolute)
 FROM ubuntu:resolute-20260707
 
-# 构建参数：禁止 apt 交互式提示
-ARG DEBIAN_FRONTEND=noninteractive
+# 环境变量：禁止 apt 交互式提示
+ENV DEBIAN_FRONTEND=noninteractive
 
 # 使用 bash 严格模式执行 RUN 指令（出错即停、禁止未定义变量、管道失败传递）
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]

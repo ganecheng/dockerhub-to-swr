@@ -1,13 +1,8 @@
 # 基础镜像：Ubuntu 26.04 (resolute)
-FROM ubuntu:resolute-20260627
+FROM ghcr.io/ganecheng/ubuntu:20260716_230438-x86_64
 
-# 构建参数：禁止 apt 交互式提示
-ARG DEBIAN_FRONTEND=noninteractive
 # 构建参数：k3s 版本号，留空时下载最新发布版二进制文件
 ARG K3S_VERSION='v1.34.9+k3s1'
-
-# 使用 bash 严格模式执行 RUN 指令（出错即停、禁止未定义变量、管道失败传递）
-SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 
 # 单个 RUN 层完成所有安装，减少镜像层数和体积
 RUN <<EOF
@@ -18,9 +13,9 @@ RUN <<EOF
 
   arch=$(dpkg --print-architecture)
 
-  # 安装基础依赖：证书、下载工具、tini（PID 1 进程管理）和 k3s/Docker 运行所需工具
+  # 安装 k3s 运行所需工具（其余基础依赖已由 ubuntu 基础镜像提供）
   apt-get update
-  apt-get install --no-install-recommends -y ca-certificates curl tini iproute2 iptables kmod procps zstd
+  apt-get install --no-install-recommends -y kmod procps
 
   # 安装 Docker 引擎（用于在容器内构建和运行镜像）
   install -m 0755 -d /etc/apt/keyrings
@@ -113,9 +108,6 @@ COPY k3s/run.sh /opt/
 
 # k3s 数据卷（集群状态 + Docker 容器数据，通过 daemon.json 指向同一目录）
 VOLUME /var/lib/rancher/k3s
-
-# 使用 tini 作为 PID 1，正确处理信号和僵尸进程
-ENTRYPOINT ["/usr/bin/tini", "--"]
 
 # 默认启动命令
 CMD ["/bin/bash", "/opt/run.sh"]
