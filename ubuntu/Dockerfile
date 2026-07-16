@@ -26,9 +26,6 @@ RUN <<EOF
   # 设置中文环境
   locale-gen zh_CN.UTF-8 en_US.UTF-8
 
-  # 裁剪掉非中英文支持
-  find /usr/lib/locale/* -maxdepth 0 -type d ! -name "zh_CN*" ! -name "en_US*" -exec rm -rf {} \;
-
   # 创建默认目录
   mkdir -pv /opt/cloud/{bin,logs,config,security,web,data,tmp}
 
