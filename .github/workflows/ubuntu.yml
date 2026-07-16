@@ -62,7 +62,7 @@ jobs:
           artifact_image_url=swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/ubuntu:${current_datetime}-x86_64
           ghcr_image_url=ghcr.io/${current_user}/ubuntu:${current_datetime}-x86_64
 
-          docker build -f ubuntu/Dockerfile --no-cache --provenance=false -t ${artifact_image_url} .
+          docker build -f ubuntu/Dockerfile --no-cache --provenance=false --sbom=false -t ${artifact_image_url} .
           docker tag ${artifact_image_url} ${ghcr_image_url}
 
           docker images
