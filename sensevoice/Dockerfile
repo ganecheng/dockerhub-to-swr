@@ -1,4 +1,4 @@
-FROM ubuntu:resolute-20260610
+FROM ghcr.io/ganecheng/ubuntu:20260717_210657-x86_64
 
 COPY sensevoice/os_init.sh /os_init.sh
 COPY sensevoice/os_clean.sh /os_clean.sh
@@ -7,12 +7,6 @@ COPY sensevoice/run.sh /run.sh
 COPY sensevoice/code.sh /code.sh
 COPY sensevoice/model.sh /model.sh
 COPY sensevoice/webui.py /webui.py
-
-# 设置时区
-ENV TZ=Asia/Shanghai
-
-# 设置全局命令
-ENV PATH="$PATH:/root/.local/bin"
 
 # 构建
 RUN sh /os_init.sh
