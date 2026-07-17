@@ -4,6 +4,13 @@ FROM ubuntu:resolute-20260707
 # 环境变量：禁止 apt 交互式提示
 ENV DEBIAN_FRONTEND=noninteractive
 
+# 允许 pip 在受外部管理的系统环境中直接安装包（绕过 PEP 668 限制）
+ENV PIP_BREAK_SYSTEM_PACKAGES=1
+# 禁止生成 .pyc 字节码缓存文件，减小镜像体积
+ENV PYTHONDONTWRITEBYTECODE=1
+# 强制 stdout/stderr 无缓冲输出，确保 docker logs 实时可见
+ENV PYTHONUNBUFFERED=1
+
 # 使用 bash 严格模式执行 RUN 指令（出错即停、禁止未定义变量、管道失败传递）
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 

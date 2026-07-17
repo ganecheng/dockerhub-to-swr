@@ -1,10 +1,4 @@
-FROM ubuntu:resolute-20260610
-
-# 忽略 PEP 668 的安全检查
-ENV PIP_BREAK_SYSTEM_PACKAGES=1
-# 设置环境变量，防止 Python 生成 .pyc 文件，缓冲输出以便实时查看日志
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+FROM ghcr.io/ganecheng/ubuntu:20260716_234744-x86_64
 
 COPY ace-step/os_init.sh /os_init.sh
 COPY ace-step/os_clean.sh /os_clean.sh
