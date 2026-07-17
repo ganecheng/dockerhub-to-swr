@@ -1,0 +1,116 @@
+name: gitea-runner-windows
+
+on:
+  workflow_dispatch:
+
+env:
+  HUAWEICLOUD_IAM_AK: "${{ secrets.HUAWEICLOUD_IAM_AK }}"
+  HUAWEICLOUD_IAM_SK: "${{ secrets.HUAWEICLOUD_IAM_SK }}"
+
+jobs:
+  main_job:
+    runs-on: ubuntu-24.04
+    env:
+      TZ: Asia/Shanghai
+    outputs:
+      current_datetime: ${{ steps.global_env.outputs.current_datetime }}
+      current_user: ${{ github.actor }}
+    steps:
+      - name: generate global_env
+        id: global_env
+        run: |
+          set -ex
+          echo "current_datetime=$(date +'%Y%m%d_%H%M%S')" >> $GITHUB_OUTPUT
+
+  build_base:
+    runs-on: windows-2025
+    needs: main_job
+    timeout-minutes: 60
+    env:
+      TZ: Asia/Shanghai
+      current_datetime: ${{ needs.main_job.outputs.current_datetime }}
+      current_user: ${{ needs.main_job.outputs.current_user }}
+    steps:
+      - name: git checkout
+        uses: actions/checkout@v6
+
+      - name: login ghcr
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Login to SWR
+        shell: powershell
+        run: docker login -u "cn-southwest-2@$env:HUAWEICLOUD_IAM_AK" -p "$env:HUAWEICLOUD_IAM_SK" swr.cn-southwest-2.myhuaweicloud.com
+
+      - name: build and push base image
+        shell: powershell
+        run: |
+          $ErrorActionPreference = "Stop"
+
+          $base_tag = "gitea-runner-windows:$env:current_datetime-windows-x86_64"
+          $swr_base = "swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/$base_tag"
+          $ghcr_base = "ghcr.io/$env:current_user/$base_tag"
+
+          docker build -f gitea-runner-windows/Dockerfile --no-cache -t $swr_base -t $ghcr_base .
+
+          docker history $swr_base
+          docker images
+
+          docker push $swr_base
+          docker push $ghcr_base
+          Get-PSDrive
+
+  build_extensions:
+    runs-on: windows-2025
+    needs: [ main_job, build_base ]
+    timeout-minutes: 60
+    env:
+      TZ: Asia/Shanghai
+      current_datetime: ${{ needs.main_job.outputs.current_datetime }}
+      current_user: ${{ needs.main_job.outputs.current_user }}
+    strategy:
+      fail-fast: false
+      matrix:
+        extension: [ flutter-windows ]
+    steps:
+      - name: git checkout
+        uses: actions/checkout@v6
+
+      - name: login ghcr
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Login to SWR
+        shell: powershell
+        run: docker login -u "cn-southwest-2@$env:HUAWEICLOUD_IAM_AK" -p "$env:HUAWEICLOUD_IAM_SK" swr.cn-southwest-2.myhuaweicloud.com
+
+      - name: build and push extension image
+        shell: powershell
+        run: |
+          $ErrorActionPreference = "Stop"
+
+          $ext = "${{ matrix.extension }}"
+          $base_tag = "gitea-runner-windows:$env:current_datetime-windows-x86_64"
+
+          # 从 GHCR 拉取基础镜像
+          docker pull "ghcr.io/$env:current_user/$base_tag"
+
+          $ext_tag = "gitea-runner-windows-${ext}:$env:current_datetime-windows-x86_64"
+          $swr_ext = "swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/$ext_tag"
+          $ghcr_ext = "ghcr.io/$env:current_user/$ext_tag"
+
+          Write-Host ">>> Building gitea-runner-windows-$ext..."
+          docker build -f "gitea-runner-windows/Dockerfile.$ext" --build-arg "BASE_IMAGE=ghcr.io/$env:current_user/$base_tag" --no-cache -t $swr_ext -t $ghcr_ext .
+
+          docker history $swr_ext
+          docker images
+
+          docker push $swr_ext
+          docker push $ghcr_ext
+          Get-PSDrive
