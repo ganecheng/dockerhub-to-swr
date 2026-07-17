@@ -26,4 +26,4 @@ COPY gitea-runner-windows/modules/common.ps1 gitea-runner-windows/modules/flutte
 RUN & 'C:\tmp\flutter-windows.ps1'; `
     Remove-Item -Recurse -Force C:\tmp -ErrorAction SilentlyContinue
 
-ENV GITEA_RUNNER_LABELS_DEFAULT='windows-latest:host,windows-2022:host,flutter-windows:host'
+ENV GITEA_RUNNER_LABELS_DEFAULT='windows-latest,windows-2022,flutter-windows'

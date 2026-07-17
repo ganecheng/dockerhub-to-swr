@@ -1,7 +1,7 @@
 # escape=`
 
 # 基础镜像：windows-dev (Windows Server Core + VS Build Tools + Git + NuGet)
-# 补充 Node.js + Gitea Runner，不含 Docker-in-Docker，任务以 host 模式运行
+# 补充 Node.js + Gitea Runner
 FROM ghcr.io/ganecheng/windows-dev:20260614_200825-windows-x86_64
 
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
@@ -38,7 +38,7 @@ ENV `
     GITEA_RUNNER_CONFIG_TEMPLATE_FILE='C:\opt\config.template.yaml' `
     GITEA_RUNNER_NAME='' `
     GITEA_RUNNER_LABELS='' `
-    GITEA_RUNNER_LABELS_DEFAULT='windows-latest:host,windows-2022:host' `
+    GITEA_RUNNER_LABELS_DEFAULT='windows-latest,windows-2022' `
     GITEA_RUNNER_REGISTRATION_TIMEOUT=30 `
     GITEA_RUNNER_REGISTRATION_RETRY_INTERVAL=3 `
     GITEA_RUNNER_TIMEOUT_MINUTES=60

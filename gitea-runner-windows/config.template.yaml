@@ -1,5 +1,4 @@
 # 基于 https://gitea.com/gitea/runner/src/tag/v1.0.2/internal/pkg/config/config.example.yaml
-# Windows 版配置模板：路径已适配 Windows，标签使用 host 模式
 
 # Runner 进程自身的日志配置（消息输出到 stderr）。
 log:
@@ -50,7 +49,10 @@ runner:
   # github_mirror 用于指定拉取 action 仓库时的 GitHub 镜像地址。
   github_mirror: '${GITEA_RUNNER_GITHUB_MIRROR:-}'
   # Runner 的标签用于决定它可以运行哪些任务，以及如何运行。
-  # Windows 版使用 host 模式，任务直接在容器内执行，无需 Docker-in-Docker。
+  # 如："macos-arm64:host" 或 "ubuntu-latest:docker://docker.gitea.com/runner-images:ubuntu-latest"
+  # 更多 Gitea 提供的镜像见 https://gitea.com/docker.gitea.com/runner-images 。
+  # 注册时如果为空，会提示输入标签。
+  # 执行 `daemon` 时如果为空，会使用 .runner 文件中的标签。
   labels: [ "${GITEA_RUNNER_LABELS//,/\",\"}" ]
 
 cache:
@@ -89,13 +91,13 @@ container:
     - '${GITEA_RUNNER_VALID_VOLUME_8:-}'
     - '${GITEA_RUNNER_VALID_VOLUME_9:-}'
   # 用指定的地址覆盖 docker 客户端主机。
-  # Windows 版不使用 Docker-in-Docker，留空即可。
+  # 如果为空，runner 会自动查找可用的 docker 主机。
   docker_host: '${GITEA_RUNNER_JOB_CONTAINER_DOCKER_HOST:-}'
   # 即使镜像已存在也强制拉取 docker 镜像
   force_pull: ${GITEA_RUNNER_JOB_CONTAINER_FORCE_PULL:-true}
   # 即使镜像已存在也强制重新构建 docker 镜像
   force_rebuild: ${GITEA_RUNNER_JOB_CONTAINER_FORCE_REBUILD:-false}
-  # 始终要求 docker 守护进程可达（Windows 版设为 false）
+  # 始终要求 docker 守护进程可达
   require_docker: ${GITEA_RUNNER_JOB_REQUIRE_DOCKER:-false}
   # 等待 docker 守护进程可达的超时时间
   docker_timeout: ${GITEA_RUNNER_JOB_CONTAINER_TIMEOUT:-0s}
