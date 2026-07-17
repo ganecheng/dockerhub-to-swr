@@ -1,0 +1,29 @@
+# escape=`
+
+# gitea-runner-flutter-windows
+# 在 gitea-runner-windows 基础镜像上叠加 Flutter SDK
+# VS Build Tools 和 NuGet 已由基础镜像 (windows-dev) 提供
+
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+
+SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+ARG FLUTTER_VERSION=3.44.2
+
+ENV FLUTTER_ROOT="C:\flutter" `
+    FLUTTER_GIT_URL="unknown source" `
+    PUB_CACHE="C:\pub-cache"
+
+WORKDIR "C:\app"
+
+# 将 Flutter/Dart 路径追加到系统 PATH（Git 等路径已由基础镜像设置）
+RUN [Environment]::SetEnvironmentVariable('PATH', "${env:PATH};${env:FLUTTER_ROOT}\bin;${env:FLUTTER_ROOT}\bin\cache\dart-sdk\bin\", 'Machine')
+
+# 复制模块化安装脚本并执行
+COPY gitea-runner-windows/modules/common.ps1 gitea-runner-windows/modules/flutter-windows.ps1 C:/tmp/
+
+RUN & 'C:\tmp\flutter-windows.ps1'; `
+    Remove-Item -Recurse -Force C:\tmp -ErrorAction SilentlyContinue
+
+ENV GITEA_RUNNER_LABELS_DEFAULT='windows-latest:host,windows-2022:host,flutter-windows:host'

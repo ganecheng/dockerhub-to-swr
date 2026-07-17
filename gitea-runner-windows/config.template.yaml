@@ -1,0 +1,113 @@
+# 基于 https://gitea.com/gitea/runner/src/tag/v1.0.2/internal/pkg/config/config.example.yaml
+# Windows 版配置模板：路径已适配 Windows，标签使用 host 模式
+
+# Runner 进程自身的日志配置（消息输出到 stderr）。
+log:
+  level: ${GITEA_RUNNER_LOG_LEVEL:-info}
+
+runner:
+  # 注册结果的存储位置。
+  file: '${GITEA_RUNNER_REGISTRATION_FILE:-C:\data\.runner}'
+  # 同一时间并发执行多少个任务。
+  capacity: ${GITEA_RUNNER_MAX_PARALLEL_JOBS:-1}
+  # 运行任务时注入的额外环境变量。
+  envs:
+    ${GITEA_RUNNER_ENV_VAR_1_NAME:-GITEA_RUNNER_ENV_VAR_1}: '${GITEA_RUNNER_ENV_VAR_1_VALUE:-}' # GITEA_RUNNER_ENV_VAR_1
+    ${GITEA_RUNNER_ENV_VAR_2_NAME:-GITEA_RUNNER_ENV_VAR_2}: '${GITEA_RUNNER_ENV_VAR_2_VALUE:-}' # GITEA_RUNNER_ENV_VAR_2
+    ${GITEA_RUNNER_ENV_VAR_3_NAME:-GITEA_RUNNER_ENV_VAR_3}: '${GITEA_RUNNER_ENV_VAR_3_VALUE:-}' # GITEA_RUNNER_ENV_VAR_3
+    ${GITEA_RUNNER_ENV_VAR_4_NAME:-GITEA_RUNNER_ENV_VAR_4}: '${GITEA_RUNNER_ENV_VAR_4_VALUE:-}' # GITEA_RUNNER_ENV_VAR_4
+    ${GITEA_RUNNER_ENV_VAR_5_NAME:-GITEA_RUNNER_ENV_VAR_5}: '${GITEA_RUNNER_ENV_VAR_5_VALUE:-}' # GITEA_RUNNER_ENV_VAR_5
+    ${GITEA_RUNNER_ENV_VAR_6_NAME:-GITEA_RUNNER_ENV_VAR_6}: '${GITEA_RUNNER_ENV_VAR_6_VALUE:-}' # GITEA_RUNNER_ENV_VAR_6
+    ${GITEA_RUNNER_ENV_VAR_7_NAME:-GITEA_RUNNER_ENV_VAR_7}: '${GITEA_RUNNER_ENV_VAR_7_VALUE:-}' # GITEA_RUNNER_ENV_VAR_7
+    ${GITEA_RUNNER_ENV_VAR_8_NAME:-GITEA_RUNNER_ENV_VAR_8}: '${GITEA_RUNNER_ENV_VAR_8_VALUE:-}' # GITEA_RUNNER_ENV_VAR_8
+    ${GITEA_RUNNER_ENV_VAR_9_NAME:-GITEA_RUNNER_ENV_VAR_9}: '${GITEA_RUNNER_ENV_VAR_9_VALUE:-}' # GITEA_RUNNER_ENV_VAR_9
+  # 从文件加载的额外环境变量。
+  env_file: '${GITEA_RUNNER_ENV_FILE:-C:\data\.env}'
+  # 任务完成超时时间。
+  timeout: '${GITEA_RUNNER_JOB_TIMEOUT:-3h}'
+  # Runner 关闭时等待运行中任务完成的最长时间。
+  shutdown_timeout: ${GITEA_RUNNER_SHUTDOWN_TIMEOUT:-0s}
+  # 是否跳过验证 Gitea 实例的 TLS 证书。
+  insecure: ${GITEA_INSTANCE_INSECURE:-false}
+  # 从 Gitea 实例获取任务的超时时间。
+  fetch_timeout: '${GITEA_RUNNER_FETCH_TIMEOUT:-5s}'
+  # 从 Gitea 实例获取任务的间隔时间。
+  fetch_interval: '${GITEA_RUNNER_FETCH_INTERVAL:-2s}'
+  # 从 Gitea 实例获取任务的最大间隔时间。
+  fetch_interval_max: '${GITEA_RUNNER_FETCH_INTERVAL_MAX:-2s}'
+  # 空闲时，清理超过此时长的过期 bind-workdir 任务目录。
+  workdir_cleanup_age: '${GITEA_RUNNER_WORKDIR_CLEANUP_AGE:-24h}'
+  # 空闲时清理过期 bind-workdir 的执行周期。
+  idle_cleanup_interval: '${GITEA_RUNNER_IDLE_CLEANUP_INTERVAL:-10m}'
+  # 向 Gitea 实例定期刷新日志的基本间隔。
+  log_report_interval: '${GITEA_RUNNER_LOG_REPORT_INTERVAL:-5s}'
+  # 单行日志等待发送的最大时间。
+  log_report_max_latency: '${GITEA_RUNNER_LOG_MAX_LATENCY:-3s}'
+  # 当缓冲区达到此行数时立即刷新日志。
+  log_report_batch_size: ${GITEA_RUNNER_BATCH_SIZE:-100}
+  # 向 Gitea 实例报告任务状态（步骤状态、计时）的间隔。
+  state_report_interval: '${GITEA_RUNNER_STATE_REPORT_INTERVAL:-5s}'
+  # github_mirror 用于指定拉取 action 仓库时的 GitHub 镜像地址。
+  github_mirror: '${GITEA_RUNNER_GITHUB_MIRROR:-}'
+  # Runner 的标签用于决定它可以运行哪些任务，以及如何运行。
+  # Windows 版使用 host 模式，任务直接在容器内执行，无需 Docker-in-Docker。
+  labels: [ "${GITEA_RUNNER_LABELS//,/\",\"}" ]
+
+cache:
+  # 启用缓存服务器以使用 actions/cache。
+  enabled: ${ACT_CACHE_SERVER_ENABLED:-true}
+  # 缓存数据的存储目录。
+  dir: '${ACT_CACHE_SERVER_DIR:-C:\data\cache\server}'
+  # 缓存服务器的主机地址。
+  host: '${ACT_CACHE_SERVER_HOST:-}'
+  # 缓存服务器的端口。
+  port: ${ACT_CACHE_SERVER_PORT:-0}
+  # 外部缓存服务器 URL。
+  external_server: '${ACT_CACHE_SERVER_EXTERNAL_URL:-}'
+  # runner 与外部缓存服务器之间的共享密钥。
+  external_secret: '${ACT_CACHE_SERVER_EXTERNAL_SECRET:-}'
+
+container:
+  # 指定容器连接的网络。
+  # Windows 容器默认使用 nat 网络。
+  network: '${GITEA_RUNNER_JOB_CONTAINER_NETWORK:-nat}'
+  # 启动任务容器时是否使用特权模式。
+  privileged: ${GITEA_RUNNER_JOB_CONTAINER_PRIVILEGED:-false}
+  # 容器启动时使用的其他选项。
+  options: '${GITEA_RUNNER_JOB_CONTAINER_OPTIONS:-}'
+  # 任务工作目录的父目录。
+  workdir_parent: ${GITEA_RUNNER_JOB_CONTAINER_WORKDIR_PARENT:-C:\workspace}
+  # 可以将卷挂载到容器中。支持 Glob 语法。
+  valid_volumes:
+    - '${GITEA_RUNNER_VALID_VOLUME_1:-}'
+    - '${GITEA_RUNNER_VALID_VOLUME_2:-}'
+    - '${GITEA_RUNNER_VALID_VOLUME_3:-}'
+    - '${GITEA_RUNNER_VALID_VOLUME_4:-}'
+    - '${GITEA_RUNNER_VALID_VOLUME_5:-}'
+    - '${GITEA_RUNNER_VALID_VOLUME_6:-}'
+    - '${GITEA_RUNNER_VALID_VOLUME_7:-}'
+    - '${GITEA_RUNNER_VALID_VOLUME_8:-}'
+    - '${GITEA_RUNNER_VALID_VOLUME_9:-}'
+  # 用指定的地址覆盖 docker 客户端主机。
+  # Windows 版不使用 Docker-in-Docker，留空即可。
+  docker_host: '${GITEA_RUNNER_JOB_CONTAINER_DOCKER_HOST:-}'
+  # 即使镜像已存在也强制拉取 docker 镜像
+  force_pull: ${GITEA_RUNNER_JOB_CONTAINER_FORCE_PULL:-true}
+  # 即使镜像已存在也强制重新构建 docker 镜像
+  force_rebuild: ${GITEA_RUNNER_JOB_CONTAINER_FORCE_REBUILD:-false}
+  # 始终要求 docker 守护进程可达（Windows 版设为 false）
+  require_docker: ${GITEA_RUNNER_JOB_REQUIRE_DOCKER:-false}
+  # 等待 docker 守护进程可达的超时时间
+  docker_timeout: ${GITEA_RUNNER_JOB_CONTAINER_TIMEOUT:-0s}
+  # 将工作区绑定到主机文件系统而非使用 Docker 卷。
+  bind_workdir: ${GITEA_RUNNER_JOB_CONTAINER_BIND_WORKDIR:-false}
+
+host:
+  # 任务工作目录的父目录。
+  workdir_parent: '${GITEA_RUNNER_HOST_WORKDIR_PARENT:-C:\data\cache\actions}'
+
+metrics:
+  # 启用 Prometheus 指标端点。
+  enabled: ${GITEA_RUNNER_METRICS_ENABLED:-false}
+  # 指标 HTTP 服务器的监听地址。
+  addr: '${GITEA_RUNNER_METRICS_ADDR:-127.0.0.1:9101}'
