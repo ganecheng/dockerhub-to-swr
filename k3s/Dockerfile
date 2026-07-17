@@ -1,5 +1,5 @@
 # 基础镜像：Ubuntu 26.04 (resolute)
-FROM ghcr.io/ganecheng/ubuntu:20260717_201227-x86_64
+FROM ghcr.io/ganecheng/ubuntu:20260717_210657-x86_64
 
 # 构建参数：k3s 版本号，留空时下载最新发布版二进制文件
 ARG K3S_VERSION='v1.34.9+k3s1'
