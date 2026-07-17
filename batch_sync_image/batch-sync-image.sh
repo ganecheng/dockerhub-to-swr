@@ -1,12 +1,11 @@
 #!/bin/bash
 
-# -e当命令发生错误的时候, 停止脚本的执行; -x把将要运行的命令用一个 + 标记之后显示出来
 set -ex
+
+target_registry="swr.cn-southwest-2.myhuaweicloud.com"
+target_repo="gsc-hub"
 
 list="batch_sync_image_list.txt"
 for i in $(cat ${list}); do
-    docker pull ${i}
-    docker tag ${i} swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/${i}
-    docker push swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/${i}
-    docker rmi ${i} swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/${i}
+    skopeo copy docker://${i} docker://${target_registry}/${target_repo}/${i}
 done
