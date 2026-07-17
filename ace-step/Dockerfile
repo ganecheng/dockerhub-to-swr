@@ -7,9 +7,6 @@ COPY ace-step/run.sh /run.sh
 COPY ace-step/code.sh /code.sh
 COPY ace-step/model_additional.sh /model_additional.sh
 
-# 设置时区
-ENV TZ=Asia/Shanghai
-
 # 设置全局命令
 ENV PATH="$PATH:/root/.local/bin"
 

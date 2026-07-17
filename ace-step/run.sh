@@ -29,10 +29,6 @@ fi
 
 # Let .pyc files be stored in one place
 export PYTHONPYCACHEPREFIX="/root/.cache/pycache"
-# Add above to PATH
-export PATH="${PATH}:/root/.local/bin"
-# Suppress [WARNING: Running pip as the 'root' user]
-export PIP_ROOT_USER_ACTION=ignore
 
 source .venv/bin/activate
 

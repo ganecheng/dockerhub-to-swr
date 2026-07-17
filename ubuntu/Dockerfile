@@ -10,6 +10,8 @@ ENV PIP_BREAK_SYSTEM_PACKAGES=1
 ENV PYTHONDONTWRITEBYTECODE=1
 # 强制 stdout/stderr 无缓冲输出，确保 docker logs 实时可见
 ENV PYTHONUNBUFFERED=1
+# 抑制 pip 以 root 用户运行时的警告输出
+ENV PIP_ROOT_USER_ACTION=ignore
 
 # 使用 bash 严格模式执行 RUN 指令（出错即停、禁止未定义变量、管道失败传递）
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
@@ -40,11 +42,16 @@ RUN <<EOF
   # 创建默认目录
   mkdir -pv /opt/cloud/{bin,logs,config,security,web,data,tmp}
 
-  # 支持ll命令, 启用颜色显示
+  # 支持 ll 命令, 启用颜色显示
   echo 'alias ls="ls --color=auto"' >> /etc/bash.bashrc
   echo 'alias l="ls -alh"' >> /etc/bash.bashrc
   echo 'alias ll="ls -alh"' >> /etc/bash.bashrc
   echo 'alias lll="ls -alh"' >> /etc/bash.bashrc
+  echo 'alias ..="cd .."' >> /etc/bash.bashrc
+  echo 'alias l="ls -alh"' >> /root/.bashrc
+  echo 'alias ll="ls -alh"' >> /root/.bashrc
+  echo 'alias lll="ls -alh"' >> /root/.bashrc
+  echo 'alias ..="cd .."' >> /root/.bashrc
 
   # 清理缓存和临时文件，减小镜像体积
   rm -rf /var/cache/{apt,debconf} /var/lib/apt/lists/* /var/log/{apt,alternatives.log,bootstrap.log,dpkg.log} /tmp/* /var/tmp/*
