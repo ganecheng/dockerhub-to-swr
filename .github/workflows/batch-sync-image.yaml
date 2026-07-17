@@ -1,4 +1,4 @@
-name: sync-image
+name: batch-sync-image
 
 on:
   workflow_dispatch:
