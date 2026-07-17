@@ -1,4 +1,4 @@
-FROM ubuntu:resolute-20260610
+FROM ghcr.io/ganecheng/ubuntu:20260717_212628-x86_64
 
 COPY indextts/os_init.sh /os_init.sh
 COPY indextts/os_clean.sh /os_clean.sh
@@ -8,9 +8,6 @@ COPY indextts/code.sh /code.sh
 COPY indextts/model_indextts.sh /model_indextts.sh
 COPY indextts/model_additional.sh /model_additional.sh
 COPY indextts/restapi.py /restapi.py
-
-# 设置时区
-ENV TZ=Asia/Shanghai
 
 # 设置全局命令
 ENV PATH="$PATH:/root/.local/bin"
