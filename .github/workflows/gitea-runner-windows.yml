@@ -72,8 +72,9 @@ jobs:
           pwd
           df -h
 
-          skopeo copy "docker-daemon:${swr_base}" "docker://${swr_base}"
-          skopeo copy "docker-daemon:${ghcr_base}" "docker://${ghcr_base}"
+          mkdir -p /d/tmp
+          skopeo copy --tmpdir D:/tmp "docker-daemon:${swr_base}" "docker://${swr_base}"
+          skopeo copy --tmpdir D:/tmp "docker-daemon:${ghcr_base}" "docker://${ghcr_base}"
 
   build_extensions:
     runs-on: windows-2025
@@ -136,5 +137,6 @@ jobs:
           pwd
           df -h
 
-          skopeo copy "docker-daemon:${swr_ext}" "docker://${swr_ext}"
-          skopeo copy "docker-daemon:${ghcr_ext}" "docker://${ghcr_ext}"
+          mkdir -p /d/tmp
+          skopeo copy --tmpdir D:/tmp "docker-daemon:${swr_ext}" "docker://${swr_ext}"
+          skopeo copy --tmpdir D:/tmp "docker-daemon:${ghcr_ext}" "docker://${ghcr_ext}"

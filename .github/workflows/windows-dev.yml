@@ -72,5 +72,6 @@ jobs:
           pwd
           df -h
 
-          skopeo copy "docker-daemon:${swr_image_url}" "docker://${swr_image_url}"
-          skopeo copy "docker-daemon:${ghcr_image_url}" "docker://${ghcr_image_url}"
+          mkdir -p /d/tmp
+          skopeo copy --tmpdir D:/tmp "docker-daemon:${swr_image_url}" "docker://${swr_image_url}"
+          skopeo copy --tmpdir D:/tmp "docker-daemon:${ghcr_image_url}" "docker://${ghcr_image_url}"
