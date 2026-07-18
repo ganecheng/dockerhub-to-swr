@@ -55,6 +55,29 @@ jobs:
           mkdir -p "${policy_dir}"
           echo '{"default":[{"type":"insecureAcceptAnything"}]}' > "${policy_dir}/policy.json"
 
+      - name: Start local registry
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # 启动本地 registry 容器作为中转，避免 skopeo docker-daemon 源导出大镜像 tar
+          # registry:2 是 Linux 镜像，GitHub Actions Windows runner 的 Docker Desktop
+          # 默认 Linux 容器模式可运行
+          docker run -d -p 5000:5000 --name registry registry:2
+
+          # 等待 registry 就绪
+          for i in $(seq 1 30); do
+            if curl -sf http://localhost:5000/v2/ >/dev/null 2>&1; then
+              echo "Local registry is ready"
+              exit 0
+            fi
+            echo "Waiting for local registry to be ready... ($i/30)"
+            sleep 1
+          done
+          echo "Local registry failed to start"
+          docker logs registry
+          exit 1
+
       - name: build container image
         shell: bash
         run: |
@@ -62,16 +85,18 @@ jobs:
 
           swr_image_url="swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/flutter-windows:${current_datetime}-windows-x86_64"
           ghcr_image_url="ghcr.io/${current_user}/flutter-windows:${current_datetime}-windows-x86_64"
+          local_image_url="localhost:5000/flutter-windows:${current_datetime}-windows-x86_64"
 
-          docker build -f flutter/windows/Dockerfile --no-cache -t "${swr_image_url}" .
+          docker build -f flutter/windows/Dockerfile --no-cache -t "${local_image_url}" .
+          docker push "${local_image_url}"
 
-          docker tag "${swr_image_url}" "${ghcr_image_url}"
+          docker tag "${local_image_url}" "${swr_image_url}"
+          docker tag "${local_image_url}" "${ghcr_image_url}"
 
           docker images
-          docker history "${swr_image_url}"
+          docker history "${local_image_url}"
           pwd
           df -h
 
-          mkdir -p /d/tmp
-          skopeo copy --tmpdir D:/tmp "docker-daemon:${swr_image_url}" "docker://${swr_image_url}"
-          skopeo copy --tmpdir D:/tmp "docker-daemon:${ghcr_image_url}" "docker://${ghcr_image_url}"
+          skopeo copy --src-tls-verify=false "docker://${local_image_url}" "docker://${swr_image_url}"
+          skopeo copy --src-tls-verify=false "docker://${local_image_url}" "docker://${ghcr_image_url}"
