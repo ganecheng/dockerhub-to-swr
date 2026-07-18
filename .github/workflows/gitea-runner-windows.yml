@@ -45,9 +45,11 @@ jobs:
         shell: powershell
         run: docker login -u "cn-southwest-2@$env:HUAWEICLOUD_IAM_AK" -p "$env:HUAWEICLOUD_IAM_SK" swr.cn-southwest-2.myhuaweicloud.com
 
-      - name: Install skopeo
+      - name: Download skopeo
         shell: powershell
-        run: choco install skopeo -y
+        run: |
+          curl.exe -LO https://github.com/passcod/winskopeo/releases/latest/download/skopeo.exe
+          Add-Content -Path $env:GITHUB_PATH -Value $PWD
 
       - name: build and push base image
         shell: powershell
@@ -93,6 +95,12 @@ jobs:
       - name: Login to SWR
         shell: powershell
         run: docker login -u "cn-southwest-2@$env:HUAWEICLOUD_IAM_AK" -p "$env:HUAWEICLOUD_IAM_SK" swr.cn-southwest-2.myhuaweicloud.com
+
+      - name: Download skopeo
+        shell: powershell
+        run: |
+          curl.exe -LO https://github.com/passcod/winskopeo/releases/latest/download/skopeo.exe
+          Add-Content -Path $env:GITHUB_PATH -Value $PWD
 
       - name: build and push extension image
         shell: powershell
