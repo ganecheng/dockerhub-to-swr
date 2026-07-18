@@ -69,8 +69,8 @@ jobs:
           pwd
           df -h
 
-          skopeo copy docker-daemon:${swr_base} docker://${swr_base}
-          skopeo copy docker-daemon:${ghcr_base} docker://${ghcr_base}
+          docker push ${swr_base}
+          docker push ${ghcr_base}
 
   build_extensions:
     runs-on: ubuntu-26.04
@@ -125,5 +125,5 @@ jobs:
           pwd
           df -h
 
-          skopeo copy docker-daemon:${swr_ext} docker://${swr_ext}
-          skopeo copy docker-daemon:${ghcr_ext} docker://${ghcr_ext}
+          docker push ${swr_ext}
+          docker push ${ghcr_ext}
