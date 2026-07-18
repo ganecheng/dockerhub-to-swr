@@ -15,7 +15,9 @@ jobs:
       - name: git checkout
         uses: actions/checkout@v6
 
+      - name: Login to SWR
+        run: docker login -u cn-southwest-2@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.cn-southwest-2.myhuaweicloud.com
+
       - name: DockerHub to SWR
         run: |
-          docker login -u cn-southwest-2@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.cn-southwest-2.myhuaweicloud.com
           sh batch_sync_image/batch-sync-image.sh

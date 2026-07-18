@@ -51,9 +51,11 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Login to SWR
+        run: docker login -u cn-southwest-2@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.cn-southwest-2.myhuaweicloud.com
+
       - name: build container image
         run: |
-          docker login -u cn-southwest-2@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.cn-southwest-2.myhuaweicloud.com
           set -ex
           
           swr_image_url=swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/comfyui:${current_datetime}-x86_64
