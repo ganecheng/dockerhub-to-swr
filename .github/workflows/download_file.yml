@@ -20,6 +20,11 @@ jobs:
       - name: git checkout
         uses: actions/checkout@v6
 
+      - name: Set up Docker
+        uses: docker/setup-docker-action@v5
+        with:
+          version: 'v28.5.2'
+
       - name: Login to SWR
         run: docker login -u cn-southwest-2@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.cn-southwest-2.myhuaweicloud.com
 

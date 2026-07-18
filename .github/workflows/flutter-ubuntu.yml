@@ -30,6 +30,11 @@ jobs:
       current_datetime: ${{ needs.main_job.outputs.current_datetime }}
       current_user: ${{ needs.main_job.outputs.current_user }}
     steps:
+      - name: Set up Docker
+        uses: docker/setup-docker-action@v5
+        with:
+          version: 'v28.5.2'
+
       - name: clean disk
         run: |
           set -exuo pipefail
