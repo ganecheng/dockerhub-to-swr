@@ -18,7 +18,9 @@ ENV FLUTTER_ROOT="C:\flutter" `
 WORKDIR "C:\app"
 
 # 将 Flutter/Dart 路径追加到系统 PATH（Git 等路径已由基础镜像设置）
-RUN [Environment]::SetEnvironmentVariable('PATH', "${env:PATH};${env:FLUTTER_ROOT}\bin;${env:FLUTTER_ROOT}\bin\cache\dart-sdk\bin\", 'Machine')
+# 注意：含变量展开的字符串必须使用 \"...\" 转义双引号，否则 Docker SHELL
+# 形式调用 powershell 会剥离双引号，导致 ';' 被误解析为语句分隔符
+RUN [Environment]::SetEnvironmentVariable('PATH', \"${env:PATH};${env:FLUTTER_ROOT}\bin;${env:FLUTTER_ROOT}\bin\cache\dart-sdk\bin\", 'Machine')
 
 # 复制模块化安装脚本并执行
 COPY gitea-runner-windows/modules/common.ps1 gitea-runner-windows/modules/flutter-windows.ps1 C:/tmp/

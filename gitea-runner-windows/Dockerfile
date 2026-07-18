@@ -11,22 +11,25 @@ ARG NODE_VERSION=24.18.0
 
 # 安装 Node.js（GitHub Actions 运行时依赖）
 # 基础镜像已包含 Git、VS Build Tools、NuGet，无需重复安装
-RUN $nodeDir = "node-v${env:NODE_VERSION}-win-x64"; `
-    $url = "https://nodejs.org/dist/v${env:NODE_VERSION}/${nodeDir}.zip"; `
+# 注意：需要变量展开的字符串必须使用 \"...\" 转义双引号，
+# 否则 Docker SHELL 形式调用 powershell 会剥离双引号，
+# 导致 PowerShell 将 ${env:PATH};C:\node 中的 ';' 误解析为语句分隔符
+RUN $nodeDir = \"node-v${env:NODE_VERSION}-win-x64\"; `
+    $url = \"https://nodejs.org/dist/v${env:NODE_VERSION}/${nodeDir}.zip\"; `
     Invoke-WebRequest -Uri $url -OutFile C:\node.zip; `
     Expand-Archive -Path C:\node.zip -DestinationPath C:\ -Force; `
-    Rename-Item "C:\${nodeDir}" 'node' -Force; `
+    Rename-Item \"C:\${nodeDir}\" 'node' -Force; `
     Remove-Item C:\node.zip -Force; `
-    [Environment]::SetEnvironmentVariable('PATH', "${env:PATH};C:\node", 'Machine'); `
+    [Environment]::SetEnvironmentVariable('PATH', \"${env:PATH};C:\node\", 'Machine'); `
     $env:PATH += ';C:\node'; `
     node --version; `
     npm --version
 
 # 下载并安装 Gitea Runner
 RUN New-Item -ItemType Directory -Path 'C:\opt\bin' -Force | Out-Null; `
-    $url = "https://gitea.com/gitea/runner/releases/download/v${env:GITEA_RUNNER_VERSION}/gitea-runner-${env:GITEA_RUNNER_VERSION}-windows-amd64.exe"; `
+    $url = \"https://gitea.com/gitea/runner/releases/download/v${env:GITEA_RUNNER_VERSION}/gitea-runner-${env:GITEA_RUNNER_VERSION}-windows-amd64.exe\"; `
     Invoke-WebRequest -Uri $url -OutFile 'C:\opt\bin\gitea-runner.exe'; `
-    [Environment]::SetEnvironmentVariable('PATH', "${env:PATH};C:\opt\bin", 'Machine'); `
+    [Environment]::SetEnvironmentVariable('PATH', \"${env:PATH};C:\opt\bin\", 'Machine'); `
     $env:PATH += ';C:\opt\bin'; `
     gitea-runner --version
 
