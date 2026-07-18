@@ -106,7 +106,11 @@ function Render-ConfigTemplate {
         [string]$OutputFile
     )
 
-    $content = Get-Content $TemplateFile -Raw
+    # Windows PowerShell 5.1 的 Get-Content 默认按 ANSI(GBK) 解码，
+    # 会把无 BOM 的 UTF-8 模板中的中文误读为乱码字节，再写回 yaml 后
+    # 导致 Go yaml 解析器报 "control characters are not allowed"。
+    # 显式指定 UTF8 让中文等非 ASCII 字符正确解码。
+    $content = Get-Content $TemplateFile -Raw -Encoding UTF8
 
     # Step 1: 处理 ${VAR//old/new} 模式（bash 风格字符串替换）
     $transformRegex = [regex]'\$\{(\w+)//([^/]+)/([^}]*)\}'
@@ -135,7 +139,12 @@ function Render-ConfigTemplate {
         $content = $content.Substring(0, $m.Index) + $replacement + $content.Substring($m.Index + $m.Length)
     }
 
-    $content | Set-Content $OutputFile -Encoding UTF8 -NoNewline
+    # 使用 .NET API 写入 UTF-8 无 BOM 文件。
+    # Windows PowerShell 5.1 的 Set-Content -Encoding UTF8 会写入 3 字节 BOM (EF BB BF)，
+    # gitea-runner 使用的 Go yaml.v3 解析器会把 BOM 当作控制字符拒绝：
+    #   yaml: control characters are not allowed
+    $utf8NoBom = New-Object System.Text.UTF8Encoding $false
+    [System.IO.File]::WriteAllText($OutputFile, $content, $utf8NoBom)
 }
 
 # 若未指定 runner 标签, 则使用默认标签
