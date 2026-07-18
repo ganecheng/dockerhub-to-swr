@@ -35,7 +35,7 @@ RUN New-Item -ItemType Directory -Path 'C:\opt\bin' -Force | Out-Null; `
 
 # 默认环境变量：均可在 docker run 时覆盖
 ENV `
-    INIT_PS1_FILE='' `
+    INIT_SH_FILE='' `
     CA_CERT_DIR='C:\certs' `
     NPM_REGISTRY='https://mirrors.huaweicloud.com/repository/npm/' `
     GITEA_RUNNER_CONFIG_TEMPLATE_FILE='C:\opt\config.template.yaml' `
@@ -47,11 +47,13 @@ ENV `
     GITEA_RUNNER_TIMEOUT_MINUTES=60
 
 # 复制启动脚本和配置模板到镜像
-COPY gitea-runner-windows/run.ps1 C:/opt/run.ps1
+# 基础镜像 windows-dev 提供完整版 Git for Windows（含 Git Bash），
+# 在此用于执行 run.sh 替代原 PowerShell 入口脚本
+COPY gitea-runner-windows/run.sh C:/opt/run.sh
 COPY gitea-runner-windows/config.template.yaml C:/opt/config.template.yaml
 
 # Runner 数据卷（注册令牌、配置等）
 VOLUME C:/data
 
-# 默认启动命令
-CMD ["powershell", "-ExecutionPolicy", "Bypass", "-File", "C:\\opt\\run.ps1"]
+# 默认启动命令：通过 Git Bash 执行 run.sh
+CMD ["C:\\Program Files\\Git\\bin\\bash.exe", "/c/opt/run.sh"]

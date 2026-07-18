@@ -45,17 +45,33 @@ RUN $tempCfg = \"$env:TEMP\secpol.cfg\"; `
     secedit /configure /db $tempDb /cfg $tempCfg /areas USER_RIGHTS /quiet; `
     Remove-Item $tempCfg, $tempDb -Force -ErrorAction SilentlyContinue
 
-# 安装 MinGit（直接下载）
-RUN $installer = \"MinGit-2.54.0-busybox-64-bit.zip\"; `
+# 安装完整版 Git for Windows（含 Git Bash / MSYS2 运行时与常用 Unix 工具）
+# 完整版相比 MinGit 多出 bash.exe 与 awk/sed/grep/curl 等 Unix 工具，
+# 也提供 Git Bash 终端，使后续安装/启动脚本可改用 Git Bash 执行。
+# 使用 Inno Setup 静默安装参数：/VERYSILENT 不显示 UI，/NORESTART 不重启，
+# /SP- 抑制"将安装该程序"提示，/DIR=... 指定安装目录（与 GIT_INSTALLATION_PATH 对齐）。
+RUN $installer = \"Git-2.54.0-64-bit.exe\"; `
     $url = \"https://github.com/git-for-windows/git/releases/download/v2.54.0.windows.1/${installer}\"; `
     Invoke-WebRequest -Uri \"$url\" -OutFile \"$installer\"; `
-    Expand-Archive -Path \"$installer\" -DestinationPath \"$env:GIT_INSTALLATION_PATH\"; `
-    Remove-Item -Path \"$installer\"
+    $installArgs = @( `
+      '/VERYSILENT', '/NORESTART', '/NOCANCEL', '/SP-', `
+      '/CLOSEAPPLICATIONS', '/RESTARTAPPLICATIONS', `
+      \"/DIR=${env:GIT_INSTALLATION_PATH}\" `
+    ); `
+    $proc = Start-Process -FilePath \"$installer\" -ArgumentList $installArgs -Wait -PassThru -NoNewWindow; `
+    if ($proc.ExitCode -ne 0) { `
+      Get-ChildItem $env:TEMP -Filter 'Install*.log' -ErrorAction SilentlyContinue | ForEach-Object { `
+        Write-Host \"========== $($_.FullName) ==========\"; Get-Content $_.FullName -ErrorAction SilentlyContinue `
+      }; `
+      throw \"Git for Windows 安装失败，退出码: $($proc.ExitCode)\" `
+    }; `
+    Remove-Item -Path \"$installer\" -Force
 
 # 设置系统 PATH（仅 Git 路径，不含 Flutter）
+# 完整版 Git for Windows 的 bin\bash.exe 与 usr\bin 下的 MSYS2 工具均通过此 PATH 暴露
 RUN [Environment]::SetEnvironmentVariable('PATH', \"${env:PATH};${env:GIT_INSTALLATION_PATH}\cmd;${env:GIT_INSTALLATION_PATH}\usr\bin\", 'Machine')
 
-# 修复 MinGit 的循环引用问题
+# 修复 Git for Windows 的循环引用问题（MinGit 与完整版均可能触发）
 RUN $env:GIT_CONFIG_NOSYSTEM=1; git config --system --unset-all include.path
 
 # 下载并安装 VS Build Tools 组件（合并为单层，避免分层后体积膨胀）
