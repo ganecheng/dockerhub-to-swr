@@ -21,11 +21,11 @@ WORKDIR "C:\app"
 RUN [Environment]::SetEnvironmentVariable('PATH', \"${env:PATH};${env:FLUTTER_ROOT}\bin;${env:FLUTTER_ROOT}\bin\cache\dart-sdk\bin\", 'Machine')
 
 # 模块化安装脚本（Git Bash 版）
-COPY gitea-runner-windows/modules/common.sh gitea-runner-windows/modules/flutter-windows.sh C:/tmp/
+COPY gitea-runner-windows/modules/common.sh gitea-runner-windows/modules/flutter.sh C:/tmp/
 
 # 通过基础镜像自带的 Git Bash 执行 .sh 安装脚本
 # 注意：含空格的 Windows 可执行路径需用 \" 转义，避免 Docker SHELL 形式剥离引号
-RUN & \"C:\Program Files\Git\bin\bash.exe\" /c/tmp/flutter-windows.sh; `
+RUN & \"C:\Program Files\Git\bin\bash.exe\" /c/tmp/flutter.sh; `
     Remove-Item -Recurse -Force C:\tmp -ErrorAction SilentlyContinue
 
-ENV GITEA_RUNNER_LABELS_DEFAULT='windows-latest,windows-2022,flutter-windows'
+ENV GITEA_RUNNER_LABELS_DEFAULT='windows-latest,windows-2022,windows-flutter'

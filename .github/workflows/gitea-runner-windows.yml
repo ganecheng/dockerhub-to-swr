@@ -75,7 +75,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        extension: [ flutter-windows ]
+        extension: [ flutter ]
     steps:
       - name: git checkout
         uses: actions/checkout@v6
