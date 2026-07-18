@@ -25,6 +25,7 @@ jobs:
   windows_container_image_build:
     runs-on: windows-2025
     needs: main_job
+    timeout-minutes: 120
     env:
       TZ: Asia/Shanghai
       current_datetime: ${{ needs.main_job.outputs.current_datetime }}
