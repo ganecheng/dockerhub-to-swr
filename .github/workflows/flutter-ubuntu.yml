@@ -19,7 +19,7 @@ jobs:
       - name: generate global_env
         id: global_env
         run: |
-          set -ex
+          set -exuo pipefail
           echo "current_datetime=$(date +'%Y%m%d_%H%M%S')" >> $GITHUB_OUTPUT
 
   ubuntu_container_image_build:
@@ -32,7 +32,7 @@ jobs:
     steps:
       - name: clean disk
         run: |
-          set -ex
+          set -exuo pipefail
           pwd
           id
           uname -a
@@ -56,7 +56,7 @@ jobs:
 
       - name: build container image
         run: |
-          set -ex
+          set -exuo pipefail
 
           swr_image_url=swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/flutter:${current_datetime}-ubuntu-x86_64
           ghcr_image_url=ghcr.io/${current_user}/flutter:${current_datetime}-ubuntu-x86_64

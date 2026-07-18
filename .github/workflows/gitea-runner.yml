@@ -19,7 +19,7 @@ jobs:
       - name: generate global_env
         id: global_env
         run: |
-          set -ex
+          set -exuo pipefail
           echo "current_datetime=$(date +'%Y%m%d_%H%M%S')" >> $GITHUB_OUTPUT
 
   build_base:
@@ -33,7 +33,7 @@ jobs:
     steps:
       - name: clean disk
         run: |
-          set -ex
+          set -exuo pipefail
           pwd; id; uname -a; docker info; docker images; df -h
 
       - name: git checkout

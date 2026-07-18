@@ -25,7 +25,7 @@ jobs:
 
       - name: welcome
         run: |
-          set -ex
+          set -exuo pipefail
           gh issue comment ${{ github.event.issue.number }} -b "Hi @${{ github.event.issue.user.login }}, 正在处理您的issue...<br><br>[详情请查看](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
 
       - name: clean disk
@@ -37,27 +37,27 @@ jobs:
       - name: add label sync-image
         if: contains(github.event.issue.body, 'sync-image')
         run: |
-          set -ex
+          set -exuo pipefail
           gh issue edit ${{ github.event.issue.number }} --add-label "sync-image"
           echo -n " sync-image" >> label.txt
 
       - name: add label x86_64
         if: contains(github.event.issue.body, 'x86_64')
         run: |
-          set -ex
+          set -exuo pipefail
           gh issue edit ${{ github.event.issue.number }} --add-label "x86_64"
           echo -n " x86_64" >> label.txt
 
       - name: add label aarch64
         if: contains(github.event.issue.body, 'aarch64')
         run: |
-          set -ex
+          set -exuo pipefail
           gh issue edit ${{ github.event.issue.number }} --add-label "aarch64"
           echo -n " aarch64" >> label.txt
 
       - name: check sync condition
         run: |
-          set -ex
+          set -exuo pipefail
           sleep 3s
           
           issue_author="${{ github.event.issue.user.login }}"
@@ -86,7 +86,7 @@ jobs:
       - name: DockerHub to SWR x86_64
         if: contains(github.event.issue.body, 'x86_64')
         run: |
-          set -ex
+          set -exuo pipefail
           
           images="${{ github.event.issue.title }}"
           IFS=',' read -r -a image_array <<< "$images"
@@ -103,7 +103,7 @@ jobs:
       - name: DockerHub to SWR aarch64
         if: contains(github.event.issue.body, 'aarch64')
         run: |
-          set -ex
+          set -exuo pipefail
           
           images="${{ github.event.issue.title }}"
           IFS=',' read -r -a image_array <<< "$images"
@@ -119,7 +119,7 @@ jobs:
 
       - name: Offline images tar gz
         run: |
-          set -ex
+          set -exuo pipefail
           docker save $(cat images.txt) | gzip > images.tar.gz
 
       - name: Upload artifact

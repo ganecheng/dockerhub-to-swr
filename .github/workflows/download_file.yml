@@ -25,7 +25,7 @@ jobs:
 
       - name: DockerHub to SWR
         run: |
-          set -ex
+          set -exuo pipefail
           
           images="${{ github.event.inputs.download_file }}"
           curl -o file ${images}
