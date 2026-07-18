@@ -59,16 +59,16 @@ jobs:
         run: |
           set -exuo pipefail
 
-          artifact_image_url=swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/dumbproxy:${current_datetime}-x86_64
+          swr_image_url=swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/dumbproxy:${current_datetime}-x86_64
           ghcr_image_url=ghcr.io/${current_user}/dumbproxy:${current_datetime}-x86_64
 
-          docker build -f dumbproxy/Dockerfile --no-cache --output type=docker -t ${artifact_image_url} .
-          docker tag ${artifact_image_url} ${ghcr_image_url}
+          docker build -f dumbproxy/Dockerfile --no-cache --output type=docker -t ${swr_image_url} .
+          docker tag ${swr_image_url} ${ghcr_image_url}
 
           docker images
-          docker history ${artifact_image_url}
+          docker history ${swr_image_url}
           pwd
           df -h
 
-          docker push ${artifact_image_url}
-          docker push ${ghcr_image_url}
+          skopeo copy docker-daemon:${swr_image_url} docker://${swr_image_url}
+          skopeo copy docker-daemon:${ghcr_image_url} docker://${ghcr_image_url}
