@@ -41,7 +41,7 @@ RUN $installer = \"PowerShell-7.4.7-win-x64.msi\"; `
     Remove-Item $installer -Force
 
 # 切换 SHELL 到 PowerShell 7，后续 RUN 全局改由 pwsh 执行
-SHELL [\"pwsh\", \"-NoLogo\", \"-NoProfile\", \"-Command\", \"$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';\"]
+SHELL ["pwsh", "-NoLogo", "-NoProfile", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
 # 授予 ContainerAdministrator 创建符号链接的权限
 RUN $tempCfg = \"$env:TEMP\secpol.cfg\"; `
