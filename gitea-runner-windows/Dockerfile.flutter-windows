@@ -1,13 +1,11 @@
 # escape=`
 
-# gitea-runner-flutter-windows
-# 在 gitea-runner-windows 基础镜像上叠加 Flutter SDK
-# VS Build Tools 和 NuGet 已由基础镜像 (windows-dev) 提供
+# 基于 gitea-runner-windows 叠加 Flutter SDK
 
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE}
 
-SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+SHELL ["pwsh", "-NoLogo", "-NoProfile", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
 ARG FLUTTER_VERSION=3.44.2
 
@@ -17,17 +15,16 @@ ENV FLUTTER_ROOT="C:\flutter" `
 
 WORKDIR "C:\app"
 
-# 将 Flutter/Dart 路径追加到系统 PATH（Git 等路径已由基础镜像设置）
-# 注意：含变量展开的字符串必须使用 \"...\" 转义双引号，否则 Docker SHELL
-# 形式调用 powershell 会剥离双引号，导致 ';' 被误解析为语句分隔符
+# 追加 Flutter / Dart 到系统 PATH
+# 注意：含变量展开的字符串必须用 \"...\" 转义双引号，否则 Docker SHELL 形式调用
+# pwsh 会剥离引号，使 ';' 被误解析为语句分隔符
 RUN [Environment]::SetEnvironmentVariable('PATH', \"${env:PATH};${env:FLUTTER_ROOT}\bin;${env:FLUTTER_ROOT}\bin\cache\dart-sdk\bin\", 'Machine')
 
-# 复制模块化安装脚本（Git Bash 版）并执行
+# 模块化安装脚本（Git Bash 版）
 COPY gitea-runner-windows/modules/common.sh gitea-runner-windows/modules/flutter-windows.sh C:/tmp/
 
-# 基础镜像 windows-dev 已提供完整版 Git for Windows（含 Git Bash），
-# 在此前提下通过 bash 执行 .sh 安装脚本，再清理临时目录
-# 注意：含空格的 Windows 可执行路径需要用 \" 转义，避免 Docker SHELL 形式剥离引号
+# 通过基础镜像自带的 Git Bash 执行 .sh 安装脚本
+# 注意：含空格的 Windows 可执行路径需用 \" 转义，避免 Docker SHELL 形式剥离引号
 RUN & \"C:\Program Files\Git\bin\bash.exe\" /c/tmp/flutter-windows.sh; `
     Remove-Item -Recurse -Force C:\tmp -ErrorAction SilentlyContinue
 
