@@ -61,10 +61,11 @@ jobs:
           
           docker history ${swr_base}
           docker images
-          
+          pwd
+          df -h
+
           skopeo copy docker-daemon:${swr_base} docker://${swr_base}
           skopeo copy docker-daemon:${ghcr_base} docker://${ghcr_base}
-          df -h
 
   build_extensions:
     runs-on: ubuntu-26.04
@@ -111,9 +112,8 @@ jobs:
           
           docker history ${swr_ext}
           docker images
-          
-          skopeo copy docker-daemon:${swr_ext} docker://${swr_ext}
-          skopeo copy docker-daemon:${ghcr_ext} docker://${ghcr_ext}
-
+          pwd
           df -h
 
+          skopeo copy docker-daemon:${swr_ext} docker://${swr_ext}
+          skopeo copy docker-daemon:${ghcr_ext} docker://${ghcr_ext}

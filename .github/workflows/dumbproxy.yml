@@ -34,13 +34,7 @@ jobs:
       - name: clean disk
         run: |
           set -exuo pipefail
-          pwd
-          id
-          uname -a
-          docker info
-          docker images
-          df -h
-          docker images
+          pwd; id; uname -a; docker info; docker images; df -h
 
       - name: git checkout
         uses: actions/checkout@v6

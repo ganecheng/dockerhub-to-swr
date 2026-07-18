@@ -55,8 +55,8 @@ jobs:
 
           docker images
           docker history ${swr_image_url}
-          df -h
           pwd
+          df -h
 
           skopeo copy docker-daemon:${swr_image_url} docker://${swr_image_url}
           skopeo copy docker-daemon:${ghcr_image_url} docker://${ghcr_image_url}

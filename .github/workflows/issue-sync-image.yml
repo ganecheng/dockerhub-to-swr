@@ -30,9 +30,8 @@ jobs:
 
       - name: clean disk
         run: |
-          uname -a
-          docker images
-          df -h
+          set -exuo pipefail
+          pwd; id; uname -a; docker info; docker images; df -h
 
       - name: add label sync-image
         if: contains(github.event.issue.body, 'sync-image')
