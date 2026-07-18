@@ -45,17 +45,6 @@ jobs:
         shell: bash
         run: docker login -u "cn-southwest-2@${HUAWEICLOUD_IAM_AK}" -p "${HUAWEICLOUD_IAM_SK}" swr.cn-southwest-2.myhuaweicloud.com
 
-      - name: Download skopeo
-        shell: bash
-        run: |
-          curl.exe -LO https://github.com/passcod/winskopeo/releases/latest/download/skopeo.exe
-          echo "$(pwd -W)" >> "${GITHUB_PATH}"
-
-          # skopeo 在 Windows 上需要 policy.json 信任策略文件
-          policy_dir="${USERPROFILE}/AppData/Roaming/containers"
-          mkdir -p "${policy_dir}"
-          echo '{"default":[{"type":"insecureAcceptAnything"}]}' > "${policy_dir}/policy.json"
-
       - name: build and push base image
         shell: bash
         run: |
@@ -72,9 +61,8 @@ jobs:
           pwd
           df -h
 
-          mkdir -p /d/tmp
-          skopeo copy --tmpdir D:/tmp "docker-daemon:${swr_base}" "docker://${swr_base}"
-          skopeo copy --tmpdir D:/tmp "docker-daemon:${ghcr_base}" "docker://${ghcr_base}"
+          docker push "${swr_base}"
+          docker push "${ghcr_base}"
 
   build_extensions:
     runs-on: windows-2025
@@ -103,17 +91,6 @@ jobs:
         shell: bash
         run: docker login -u "cn-southwest-2@${HUAWEICLOUD_IAM_AK}" -p "${HUAWEICLOUD_IAM_SK}" swr.cn-southwest-2.myhuaweicloud.com
 
-      - name: Download skopeo
-        shell: bash
-        run: |
-          curl.exe -LO https://github.com/passcod/winskopeo/releases/latest/download/skopeo.exe
-          echo "$(pwd -W)" >> "${GITHUB_PATH}"
-
-          # skopeo 在 Windows 上需要 policy.json 信任策略文件
-          policy_dir="${USERPROFILE}/AppData/Roaming/containers"
-          mkdir -p "${policy_dir}"
-          echo '{"default":[{"type":"insecureAcceptAnything"}]}' > "${policy_dir}/policy.json"
-
       - name: build and push extension image
         shell: bash
         run: |
@@ -137,6 +114,5 @@ jobs:
           pwd
           df -h
 
-          mkdir -p /d/tmp
-          skopeo copy --tmpdir D:/tmp "docker-daemon:${swr_ext}" "docker://${swr_ext}"
-          skopeo copy --tmpdir D:/tmp "docker-daemon:${ghcr_ext}" "docker://${ghcr_ext}"
+          docker push "${swr_ext}"
+          docker push "${ghcr_ext}"

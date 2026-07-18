@@ -44,17 +44,6 @@ jobs:
         shell: bash
         run: docker login -u "cn-southwest-2@${HUAWEICLOUD_IAM_AK}" -p "${HUAWEICLOUD_IAM_SK}" swr.cn-southwest-2.myhuaweicloud.com
 
-      - name: Download skopeo
-        shell: bash
-        run: |
-          curl.exe -LO https://github.com/passcod/winskopeo/releases/latest/download/skopeo.exe
-          echo "$(pwd -W)" >> "${GITHUB_PATH}"
-
-          # skopeo 在 Windows 上需要 policy.json 信任策略文件
-          policy_dir="${USERPROFILE}/AppData/Roaming/containers"
-          mkdir -p "${policy_dir}"
-          echo '{"default":[{"type":"insecureAcceptAnything"}]}' > "${policy_dir}/policy.json"
-
       - name: build container image
         shell: bash
         run: |
@@ -64,7 +53,6 @@ jobs:
           ghcr_image_url="ghcr.io/${current_user}/windows-dev:${current_datetime}-windows-x86_64"
 
           docker build -f windows-dev/Dockerfile --no-cache -t "${swr_image_url}" .
-
           docker tag "${swr_image_url}" "${ghcr_image_url}"
 
           docker images
@@ -72,6 +60,5 @@ jobs:
           pwd
           df -h
 
-          mkdir -p /d/tmp
-          skopeo copy --tmpdir D:/tmp "docker-daemon:${swr_image_url}" "docker://${swr_image_url}"
-          skopeo copy --tmpdir D:/tmp "docker-daemon:${ghcr_image_url}" "docker://${ghcr_image_url}"
+          docker push "${swr_image_url}"
+          docker push "${ghcr_image_url}"
