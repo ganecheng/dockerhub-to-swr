@@ -21,6 +21,28 @@ RUN certutil -generateSSTFromWU C:\roots.sst; `
     certutil -addstore -f root C:\roots.sst; `
     Remove-Item C:\roots.sst -Force
 
+# 安装 PowerShell 7 并切换为后续构建步骤的默认 shell
+# PS 5.1 在 $ErrorActionPreference='Stop' 下会把原生命令 stderr 升级为终止性错误，
+# 使得诸如"git config --unset-all 在键不存在时以非零码退出"这类正常幂等场景
+# 直接中止 RUN。PS 7 修正了该缺陷，原生命令 stderr 不再触发终止性错误。
+# 后续如需调用 .sh 脚本，仍使用 Git Bash（C:\Program Files\Git\bin\bash.exe，
+# 由后一步加入系统 PATH）。
+RUN $installer = \"PowerShell-7.4.7-win-x64.msi\"; `
+    $url = \"https://github.com/PowerShell/PowerShell/releases/download/v7.4.7/${installer}\"; `
+    Invoke-WebRequest -Uri $url -OutFile $installer; `
+    $installArgs = @( '/i', $installer, '/quiet', '/norestart' ); `
+    $proc = Start-Process msiexec -ArgumentList $installArgs -Wait -PassThru -NoNewWindow; `
+    if ($proc.ExitCode -ne 0) { `
+      Get-ChildItem $env:TEMP -Filter 'MSI*.LOG' -ErrorAction SilentlyContinue | ForEach-Object { `
+        Write-Host \"========== $($_.FullName) ==========\"; Get-Content $_.FullName -ErrorAction SilentlyContinue `
+      }; `
+      throw \"PowerShell 7 安装失败，退出码: $($proc.ExitCode)\" `
+    }; `
+    Remove-Item $installer -Force
+
+# 切换 SHELL 到 PowerShell 7，后续 RUN 全局改由 pwsh 执行
+SHELL [\"pwsh\", \"-NoLogo\", \"-NoProfile\", \"-Command\", \"$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';\"]
+
 # 授予 ContainerAdministrator 创建符号链接的权限
 RUN $tempCfg = \"$env:TEMP\secpol.cfg\"; `
     $tempDb = \"$env:TEMP\secpol.sdb\"; `
@@ -72,12 +94,11 @@ RUN $installer = \"Git-2.54.0-64-bit.exe\"; `
 RUN [Environment]::SetEnvironmentVariable('PATH', \"${env:PATH};${env:GIT_INSTALLATION_PATH}\cmd;${env:GIT_INSTALLATION_PATH}\usr\bin\", 'Machine')
 
 # 修复 Git for Windows 的循环引用问题（MinGit 与完整版均可能触发）
-# 全新安装的 system config 不含 include.path，git config --unset-all 会以非零码退出
-# 并向 stderr 写入 "No such section!"。SHELL 已设 $ErrorActionPreference='Stop'，
-# PS 5.1 会把原生命令的 stderr 升级为终止性错误，使 RUN 步骤整体失败。
-# 改用 cmd /c 包装：2>nul 丢弃 git 的 stderr，& exit 0 强制 cmd 退出码为 0，
-# PS 不再收到 stderr 与非零退出码，构建可继续。
-RUN $env:GIT_CONFIG_NOSYSTEM=1; cmd /c "git config --system --unset-all include.path 2>nul & exit 0"
+# 全新安装的 system config 通常不含 include.path，git config --unset-all 会写
+# "No such section!" 到 stderr 并以非零码退出。PS 7 不会将原生命令 stderr 升级为
+# 终止性错误，但 pwsh -Command 退出码会取自 $LASTEXITCODE，故显式重置为 0
+# 以确保 RUN 不被非零退出码终结（include.path 不存在视为已达成"无 include.path"）。
+RUN $env:GIT_CONFIG_NOSYSTEM=1; git config --system --unset-all include.path; $LASTEXITCODE = 0
 
 # 下载并安装 VS Build Tools 组件（合并为单层，避免分层后体积膨胀）
 # 包含：VCTools 工作负载、MSVC v143、Windows 10 SDK 19041、CMake 工具
