@@ -64,15 +64,16 @@ RUN $tempCfg = \"$env:TEMP\secpol.cfg\"; `
     Remove-Item $tempCfg, $tempDb -Force -ErrorAction SilentlyContinue
 
 # 安装完整版 Git for Windows（含 Git Bash / MSYS2 Unix 工具）
-# Inno Setup 静默参数：/VERYSILENT 无 UI，/SP- 抑制安装提示，/DIR 与 GIT_INSTALLATION_PATH 对齐
+# Inno Setup 静默参数：/VERYSILENT 无 UI，/SP- 抑制安装提示
+# 注意：-ArgumentList 必须用单字符串传入。若用数组形式，PowerShell 会对含空格的 /DIR=... 整体
+# 加引号生成 "/DIR=C:\Program Files\Git"，Inno Setup 不识别此格式（要求 /DIR="..."），
+# 在空格处截断导致安装到 C:\Program 而非 C:\Program Files\Git
+# 用 [char]34 产生双引号字符，避免 Dockerfile 转义层级混乱
 RUN $installer = \"Git-2.54.0-64-bit.exe\"; `
     $url = \"https://github.com/git-for-windows/git/releases/download/v2.54.0.windows.1/${installer}\"; `
     Invoke-WebRequest -Uri \"$url\" -OutFile \"$installer\"; `
-    $installArgs = @( `
-      '/VERYSILENT', '/NORESTART', '/NOCANCEL', '/SP-', `
-      '/CLOSEAPPLICATIONS', '/RESTARTAPPLICATIONS', `
-      \"/DIR=${env:GIT_INSTALLATION_PATH}\" `
-    ); `
+    $q = [char]34; `
+    $installArgs = '/VERYSILENT /NORESTART /NOCANCEL /SP- /CLOSEAPPLICATIONS /RESTARTAPPLICATIONS /DIR=' + $q + $env:GIT_INSTALLATION_PATH + $q; `
     $proc = Start-Process -FilePath \"$installer\" -ArgumentList $installArgs -Wait -PassThru -NoNewWindow; `
     if ($proc.ExitCode -ne 0) { `
       Get-ChildItem $env:TEMP -Filter 'Install*.log' -ErrorAction SilentlyContinue | ForEach-Object { `
@@ -80,7 +81,10 @@ RUN $installer = \"Git-2.54.0-64-bit.exe\"; `
       }; `
       throw \"Git for Windows 安装失败，退出码: $($proc.ExitCode)\" `
     }; `
-    Remove-Item -Path \"$installer\" -Force
+    Remove-Item -Path \"$installer\" -Force; `
+    if (-not (Test-Path \"${env:GIT_INSTALLATION_PATH}\bin\bash.exe\")) { `
+      throw \"Git Bash 未安装在预期路径: ${env:GIT_INSTALLATION_PATH}\bin\bash.exe\" `
+    }
 
 # 将 Git cmd 与 MSYS2 工具目录加入系统 PATH
 RUN [Environment]::SetEnvironmentVariable('PATH', \"${env:PATH};${env:GIT_INSTALLATION_PATH}\cmd;${env:GIT_INSTALLATION_PATH}\usr\bin\", 'Machine')
