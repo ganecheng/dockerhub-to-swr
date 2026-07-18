@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # 共享安装函数库 (Git Bash 版)：Web 下载封装、Flutter 安装
 # 对应 Linux 版的 modules/common.sh
-# VS Build Tools 和 NuGet 已由基础镜像 (windows-dev) 提供，无需在此安装
+# VS Build Tools 和 NuGet 已由基础镜像 (windows) 提供，无需在此安装
 
 set -euo pipefail
 

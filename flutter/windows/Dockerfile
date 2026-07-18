@@ -1,6 +1,6 @@
 # escape=`
 
-FROM ghcr.io/ganecheng/windows-dev:20260614_200825-windows-x86_64
+FROM ghcr.io/ganecheng/windows:20260614_200825-windows-x86_64
 
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 

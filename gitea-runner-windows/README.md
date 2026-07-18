@@ -4,7 +4,7 @@
 
 | 维度 | Linux 版 (gitea-runner-ubuntu) | Windows 版 (gitea-runner-windows) |
 |------|------------------------|----------------------------------|
-| 基础镜像 | Ubuntu 26.04 | windows-dev (Windows Server Core + VS Build Tools) |
+| 基础镜像 | Ubuntu 26.04 | windows (Windows Server Core + VS Build Tools) |
 | Shell | bash | Git Bash (随完整版 Git for Windows 提供) |
 | 启动脚本 | `run.sh` | `run.sh` |
 | 模块脚本 | `modules/*.sh` | `modules/*.sh` |
@@ -16,7 +16,7 @@
 
 ## 镜像结构
 
-采用模块化设计，基础镜像（`gitea-runner-windows`）在 [windows-dev](../windows-dev/Dockerfile) 之上补充 Gitea Runner 运行时，各扩展镜像在此之上叠加特定场景的构建工具。
+采用模块化设计，基础镜像（`gitea-runner-windows`）在 [windows](../windows/Dockerfile) 之上补充 Gitea Runner 运行时，各扩展镜像在此之上叠加特定场景的构建工具。
 
 ```
 gitea-runner-windows/               ← 基础镜像
@@ -34,10 +34,10 @@ gitea-runner-windows/               ← 基础镜像
 
 | 镜像名称 | Dockerfile | 包含组件 | Runner 标签 |
 |---------|-----------|---------|------------|
-| `gitea-runner-windows` | `Dockerfile` | windows-dev 全部组件 + Node.js 24.18.0 + Gitea Runner 1.0.8 | `windows-latest,windows-2022` |
+| `gitea-runner-windows` | `Dockerfile` | windows 全部组件 + Node.js 24.18.0 + Gitea Runner 1.0.8 | `windows-latest,windows-2022` |
 | `gitea-runner-flutter-windows` | `Dockerfile.flutter-windows` | + Flutter 3.44.2 (仅 Windows 桌面) | `windows-latest,windows-2022,flutter-windows` |
 
-> windows-dev 已包含：Windows Server Core ltsc2022 + VS Build Tools (MSVC v143, Windows 10 SDK 19041, CMake) + 完整版 Git for Windows 2.54.0 (含 Git Bash) + NuGet
+> windows 已包含：Windows Server Core ltsc2022 + VS Build Tools (MSVC v143, Windows 10 SDK 19041, CMake) + 完整版 Git for Windows 2.54.0 (含 Git Bash) + NuGet
 
 > 扩展镜像在基础标签之上追加各自的功能标签，无需重复声明基础标签。
 
@@ -53,7 +53,7 @@ docker build -f gitea-runner-windows/Dockerfile.flutter-windows --build-arg BASE
 
 ## 工作原理
 
-基础镜像在 windows-dev 之上补充 Node.js 和 Gitea Runner 二进制，扩展镜像在此基础上安装特定工具（Flutter SDK 等）。构建时通过 `ARG BASE_IMAGE` 引用基础镜像，无需手动处理任何依赖关系。
+基础镜像在 windows 之上补充 Node.js 和 Gitea Runner 二进制，扩展镜像在此基础上安装特定工具（Flutter SDK 等）。构建时通过 `ARG BASE_IMAGE` 引用基础镜像，无需手动处理任何依赖关系。
 
 ### 启动流程（`run.sh`）
 

@@ -1,4 +1,4 @@
-name: windows-dev
+name: windows
 
 on:
   workflow_dispatch:
@@ -50,10 +50,10 @@ jobs:
         run: |
           set -euo pipefail
 
-          swr_image_url="swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/windows-dev:${current_datetime}-windows-x86_64"
-          ghcr_image_url="ghcr.io/${current_user}/windows-dev:${current_datetime}-windows-x86_64"
+          swr_image_url="swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/windows:${current_datetime}-windows-x86_64"
+          ghcr_image_url="ghcr.io/${current_user}/windows:${current_datetime}-windows-x86_64"
 
-          docker build -f windows-dev/Dockerfile --no-cache -t "${swr_image_url}" .
+          docker build -f windows/Dockerfile --no-cache -t "${swr_image_url}" .
           docker tag "${swr_image_url}" "${ghcr_image_url}"
 
           docker images
