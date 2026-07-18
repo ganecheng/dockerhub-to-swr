@@ -1,4 +1,4 @@
-﻿﻿# run.ps1 - Gitea Runner Windows 启动脚本
+﻿# run.ps1 - Gitea Runner Windows 启动脚本
 # 对应 Linux 版的 run.sh，功能包括：
 #   1. 打印启动横幅和环境信息
 #   2. 导入自定义 CA 证书（Windows 证书存储）
