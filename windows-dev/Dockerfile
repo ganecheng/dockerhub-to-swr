@@ -72,7 +72,10 @@ RUN $installer = \"Git-2.54.0-64-bit.exe\"; `
 RUN [Environment]::SetEnvironmentVariable('PATH', \"${env:PATH};${env:GIT_INSTALLATION_PATH}\cmd;${env:GIT_INSTALLATION_PATH}\usr\bin\", 'Machine')
 
 # 修复 Git for Windows 的循环引用问题（MinGit 与完整版均可能触发）
-RUN $env:GIT_CONFIG_NOSYSTEM=1; git config --system --unset-all include.path
+# include.path 可能不存在（全新安装），此时 git 向 stderr 写入错误信息并以非零码退出；
+# 加上 2>&1 | Out-Null 可吞掉 stderr 记录，避免 $ErrorActionPreference='Stop'
+# 将其升级为终止性错误（PS 5.1 行为）。
+RUN $env:GIT_CONFIG_NOSYSTEM=1; git config --system --unset-all include.path 2>&1 | Out-Null
 
 # 下载并安装 VS Build Tools 组件（合并为单层，避免分层后体积膨胀）
 # 包含：VCTools 工作负载、MSVC v143、Windows 10 SDK 19041、CMake 工具
