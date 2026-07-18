@@ -62,8 +62,8 @@ jobs:
           docker history ${swr_base}
           docker images
           
-          docker push ${swr_base}
-          docker push ${ghcr_base}
+          skopeo copy docker-daemon:${swr_base} docker://${swr_base}
+          skopeo copy docker-daemon:${ghcr_base} docker://${ghcr_base}
           df -h
 
   build_extensions:
@@ -112,8 +112,8 @@ jobs:
           docker history ${swr_ext}
           docker images
           
-          docker push ${swr_ext}
-          docker push ${ghcr_ext}
+          skopeo copy docker-daemon:${swr_ext} docker://${swr_ext}
+          skopeo copy docker-daemon:${ghcr_ext} docker://${ghcr_ext}
 
           df -h
 

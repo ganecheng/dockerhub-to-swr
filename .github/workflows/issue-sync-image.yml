@@ -94,7 +94,7 @@ jobs:
           for image in "${image_array[@]}"; do
             docker pull "${image}" --platform "linux/amd64"
             docker tag "${image}" swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/${image}-x86_64
-            docker push swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/${image}-x86_64
+            skopeo copy docker-daemon:swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/${image}-x86_64 docker://swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/${image}-x86_64
 
             docker tag "${image}" ${image}-x86_64
             echo -n " ${image}-x86_64" >> images.txt
@@ -111,7 +111,7 @@ jobs:
           for image in "${image_array[@]}"; do
             docker pull "${image}" --platform "linux/arm64"
             docker tag "${image}" swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/${image}-aarch64
-            docker push swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/${image}-aarch64
+            skopeo copy docker-daemon:swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/${image}-aarch64 docker://swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/${image}-aarch64
           
             docker tag "${image}" ${image}-aarch64
             echo -n " ${image}-aarch64" >> images.txt

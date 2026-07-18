@@ -76,24 +76,17 @@ jobs:
       - name: build container image
         run: |
           set -ex
-          
+
           swr_image_url=swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/indextts:${current_datetime}-x86_64
           ghcr_image_url=ghcr.io/${current_user}/indextts:${current_datetime}-x86_64
-          
+
           docker build -f indextts/Dockerfile --squash --no-cache -t ${swr_image_url} .
           docker tag ${swr_image_url} ${ghcr_image_url}
-          
+
           docker images
           docker history ${swr_image_url}
           df -h
           pwd
-          
-          docker push ${swr_image_url}
 
-          ls -alh
-          df -h
-          
-          docker push ghcr.io/${current_user}/indextts:${current_datetime}-x86_64
-          
-          ls -alh
-          df -h
+          skopeo copy docker-daemon:${swr_image_url} docker://${swr_image_url}
+          skopeo copy docker-daemon:${ghcr_image_url} docker://${ghcr_image_url}

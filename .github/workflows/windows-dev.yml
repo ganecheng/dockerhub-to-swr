@@ -44,6 +44,10 @@ jobs:
         shell: powershell
         run: docker login -u "cn-southwest-2@$env:HUAWEICLOUD_IAM_AK" -p "$env:HUAWEICLOUD_IAM_SK" swr.cn-southwest-2.myhuaweicloud.com
 
+      - name: Install skopeo
+        shell: powershell
+        run: choco install skopeo -y
+
       - name: build container image
         shell: powershell
         run: |
@@ -60,6 +64,6 @@ jobs:
           docker history $swr_image_url
           Get-PSDrive
 
-          docker push $swr_image_url
+          skopeo copy docker-daemon:$swr_image_url docker://$swr_image_url
 
-          docker push $ghcr_image_url
+          skopeo copy docker-daemon:$ghcr_image_url docker://$ghcr_image_url
