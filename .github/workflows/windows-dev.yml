@@ -47,17 +47,17 @@ jobs:
 
           docker login -u "cn-southwest-2@$env:HUAWEICLOUD_IAM_AK" -p "$env:HUAWEICLOUD_IAM_SK" swr.cn-southwest-2.myhuaweicloud.com
 
-          $artifact_image_url = "swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/windows-dev:$env:current_datetime-windows-x86_64"
+          $swr_image_url = "swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/windows-dev:$env:current_datetime-windows-x86_64"
           $ghcr_image_url = "ghcr.io/$env:current_user/windows-dev:$env:current_datetime-windows-x86_64"
 
-          docker build -f windows-dev/Dockerfile --no-cache -t $artifact_image_url .
+          docker build -f windows-dev/Dockerfile --no-cache -t $swr_image_url .
 
-          docker tag $artifact_image_url $ghcr_image_url
+          docker tag $swr_image_url $ghcr_image_url
 
           docker images
-          docker history $artifact_image_url
+          docker history $swr_image_url
           Get-PSDrive
 
-          docker push $artifact_image_url
+          docker push $swr_image_url
 
           docker push $ghcr_image_url
