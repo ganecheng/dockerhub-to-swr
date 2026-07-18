@@ -169,13 +169,16 @@ if (-not (Test-Path $registrationFile) -or (Get-Item $registrationFile).Length -
     Log-Info "  GITEA_RUNNER_LABELS=$env:GITEA_RUNNER_LABELS"
     Log-Info '  Ephemeral mode enabled (runner will exit after completing one job)'
 
+    # 使用 --flag=value 形式（而非 --flag value 两元素），避免当 env 变量为空字符串时
+    # PowerShell 在 Windows 命令行拼装阶段丢弃空 token，导致 pflag 误吞后续 flag
+    # 使下一个值成为 leftover 位置参数，触发 cobra MaximumNArgs(0) 校验失败。
     $registerArgs = @(
         'register',
-        '--instance', $env:GITEA_INSTANCE_URL,
-        '--token', $env:GITEA_RUNNER_REGISTRATION_TOKEN,
-        '--name', $env:GITEA_RUNNER_NAME,
-        '--labels', $env:GITEA_RUNNER_LABELS,
-        '--config', $effectiveConfigFile,
+        "--instance=$env:GITEA_INSTANCE_URL",
+        "--token=$env:GITEA_RUNNER_REGISTRATION_TOKEN",
+        "--name=$env:GITEA_RUNNER_NAME",
+        "--labels=$env:GITEA_RUNNER_LABELS",
+        "--config=$effectiveConfigFile",
         '--no-interactive',
         '--ephemeral'
     )
