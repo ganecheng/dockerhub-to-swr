@@ -1,11 +1,11 @@
-# gitea-runner 系列镜像
+# gitea-runner-ubuntu 系列镜像
 
 ## 镜像结构
 
-采用模块化设计，基础镜像（`gitea-runner`）包含通用运行时和 Docker 守护进程，各扩展镜像在此之上叠加特定场景的构建工具。
+采用模块化设计，基础镜像（`gitea-runner-ubuntu`）包含通用运行时和 Docker 守护进程，各扩展镜像在此之上叠加特定场景的构建工具。
 
 ```
-gitea-runner/                       ← 基础镜像 (Dockerfile)
+gitea-runner-ubuntu/                ← 基础镜像 (Dockerfile)
 ├── Dockerfile                      # 基基础镜像
 ├── run.sh                          # 容器入口脚本（Docker 启动、Runner 注册、守护进程）
 ├── config.template.yaml            # Runner 配置文件模板（环境变量占位符）
@@ -17,25 +17,25 @@ gitea-runner/                       ← 基础镜像 (Dockerfile)
 │   ├── graalvm-jdk21.sh            # Oracle GraalVM JDK 21 + Maven 3.9.9
 │   ├── graalvm-jdk25.sh            # Oracle GraalVM JDK 25 + Maven 3.9.9
 │   └── jmeter.sh                   # Temurin JDK 25 + JMeter 5.6.3
-├── Dockerfile.jdk21                # gitea-runner-jdk21
-├── Dockerfile.jdk25                # gitea-runner-jdk25
-├── Dockerfile.graalvm-jdk21        # gitea-runner-graalvm-jdk21
-├── Dockerfile.graalvm-jdk25        # gitea-runner-graalvm-jdk25
-├── Dockerfile.jmeter               # gitea-runner-jmeter
-└── Dockerfile.flutter-ubuntu       # gitea-runner-flutter-ubuntu
+├── Dockerfile.jdk21                # gitea-runner-ubuntu-jdk21
+├── Dockerfile.jdk25                # gitea-runner-ubuntu-jdk25
+├── Dockerfile.graalvm-jdk21        # gitea-runner-ubuntu-graalvm-jdk21
+├── Dockerfile.graalvm-jdk25        # gitea-runner-ubuntu-graalvm-jdk25
+├── Dockerfile.jmeter               # gitea-runner-ubuntu-jmeter
+└── Dockerfile.flutter              # gitea-runner-ubuntu-flutter
 ```
 
 ## 镜像列表
 
 | 镜像名称 | Dockerfile | 包含组件 | Runner 标签 |
 |---------|-----------|---------|------------|
-| `gitea-runner` | `Dockerfile` | Ubuntu 26.04 + Docker 28.5.2 + Gitea Runner 1.0.8 + Node.js 24.18.0 + Python 3 + 常用工具 | `ubuntu-latest,ubuntu-26.04` |
-| `gitea-runner-jdk21` | `Dockerfile.jdk21` | + Temurin JDK 21 + Maven 3.9.9 | `ubuntu-latest,ubuntu-26.04,jdk-21` |
-| `gitea-runner-jdk25` | `Dockerfile.jdk25` | + Temurin JDK 25 + Maven 3.9.9 | `ubuntu-latest,ubuntu-26.04,jdk-25` |
-| `gitea-runner-graalvm-jdk21` | `Dockerfile.graalvm-jdk21` | + GraalVM JDK 21 + Maven 3.9.9 + gcc/g++/zlib1g-dev (native-image) | `ubuntu-latest,ubuntu-26.04,graalvm-jdk-21` |
-| `gitea-runner-graalvm-jdk25` | `Dockerfile.graalvm-jdk25` | + GraalVM JDK 25 + Maven 3.9.9 + gcc/g++/zlib1g-dev (native-image) | `ubuntu-latest,ubuntu-26.04,graalvm-jdk-25` |
-| `gitea-runner-jmeter` | `Dockerfile.jmeter` | + Temurin JDK 25 + JMeter 5.6.3 | `ubuntu-latest,ubuntu-26.04,jmeter` |
-| `gitea-runner-flutter-ubuntu` | `Dockerfile.flutter-ubuntu` | + Flutter 3.44.2 + Android SDK (compileSdk 36, NDK 29, build-tools 36) + OpenJDK 21 | `ubuntu-latest,ubuntu-26.04,flutter-ubuntu` |
+| `gitea-runner-ubuntu` | `Dockerfile` | Ubuntu 26.04 + Docker 28.5.2 + Gitea Runner 1.0.8 + Node.js 24.18.0 + Python 3 + 常用工具 | `ubuntu-latest,ubuntu-26.04` |
+| `gitea-runner-ubuntu-jdk21` | `Dockerfile.jdk21` | + Temurin JDK 21 + Maven 3.9.9 | `ubuntu-latest,ubuntu-26.04,ubuntu-jdk-21` |
+| `gitea-runner-ubuntu-jdk25` | `Dockerfile.jdk25` | + Temurin JDK 25 + Maven 3.9.9 | `ubuntu-latest,ubuntu-26.04,ubuntu-jdk-25` |
+| `gitea-runner-ubuntu-graalvm-jdk21` | `Dockerfile.graalvm-jdk21` | + GraalVM JDK 21 + Maven 3.9.9 + gcc/g++/zlib1g-dev (native-image) | `ubuntu-latest,ubuntu-26.04,ubuntu-graalvm-jdk-21` |
+| `gitea-runner-ubuntu-graalvm-jdk25` | `Dockerfile.graalvm-jdk25` | + GraalVM JDK 25 + Maven 3.9.9 + gcc/g++/zlib1g-dev (native-image) | `ubuntu-latest,ubuntu-26.04,ubuntu-graalvm-jdk-25` |
+| `gitea-runner-ubuntu-jmeter` | `Dockerfile.jmeter` | + Temurin JDK 25 + JMeter 5.6.3 | `ubuntu-latest,ubuntu-26.04,ubuntu-jmeter` |
+| `gitea-runner-ubuntu-flutter` | `Dockerfile.flutter` | + Flutter 3.44.2 + Android SDK (compileSdk 36, NDK 29, build-tools 36) + OpenJDK 21 | `ubuntu-latest,ubuntu-26.04,ubuntu-flutter` |
 
 > 扩展镜像在基础标签之上追加各自的功能标签，无需重复声明基础标签。
 
@@ -43,10 +43,10 @@ gitea-runner/                       ← 基础镜像 (Dockerfile)
 
 ```bash
 # 1. 先构建基础镜像
-docker build -f gitea-runner/Dockerfile -t gitea-runner:base .
+docker build -f gitea-runner-ubuntu/Dockerfile -t gitea-runner-ubuntu:base .
 
 # 2. 构建扩展镜像（以 jdk21 为例）
-docker build -f gitea-runner/Dockerfile.jdk21 --build-arg BASE_IMAGE=gitea-runner:base -t gitea-runner-jdk21:local .
+docker build -f gitea-runner-ubuntu/Dockerfile.jdk21 --build-arg BASE_IMAGE=gitea-runner-ubuntu:base -t gitea-runner-ubuntu-jdk21:local .
 ```
 
 ## 工作原理
@@ -57,14 +57,14 @@ docker build -f gitea-runner/Dockerfile.jdk21 --build-arg BASE_IMAGE=gitea-runne
 
 容器启动时按顺序执行：
 
-1. **打印启动横幅** — 显示 Runner 版本、时区、主机名、IP 及环境变量（敏感信息脱敏）
-2. **导入自定义 CA 证书** — 在 Docker 守护进程启动前完成（见下文）
-3. **配置国内镜像站** — APT / PIP / NPM（见下文）
-4. **启动 Docker 守护进程** — 通过 `dind-hack` 配置嵌套环境，轮询等待引擎就绪
-5. **加载自定义初始化脚本** — 若设置了 `INIT_SH_FILE` 则 source 执行
-6. **渲染配置文件** — 从 `config.template.yaml` 模板用环境变量替换占位符
-7. **注册 Runner** — 临时模式（`--ephemeral`），带超时重试（默认 30s 超时、3s 重试间隔）
-8. **启动守护进程并监控** — 后台运行 `gitea-runner daemon`，主循环检测空闲超时
+1. **打印启动横幅** - 显示 Runner 版本、时区、主机名、IP 及环境变量（敏感信息脱敏）
+2. **导入自定义 CA 证书** - 在 Docker 守护进程启动前完成（见下文）
+3. **配置国内镜像站** - APT / PIP / NPM（见下文）
+4. **启动 Docker 守护进程** - 通过 `dind-hack` 配置嵌套环境，轮询等待引擎就绪
+5. **加载自定义初始化脚本** - 若设置了 `INIT_SH_FILE` 则 source 执行
+6. **渲染配置文件** - 从 `config.template.yaml` 模板用环境变量替换占位符
+7. **注册 Runner** - 临时模式（`--ephemeral`），带超时重试（默认 30s 超时、3s 重试间隔）
+8. **启动守护进程并监控** - 后台运行 `gitea-runner daemon`，主循环检测空闲超时
 
 ### 临时模式与空闲超时
 
@@ -133,12 +133,12 @@ docker run -e CA_CERT_DIR=/etc/my-certs -v /path/to/my-certs:/etc/my-certs:ro ..
 
 | 环境变量 | 默认值 | 说明 |
 |---------|-------|------|
-| `GITEA_INSTANCE_URL` | — | Gitea 实例地址（必填） |
-| `GITEA_RUNNER_REGISTRATION_TOKEN` | — | 注册令牌（或通过文件提供） |
-| `GITEA_RUNNER_NAME` | — | Runner 名称 |
+| `GITEA_INSTANCE_URL` | - | Gitea 实例地址（必填） |
+| `GITEA_RUNNER_REGISTRATION_TOKEN` | - | 注册令牌（或通过文件提供） |
+| `GITEA_RUNNER_NAME` | - | Runner 名称 |
 | `GITEA_RUNNER_LABELS` | `GITEA_RUNNER_LABELS_DEFAULT` | Runner 标签（逗号分隔） |
 | `GITEA_RUNNER_TIMEOUT_MINUTES` | `60` | 容器空闲超时（分钟） |
 | `GITEA_RUNNER_REGISTRATION_TIMEOUT` | `30` | 注册超时（秒） |
 | `GITEA_RUNNER_REGISTRATION_RETRY_INTERVAL` | `3` | 注册重试间隔（秒） |
-| `INIT_SH_FILE` | — | 自定义初始化脚本路径（容器内） |
+| `INIT_SH_FILE` | - | 自定义初始化脚本路径（容器内） |
 | `CA_CERT_DIR` | `/opt/cloud/security/cert/ca` | 自定义 CA 证书挂载目录 |

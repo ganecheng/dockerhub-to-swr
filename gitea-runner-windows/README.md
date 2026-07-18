@@ -2,7 +2,7 @@
 
 ## 与 Linux 版的差异
 
-| 维度 | Linux 版 (gitea-runner) | Windows 版 (gitea-runner-windows) |
+| 维度 | Linux 版 (gitea-runner-ubuntu) | Windows 版 (gitea-runner-windows) |
 |------|------------------------|----------------------------------|
 | 基础镜像 | Ubuntu 26.04 | windows-dev (Windows Server Core + VS Build Tools) |
 | Shell | bash | Git Bash (随完整版 Git for Windows 提供) |

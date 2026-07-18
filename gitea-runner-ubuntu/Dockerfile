@@ -72,8 +72,8 @@ ENV \
   GITEA_RUNNER_TIMEOUT_MINUTES=60
 
 # 复制启动脚本和配置模板到镜像
-COPY gitea-runner/run.sh /opt/
-COPY gitea-runner/config.template.yaml /opt/
+COPY gitea-runner-ubuntu/run.sh /opt/
+COPY gitea-runner-ubuntu/config.template.yaml /opt/
 
 # Runner 数据卷（注册令牌、配置等）
 VOLUME /data

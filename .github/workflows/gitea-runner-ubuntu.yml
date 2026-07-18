@@ -1,4 +1,4 @@
-name: gitea-runner
+name: gitea-runner-ubuntu
 
 on:
   workflow_dispatch:
@@ -53,11 +53,11 @@ jobs:
         run: |
           set -exuo pipefail
 
-          base_tag=gitea-runner:${current_datetime}-x86_64
+          base_tag=gitea-runner-ubuntu:${current_datetime}-x86_64
           swr_base=swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/${base_tag}
           ghcr_base=ghcr.io/${current_user}/${base_tag}
 
-          docker build -f gitea-runner/Dockerfile --no-cache -t ${swr_base} -t ${ghcr_base} .
+          docker build -f gitea-runner-ubuntu/Dockerfile --no-cache -t ${swr_base} -t ${ghcr_base} .
           
           docker history ${swr_base}
           docker images
@@ -78,7 +78,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        extension: [ jdk21, jdk25, graalvm-jdk21, graalvm-jdk25, jmeter, flutter-ubuntu ]
+        extension: [ jdk21, jdk25, graalvm-jdk21, graalvm-jdk25, jmeter, flutter ]
     steps:
       - name: git checkout
         uses: actions/checkout@v6
@@ -98,17 +98,17 @@ jobs:
           set -exuo pipefail
 
           ext=${{ matrix.extension }}
-          base_tag=gitea-runner:${current_datetime}-x86_64
+          base_tag=gitea-runner-ubuntu:${current_datetime}-x86_64
 
           # 从 GHCR 拉取基础镜像
           docker pull ghcr.io/${current_user}/${base_tag}
 
-          ext_tag=gitea-runner-${ext}:${current_datetime}-x86_64
+          ext_tag=gitea-runner-ubuntu-${ext}:${current_datetime}-x86_64
           swr_ext=swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/${ext_tag}
           ghcr_ext=ghcr.io/${current_user}/${ext_tag}
 
-          echo ">>> Building gitea-runner-${ext}..."
-          docker build -f gitea-runner/Dockerfile.${ext} --build-arg BASE_IMAGE=ghcr.io/${current_user}/${base_tag} --no-cache -t ${swr_ext} -t ${ghcr_ext} .
+          echo ">>> Building gitea-runner-ubuntu-${ext}..."
+          docker build -f gitea-runner-ubuntu/Dockerfile.${ext} --build-arg BASE_IMAGE=ghcr.io/${current_user}/${base_tag} --no-cache -t ${swr_ext} -t ${ghcr_ext} .
           
           docker history ${swr_ext}
           docker images
