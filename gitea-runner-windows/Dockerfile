@@ -9,16 +9,8 @@ ARG GITEA_RUNNER_VERSION=1.0.8
 ARG NODE_VERSION=24.18.0
 
 # 安装 Node.js（GitHub Actions 运行时依赖）
-# 注意：需变量展开的字符串必须用 \"...\" 转义双引号，否则 Docker SHELL 形式
-# 调用 pwsh 会剥离引号，使 ${env:PATH};C:\node 中的 ';' 被 PowerShell 误解析为语句分隔符
-RUN $nodeDir = \"node-v${env:NODE_VERSION}-win-x64\"; `
-    $url = \"https://nodejs.org/dist/v${env:NODE_VERSION}/${nodeDir}.zip\"; `
-    Invoke-WebRequest -Uri $url -OutFile C:\node.zip; `
-    Expand-Archive -Path C:\node.zip -DestinationPath C:\ -Force; `
-    Rename-Item \"C:\${nodeDir}\" 'node' -Force; `
-    Remove-Item C:\node.zip -Force; `
-    [Environment]::SetEnvironmentVariable('PATH', \"${env:PATH};C:\node\", 'Machine'); `
-    $env:PATH += ';C:\node'; `
+RUN choco install nodejs-lts -y --version=${env:NODE_VERSION} --no-progress; `
+    $env:PATH = [Environment]::GetEnvironmentVariable('PATH', 'Machine'); `
     node --version; `
     npm --version
 
