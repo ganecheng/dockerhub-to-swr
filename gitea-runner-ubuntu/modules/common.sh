@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # 共享安装函数库：架构检测、JDK/GraalVM/Maven/JMeter 安装
-set -euo pipefail
+set -exuo pipefail
 
 # 封装 curl：统一超时和重试策略（与基础镜像 Dockerfile 一致）
 function curl() {
