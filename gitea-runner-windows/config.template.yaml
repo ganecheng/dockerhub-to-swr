@@ -53,7 +53,7 @@ runner:
   # 更多 Gitea 提供的镜像见 https://gitea.com/docker.gitea.com/runner-images 。
   # 注册时如果为空，会提示输入标签。
   # 执行 `daemon` 时如果为空，会使用 .runner 文件中的标签。
-  labels: [ "${GITEA_RUNNER_LABELS//,/\",\"}" ]
+  labels: [ "${GITEA_RUNNER_LABELS//,/","}" ]
 
 cache:
   # 启用缓存服务器以使用 actions/cache。
