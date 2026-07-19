@@ -16,7 +16,7 @@ RUN $path = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\P
 
 # 更新根证书
 RUN certutil -generateSSTFromWU C:\roots.sst; `
-    certutil -addstore -f root C:\roots.sst; `
+    certutil -addstore -f -quiet root C:\roots.sst; `
     Remove-Item C:\roots.sst -Force
 
 # PS 5.1 在 $ErrorActionPreference='Stop' 下会将原生命令 stderr 升级为终止性错误
