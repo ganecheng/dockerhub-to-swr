@@ -3,11 +3,40 @@
 # 对应 Linux 版的 modules/common.sh
 # VS Build Tools 和 NuGet 已由基础镜像 (windows) 提供，无需在此安装
 
-set -euo pipefail
+set -exuo pipefail
 
 # 封装 curl：统一超时和重试策略（与基础镜像 Dockerfile 一致）
 function curl() {
   command curl -sSfL --connect-timeout 10 --max-time 300 --retry 3 --retry-all-errors "$@"
+}
+
+# 下载 Mozilla CA 证书包，供 Dart/Flutter TLS 验证使用
+# Windows 容器根证书存储可能不完整，导致 Dart BoringSSL 验证失败 (CERTIFICATE_VERIFY_FAILED)
+# 目标路径通过 SSL_CERT_FILE 环境变量指定 (由 Dockerfile.flutter ENV 设置)
+function install_ca_certificates() {
+  local cert_file=${SSL_CERT_FILE:-C:/opt/ssl/cacert.pem}
+  local cert_dir
+  cert_dir=$(dirname "$cert_file")
+
+  echo ">>> Installing Mozilla CA certificates to $cert_file..."
+
+  mkdir -p "$cert_dir"
+
+  # 临时清除 SSL_CERT_FILE，避免 Git Bash 的 curl (OpenSSL) 尝试读取尚未下载的证书文件
+  local saved_ssl_cert_file=${SSL_CERT_FILE:-}
+  unset SSL_CERT_FILE
+  curl "https://curl.se/ca/cacert.pem" -o "$cert_file"
+  export SSL_CERT_FILE=$saved_ssl_cert_file
+
+  # 验证下载的文件大小（Mozilla CA 包通常 > 200KB）
+  local file_size
+  file_size=$(wc -c < "$cert_file")
+  if (( file_size < 100000 )); then
+    echo "ERROR: cacert.pem download failed (size: ${file_size} bytes)" >&2
+    exit 1
+  fi
+
+  echo ">>> CA certificates installed (${file_size} bytes)"
 }
 
 # 安装 Flutter SDK（仅启用 Windows 桌面构建）
@@ -34,10 +63,11 @@ function install_flutter() {
   flutter precache --windows
 
   # 清理示例和开发文档（节省 ~200MB）
+  # 注意：不能删除 bin/cache/pkg，其中含 sky_engine，运行时 flutter --version
+  # 会检测到缺失并尝试重新下载，若网络不通或证书验证失败则直接报错
   rm -rf \
     "$flutter_root/examples" \
     "$flutter_root/dev" \
-    "$flutter_root/bin/cache/pkg" \
     "$flutter_root/bin/cache/flutter_tools.skps"
 
   echo ">>> Flutter $version installed"

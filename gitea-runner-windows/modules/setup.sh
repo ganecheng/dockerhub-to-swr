@@ -3,7 +3,7 @@
 # 对应基础镜像 Dockerfile 的安装逻辑
 # VS Build Tools、NuGet、Git 已由基础镜像 (windows) 提供
 
-set -euo pipefail
+set -exuo pipefail
 
 # 加载共享函数库（与脚本同目录）
 # shellcheck source=common.sh

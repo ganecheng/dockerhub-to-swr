@@ -5,9 +5,8 @@
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE}
 
-ARG FLUTTER_VERSION=3.44.2
-
-ENV FLUTTER_ROOT="C:\flutter" `
+ENV FLUTTER_VERSION="3.44.2" `
+    FLUTTER_ROOT="C:\flutter" `
     FLUTTER_GIT_URL="unknown source" `
     PUB_CACHE="C:\pub-cache"
 
@@ -16,6 +15,11 @@ WORKDIR "C:\app"
 # 追加 Flutter / Dart 到系统 PATH
 # 含变量展开须 \"...\" 转义双引号，否则 pwsh 剥离引号致 ';' 误解析
 RUN [Environment]::SetEnvironmentVariable('PATH', \"${env:PATH};${env:FLUTTER_ROOT}\bin;${env:FLUTTER_ROOT}\bin\cache\dart-sdk\bin\", 'Machine')
+
+# 下载 Mozilla CA 证书包，供 Dart/Flutter TLS 验证使用
+# Windows 容器根证书存储可能不完整，导致 Dart BoringSSL 验证失败 (CERTIFICATE_VERIFY_FAILED)
+# 实际下载在 flutter.sh 中执行（复用 common.sh 的 curl 封装）
+ENV SSL_CERT_FILE="C:\opt\ssl\cacert.pem"
 
 # 模块化安装脚本（Git Bash 版）
 COPY gitea-runner-windows/modules/common.sh gitea-runner-windows/modules/flutter.sh C:/tmp/
