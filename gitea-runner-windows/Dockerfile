@@ -1,24 +1,23 @@
 # escape=`
 
 # 基于 windows（Windows Server Core + VS Build Tools + Git + NuGet）追加 Node.js + Gitea Runner
-FROM ghcr.io/ganecheng/windows:20260719_165318-x86_64
+FROM ghcr.io/ganecheng/windows:20260719_175323-x86_64
 
-ARG GITEA_RUNNER_VERSION=1.0.8
-ARG NODE_VERSION=24.18.0
+ENV GITEA_RUNNER_VERSION=1.0.8 `
+    NODE_VERSION=24.18.0
 
-# 安装 Node.js（GitHub Actions 运行时依赖）
-RUN choco install nodejs-lts -y --version=${env:NODE_VERSION} --no-progress; `
-    $env:PATH = [Environment]::GetEnvironmentVariable('PATH', 'Machine'); `
-    node --version; `
-    npm --version
+# 安装目录
+ENV NODE_HOME="C:\Program Files\nodejs" `
+    GITEA_RUNNER_HOME="C:\opt\bin"
 
-# 安装 Gitea Runner
-RUN New-Item -ItemType Directory -Path 'C:\opt\bin' -Force | Out-Null; `
-    $url = \"https://gitea.com/gitea/runner/releases/download/v${env:GITEA_RUNNER_VERSION}/gitea-runner-${env:GITEA_RUNNER_VERSION}-windows-amd64.exe\"; `
-    Invoke-WebRequest -Uri $url -OutFile 'C:\opt\bin\gitea-runner.exe'; `
-    [Environment]::SetEnvironmentVariable('PATH', \"${env:PATH};C:\opt\bin\", 'Machine'); `
-    $env:PATH += ';C:\opt\bin'; `
-    gitea-runner --version
+# 追加 Node.js 和 Gitea Runner 到系统 PATH
+RUN [Environment]::SetEnvironmentVariable('PATH', \"${env:PATH};${env:NODE_HOME};${env:GITEA_RUNNER_HOME}\", 'Machine')
+
+# 模块化安装脚本（Git Bash 版）
+COPY gitea-runner-windows/modules/common.sh gitea-runner-windows/modules/setup.sh C:/tmp/
+
+# Git Bash 执行安装脚本（ENV 变量直接传递给 bash）
+RUN bash /c/tmp/setup.sh; Remove-Item -Recurse -Force C:\tmp -ErrorAction SilentlyContinue
 
 # 默认环境变量，运行时可覆盖
 ENV `
@@ -41,4 +40,4 @@ COPY gitea-runner-windows/config.template.yaml C:/opt/config.template.yaml
 VOLUME C:/data
 
 # Git Bash 执行 run.sh
-CMD ["C:\\Program Files\\Git\\bin\\bash.exe", "/c/opt/run.sh"]
+CMD ["bash", "/c/opt/run.sh"]

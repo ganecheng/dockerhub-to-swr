@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 共享安装函数库 (Git Bash 版)：Web 下载封装、Flutter 安装
+# 共享安装函数库 (Git Bash 版)：Web 下载封装、Node.js/Gitea Runner/Flutter 安装
 # 对应 Linux 版的 modules/common.sh
 # VS Build Tools 和 NuGet 已由基础镜像 (windows) 提供，无需在此安装
 
@@ -41,4 +41,63 @@ function install_flutter() {
     "$flutter_root/bin/cache/flutter_tools.skps"
 
   echo ">>> Flutter $version installed"
+}
+
+# 安装 Node.js（GitHub Actions 运行时依赖）
+# 参数: $1 - Node.js 版本号 (如 24.18.0)
+# 安装路径: 通过 NODE_HOME 环境变量指定 (默认 C:/Program Files/nodejs)
+function install_node() {
+  local version=${1:?}
+  local arch
+  arch=$(uname -m)
+  local node_arch
+  case "$arch" in
+    x86_64|amd64)  node_arch="x64" ;;
+    aarch64|arm64) node_arch="arm64" ;;
+    *) echo "ERROR: Unsupported architecture: $arch" >&2; exit 1 ;;
+  esac
+
+  local node_home=${NODE_HOME:-C:/Program Files/nodejs}
+  local tmp_dir=C:/tmp/node-install
+
+  echo ">>> Installing Node.js $version ($node_arch) to $node_home..."
+
+  mkdir -p "$tmp_dir"
+  curl "https://nodejs.org/dist/v${version}/node-v${version}-win-${node_arch}.zip" -o "$tmp_dir/node.zip"
+
+  # 使用 PowerShell 解压 zip（Git Bash 自带的 GNU tar 不支持 zip 格式）
+  pwsh -NoProfile -Command "Expand-Archive -Path '$tmp_dir/node.zip' -DestinationPath '$tmp_dir/extracted' -Force"
+
+  mkdir -p "$node_home"
+  cp -r "$tmp_dir/extracted/node-v${version}-win-${node_arch}/"* "$node_home/"
+  rm -rf "$tmp_dir"
+
+  echo ">>> Node.js $version installed:"
+  "$node_home/node.exe" --version
+  "$node_home/npm.cmd" --version
+}
+
+# 安装 Gitea Runner
+# 参数: $1 - Gitea Runner 版本号 (如 1.0.8)
+# 安装路径: 通过 GITEA_RUNNER_HOME 环境变量指定 (默认 C:/opt/bin)
+function install_gitea_runner() {
+  local version=${1:?}
+  local arch
+  arch=$(uname -m)
+  local runner_arch
+  case "$arch" in
+    x86_64|amd64)  runner_arch="amd64" ;;
+    aarch64|arm64) runner_arch="arm64" ;;
+    *) echo "ERROR: Unsupported architecture: $arch" >&2; exit 1 ;;
+  esac
+
+  local runner_home=${GITEA_RUNNER_HOME:-C:/opt/bin}
+
+  echo ">>> Installing Gitea Runner $version ($runner_arch) to $runner_home..."
+
+  mkdir -p "$runner_home"
+  curl "https://gitea.com/gitea/runner/releases/download/v${version}/gitea-runner-${version}-windows-${runner_arch}.exe" -o "$runner_home/gitea-runner.exe"
+
+  echo ">>> Gitea Runner $version installed:"
+  "$runner_home/gitea-runner.exe" --version
 }
