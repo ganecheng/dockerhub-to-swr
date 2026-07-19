@@ -7,10 +7,10 @@ FROM amitie10g/visualstudio2022-workload-vctools:ltsc2025
 # 以 ContainerAdministrator 构建和运行
 USER ContainerAdministrator
 
-# 将 ContainerAdministrator 加入 Administrators 组
-RUN net localgroup Administrators ContainerAdministrator /add 2>$null; $LASTEXITCODE = 0
-
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+# 将 ContainerAdministrator 加入 Administrators 组
+RUN Add-LocalGroupMember -Group "Administrators" -Member "ContainerAdministrator" 2>$null; $LASTEXITCODE = 0
 
 # 启用 TLS 1.2
 RUN $path = 'HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\TLS 1.2'; `
