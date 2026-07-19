@@ -38,3 +38,4 @@ root*
 **/.flattened-pom.xml
 
 .qwen
+*.bak
