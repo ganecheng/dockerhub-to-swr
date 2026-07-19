@@ -67,5 +67,14 @@ RUN choco install nuget.commandline -y --no-progress; `
 
 # 打印 VS Build Tools 相关组件版本，确认安装成功
 RUN $vswhere = \"${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe\"; `
-    & $vswhere -all -format value -property installationPath,displayName,installationVersion; `
-    (& $vswhere -all -format json | ConvertFrom-Json).packages | Where-Object { $_.id -match 'VC\.Tools|Windows10SDK|CMake' } | ForEach-Object { \"$($_.id): $($_.version)\" }
+    $installs = & $vswhere -products * -all -format json | ConvertFrom-Json; `
+    $installs | ForEach-Object { \"VS: $($_.displayName) $($_.installationVersion)\" }; `
+    $cl = Get-ChildItem 'C:\Program Files (x86)\Microsoft Visual Studio\2022\*\VC\Tools\MSVC\*\bin\Hostx64\x64\cl.exe' -ErrorAction SilentlyContinue; `
+    if ($cl) { $cl | ForEach-Object { \"VC.Tools: $($_.Directory.Parent.Parent.Parent.Name)\" } } else { \"VC.Tools: 未找到\" }; `
+    $sdk = Get-ChildItem 'C:\Program Files (x86)\Windows Kits\10\Include' -Directory -ErrorAction SilentlyContinue; `
+    if ($sdk) { $sdk | ForEach-Object { \"Windows SDK: $($_.Name)\" } } else { \"Windows SDK: 未找到\" }; `
+    $cmake = Test-Path 'C:\Program Files (x86)\Microsoft Visual Studio\2022\*\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe'; `
+    \"CMake: $(if ($cmake) { '已安装' } else { '未找到' })\"
+
+ENTRYPOINT []
+CMD ["pwsh", "-NoLogo", "-NoProfile"]

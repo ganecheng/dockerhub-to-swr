@@ -38,6 +38,10 @@ jobs:
         uses: docker/setup-docker-action@v5
         with:
           version: 'v28.5.2'
+          daemon-config: |
+            {
+              "data-root": "D:\\docker-data"
+            }
 
       - name: login ghcr
         uses: docker/login-action@v3
@@ -55,8 +59,8 @@ jobs:
         run: |
           set -euo pipefail
 
-          swr_image_url="swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/windows:${current_datetime}-windows-x86_64"
-          ghcr_image_url="ghcr.io/${current_user}/windows:${current_datetime}-windows-x86_64"
+          swr_image_url="swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/windows:${current_datetime}-x86_64"
+          ghcr_image_url="ghcr.io/${current_user}/windows:${current_datetime}-x86_64"
 
           docker build -f windows/Dockerfile --no-cache -t "${swr_image_url}" .
           docker tag "${swr_image_url}" "${ghcr_image_url}"
