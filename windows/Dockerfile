@@ -32,29 +32,17 @@ RUN choco install powershell-core -y --no-progress; `
 
 SHELL ["pwsh", "-NoLogo", "-NoProfile", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
-# 授予 ContainerAdministrator 符号链接权限
-RUN $tempCfg = \"$env:TEMP\secpol.cfg\"; `
-    $tempDb = \"$env:TEMP\secpol.sdb\"; `
-    secedit /export /cfg $tempCfg /areas USER_RIGHTS /quiet; `
-    $content = Get-Content $tempCfg -Encoding Unicode; `
-    $sid = (New-Object System.Security.Principal.NTAccount('ContainerAdministrator')).Translate([System.Security.Principal.SecurityIdentifier]).Value; `
-    $found = $false; `
-    $newContent = @(); `
-    foreach ($line in $content) { `
-      if ($line -match '^SeCreateSymbolicLinkPrivilege\s*=') { `
-        $found = $true; `
-        if ($line -notmatch [regex]::Escape($sid)) { `
-          $line = $line.TrimEnd() + ',*' + $sid `
-        } `
-      }; `
-      $newContent += $line `
-    }; `
-    if (-not $found) { `
-      $newContent += ('SeCreateSymbolicLinkPrivilege = *' + $sid) `
-    }; `
-    $newContent | Set-Content $tempCfg -Encoding Unicode; `
-    secedit /configure /db $tempDb /cfg $tempCfg /areas USER_RIGHTS /quiet; `
-    Remove-Item $tempCfg, $tempDb -Force -ErrorAction SilentlyContinue
+# 启用开发者模式以允许创建符号链接
+RUN New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Force | Out-Null; `
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" `
+      -Name "AllowDevelopmentWithoutDevLicense" -Value 1 -Type DWord; `
+    $testDir = "$env:TEMP\symlink_test_target"; `
+    $testLink = "$env:TEMP\symlink_test_link"; `
+    New-Item -ItemType Directory -Path $testDir -Force | Out-Null; `
+    if (Test-Path $testLink) { Remove-Item $testLink -Force }; `
+    New-Item -ItemType SymbolicLink -Path $testLink -Target $testDir | Out-Null; `
+    if (Test-Path $testLink) { Write-Host "Symlink creation: OK" } else { throw "Symlink creation failed" }; `
+    Remove-Item $testLink, $testDir -Force -ErrorAction SilentlyContinue
 
 # 安装 Git for Windows（含 Git Bash / MSYS2）
 RUN choco install git -y --no-progress; `
