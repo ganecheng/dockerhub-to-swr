@@ -63,13 +63,11 @@ function install_flutter() {
   flutter precache --windows
 
   # 清理示例和开发文档（节省 ~200MB）
-  # 注意：不能删除 bin/cache/pkg，其中含 sky_engine，运行时 flutter --version
-  # 会检测到缺失并尝试重新下载，若网络不通或证书验证失败则直接报错
   rm -rf \
     "$flutter_root/examples" \
-    "$flutter_root/dev" \
-    "$flutter_root/bin/cache/flutter_tools.skps"
+    "$flutter_root/dev"
 
+  flutter doctor -v
   echo ">>> Flutter $version installed"
 }
 
