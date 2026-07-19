@@ -55,7 +55,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          base_tag="gitea-runner-windows:${current_datetime}-windows-x86_64"
+          base_tag="gitea-runner-windows:${current_datetime}-x86_64"
           swr_base="swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/${base_tag}"
           ghcr_base="ghcr.io/${current_user}/${base_tag}"
 
@@ -107,12 +107,12 @@ jobs:
           set -euo pipefail
 
           ext="${{ matrix.extension }}"
-          base_tag="gitea-runner-windows:${current_datetime}-windows-x86_64"
+          base_tag="gitea-runner-windows:${current_datetime}-x86_64"
 
           # 从 GHCR 拉取基础镜像
           docker pull "ghcr.io/${current_user}/${base_tag}"
 
-          ext_tag="gitea-runner-windows-${ext}:${current_datetime}-windows-x86_64"
+          ext_tag="gitea-runner-windows-${ext}:${current_datetime}-x86_64"
           swr_ext="swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/${ext_tag}"
           ghcr_ext="ghcr.io/${current_user}/${ext_tag}"
 

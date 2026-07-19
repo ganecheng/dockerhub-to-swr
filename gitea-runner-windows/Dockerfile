@@ -1,9 +1,7 @@
 # escape=`
 
 # 基于 windows（Windows Server Core + VS Build Tools + Git + NuGet）追加 Node.js + Gitea Runner
-FROM ghcr.io/ganecheng/windows:20260719_132149-windows-x86_64
-
-SHELL ["pwsh", "-NoLogo", "-NoProfile", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+FROM ghcr.io/ganecheng/windows:20260719_165318-x86_64
 
 ARG GITEA_RUNNER_VERSION=1.0.8
 ARG NODE_VERSION=24.18.0
