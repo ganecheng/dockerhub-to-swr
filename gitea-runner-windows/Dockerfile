@@ -1,7 +1,7 @@
 # escape=`
 
 # 基于 windows（Windows Server Core + VS Build Tools + Git + NuGet）追加 Node.js + Gitea Runner
-FROM ghcr.io/ganecheng/windows:20260718_185558-windows-x86_64
+FROM ghcr.io/ganecheng/windows:20260719_132149-windows-x86_64
 
 SHELL ["pwsh", "-NoLogo", "-NoProfile", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
