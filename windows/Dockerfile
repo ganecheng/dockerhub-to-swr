@@ -2,7 +2,7 @@
 
 # Windows Server Core + Git + VS Build Tools，不含 Flutter SDK
 # 供 Flutter Windows 构建镜像继承
-FROM amitie10g/visualstudio2022buildtools:ltsc2025
+FROM amitie10g/visualstudio2022-workload-vctools:ltsc2025
 
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
@@ -65,13 +65,7 @@ RUN $env:GIT_CONFIG_NOSYSTEM=1; git config --system --unset-all include.path; $L
 RUN choco install nuget.commandline -y --no-progress; `
     nuget help | Select-Object -First 1
 
-# 基础镜像已预装 visualstudio2022buildtools，必须 --force 才会重新调用 VS Installer 执行 --add
-RUN choco install visualstudio2022buildtools -y --force --package-parameters `
-    \"--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
-    --add Microsoft.VisualStudio.Component.Windows10SDK.19041 `
-    --add Microsoft.VisualStudio.Component.VC.CMake.Project\"
-
 # 打印 VS Build Tools 相关组件版本，确认安装成功
 RUN $vswhere = \"${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe\"; `
-    & $vswhere -products * -property displayName,installationVersion -format value; `
-    (& $vswhere -products * -format json | ConvertFrom-Json).packages | Where-Object { $_.id -match 'VC\.Tools|Windows10SDK|CMake' } | ForEach-Object { \"$($_.id): $($_.version)\" }
+    & $vswhere -all -format value -property installationPath,displayName,installationVersion; `
+    (& $vswhere -all -format json | ConvertFrom-Json).packages | Where-Object { $_.id -match 'VC\.Tools|Windows10SDK|CMake' } | ForEach-Object { \"$($_.id): $($_.version)\" }
