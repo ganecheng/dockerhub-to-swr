@@ -65,8 +65,8 @@ RUN $env:GIT_CONFIG_NOSYSTEM=1; git config --system --unset-all include.path; $L
 RUN choco install nuget.commandline -y --no-progress; `
     nuget help | Select-Object -First 1
 
-# 安装 VS Build Tools：VCTools、MSVC v143、Windows 10 SDK 19041、CMake
-RUN choco install visualstudio2022buildtools -y --package-parameters `
+# 基础镜像已预装 visualstudio2022buildtools，必须 --force 才会重新调用 VS Installer 执行 --add
+RUN choco install visualstudio2022buildtools -y --force --package-parameters `
     \"--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
     --add Microsoft.VisualStudio.Component.Windows10SDK.19041 `
     --add Microsoft.VisualStudio.Component.VC.CMake.Project\"
