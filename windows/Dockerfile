@@ -36,12 +36,12 @@ SHELL ["pwsh", "-NoLogo", "-NoProfile", "-Command", "$ErrorActionPreference = 'S
 RUN New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Force | Out-Null; `
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" `
       -Name "AllowDevelopmentWithoutDevLicense" -Value 1 -Type DWord; `
-    $testDir = "$env:TEMP\symlink_test_target"; `
-    $testLink = "$env:TEMP\symlink_test_link"; `
+    $testDir = Join-Path $env:TEMP 'symlink_test_target'; `
+    $testLink = Join-Path $env:TEMP 'symlink_test_link'; `
     New-Item -ItemType Directory -Path $testDir -Force | Out-Null; `
     if (Test-Path $testLink) { Remove-Item $testLink -Force }; `
     New-Item -ItemType SymbolicLink -Path $testLink -Target $testDir | Out-Null; `
-    if (Test-Path $testLink) { Write-Host "Symlink creation: OK" } else { throw "Symlink creation failed" }; `
+    if (Test-Path $testLink) { Write-Host 'Symlink creation: OK' } else { throw 'Symlink creation failed' }; `
     Remove-Item $testLink, $testDir -Force -ErrorAction SilentlyContinue
 
 # 安装 Git for Windows（含 Git Bash / MSYS2）
