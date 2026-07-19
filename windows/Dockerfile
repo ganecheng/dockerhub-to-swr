@@ -53,7 +53,8 @@ RUN $tempCfg = \"$env:TEMP\secpol.cfg\"; `
 # 安装 Git for Windows（含 Git Bash / MSYS2）
 RUN choco install git -y --no-progress; `
     $env:PATH = [Environment]::GetEnvironmentVariable('PATH', 'Machine'); `
-    git --version
+    git --version; `
+    bash -c 'echo Git Bash OK'
 
 # 移除可能导致循环引用的 system include.path；键不存在时 --unset-all 非零退出，需重置 $LASTEXITCODE
 RUN $env:GIT_CONFIG_NOSYSTEM=1; git config --system --unset-all include.path; $LASTEXITCODE = 0
@@ -63,7 +64,12 @@ RUN choco install nuget.commandline -y --no-progress; `
     nuget help | Select-Object -First 1
 
 # 安装 VS Build Tools：VCTools、MSVC v143、Windows 10 SDK 19041、CMake
-RUN choco install visualstudio2022buildtools --package-parameters \"--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows10SDK.19041 --add Microsoft.VisualStudio.Component.VC.CMake.Project\"; `
-    $vswhere = \"${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe\"; `
+RUN choco install visualstudio2022buildtools -y --package-parameters `
+    \"--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 `
+    --add Microsoft.VisualStudio.Component.Windows10SDK.19041 `
+    --add Microsoft.VisualStudio.Component.VC.CMake.Project\"
+
+# 打印 VS Build Tools 相关组件版本，确认安装成功
+RUN $vswhere = \"${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe\"; `
     & $vswhere -products * -property displayName,installationVersion -format value; `
     (& $vswhere -products * -format json | ConvertFrom-Json).packages | Where-Object { $_.id -match 'VC\.Tools|Windows10SDK|CMake' } | ForEach-Object { \"$($_.id): $($_.version)\" }
