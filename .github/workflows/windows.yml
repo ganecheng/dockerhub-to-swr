@@ -57,7 +57,7 @@ jobs:
       - name: build container image
         shell: bash
         run: |
-          set -euo pipefail
+          set -exuo pipefail
 
           swr_image_url="swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/windows:${current_datetime}-x86_64"
           ghcr_image_url="ghcr.io/${current_user}/windows:${current_datetime}-x86_64"

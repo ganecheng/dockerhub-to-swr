@@ -104,7 +104,7 @@ jobs:
       - name: build and push extension image
         shell: bash
         run: |
-          set -euo pipefail
+          set -exuo pipefail
 
           ext="${{ matrix.extension }}"
           base_tag="gitea-runner-windows:${current_datetime}-x86_64"
