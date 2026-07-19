@@ -52,6 +52,9 @@ RUN $tempCfg = \"$env:TEMP\secpol.cfg\"; `
 
 # 安装 Git for Windows（含 Git Bash / MSYS2）
 RUN choco install git -y --no-progress; `
+    $gitBin = 'C:\Program Files\Git\bin'; `
+    $p = [Environment]::GetEnvironmentVariable('PATH', 'Machine'); `
+    if ($p -notlike "*$gitBin*") { [Environment]::SetEnvironmentVariable('PATH', "$p;$gitBin", 'Machine') }; `
     $env:PATH = [Environment]::GetEnvironmentVariable('PATH', 'Machine'); `
     git --version; `
     bash -c 'echo Git Bash OK'
