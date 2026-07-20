@@ -57,6 +57,16 @@ env | grep -E '^(GITEA_|ACT_)' | sort | sed -E 's/^([^=]*(TOKEN|SECRET|PASSWORD)
 
 
 #################################################################
+# 检查符号链接权限（诊断信息）
+#################################################################
+if /c/Windows/System32/whoami.exe /priv 2>/dev/null | grep -q 'SeCreateSymbolicLinkPrivilege'; then
+  log INFO "SeCreateSymbolicLinkPrivilege: OK"
+else
+  log WARNING "SeCreateSymbolicLinkPrivilege not found in user token - symlink creation may fail"
+fi
+
+
+#################################################################
 # 导入自定义 CA 证书（若挂载目录存在证书文件）
 # 系统侧：通过 certutil 导入到 Windows 根证书存储
 #################################################################
