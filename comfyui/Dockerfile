@@ -13,7 +13,6 @@ RUN sh /code.sh
 RUN sh /model_additional.sh
 
 USER root
-VOLUME /root
 WORKDIR /root
 EXPOSE 8188
 ENV CLI_ARGS=""
