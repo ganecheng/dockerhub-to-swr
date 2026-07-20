@@ -75,8 +75,6 @@ ENV \
 COPY gitea-runner-ubuntu/run.sh /opt/
 COPY gitea-runner-ubuntu/config.template.yaml /opt/
 
-# Runner 数据卷（注册令牌、配置等）
-VOLUME /data
 # Docker 数据卷（镜像、容器层存储）
 VOLUME /var/lib/docker
 

@@ -36,8 +36,5 @@ ENV `
 COPY gitea-runner-windows/run.sh C:/opt/run.sh
 COPY gitea-runner-windows/config.template.yaml C:/opt/config.template.yaml
 
-# Runner 数据卷
-VOLUME C:/data
-
 # Git Bash 执行 run.sh
 CMD ["bash", "/c/opt/run.sh"]

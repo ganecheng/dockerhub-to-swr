@@ -32,43 +32,10 @@ RUN choco install powershell-core -y --no-progress; `
 
 SHELL ["pwsh", "-NoLogo", "-NoProfile", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
 
-# 启用开发者模式并通过 secedit 授予符号链接权限（双重保障）
-# 开发者模式：允许通过 SYMBOLIC_LINK_FLAG_ALLOW_UNPRIVILEGED_CREATE 创建符号链接（桌面版 Windows 生效）
-# secedit：确保 SeCreateSymbolicLinkPrivilege 直接存在于用户令牌中（Server Core 容器生效）
+# 启用开发者模式以允许创建符号链接
 RUN New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Force | Out-Null; `
     Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" `
       -Name "AllowDevelopmentWithoutDevLicense" -Value 1 -Type DWord; `
-    $tempCfg = Join-Path $env:TEMP 'secpol.cfg'; `
-    $tempDb = Join-Path $env:TEMP 'secpol.sdb'; `
-    secedit /export /cfg $tempCfg /areas USER_RIGHTS /quiet; `
-    if ($LASTEXITCODE -ne 0) { throw "secedit /export failed: $LASTEXITCODE" }; `
-    $content = Get-Content $tempCfg -Encoding Unicode; `
-    $caSid = (New-Object System.Security.Principal.NTAccount('ContainerAdministrator')).Translate([System.Security.Principal.SecurityIdentifier]).Value; `
-    $adminSid = 'S-1-5-32-544'; `
-    $found = $false; `
-    $newContent = @(); `
-    foreach ($line in $content) { `
-      if ($line -match '^SeCreateSymbolicLinkPrivilege\s*=') { `
-        $found = $true; `
-        foreach ($sid in @($caSid, $adminSid)) { `
-          if ($line -notmatch [regex]::Escape($sid)) { `
-            $line = $line.TrimEnd() + ',*' + $sid `
-          } `
-        } `
-      }; `
-      $newContent += $line `
-    }; `
-    if (-not $found) { `
-      $newContent += "SeCreateSymbolicLinkPrivilege = *$caSid,*$adminSid" `
-    }; `
-    $newContent | Set-Content $tempCfg -Encoding Unicode; `
-    secedit /configure /db $tempDb /cfg $tempCfg /areas USER_RIGHTS /quiet; `
-    if ($LASTEXITCODE -ne 0) { throw "secedit /configure failed: $LASTEXITCODE" }; `
-    Remove-Item $tempCfg, $tempDb -Force -ErrorAction SilentlyContinue; `
-    if (-not (whoami /priv | Select-String -Quiet 'SeCreateSymbolicLinkPrivilege')) { `
-      throw 'SeCreateSymbolicLinkPrivilege not found in user token' `
-    }; `
-    Write-Host 'SeCreateSymbolicLinkPrivilege: OK'; `
     $testDir = Join-Path $env:TEMP 'symlink_test_target'; `
     $testLink = Join-Path $env:TEMP 'symlink_test_link'; `
     New-Item -ItemType Directory -Path $testDir -Force | Out-Null; `
@@ -76,9 +43,6 @@ RUN New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlo
     New-Item -ItemType SymbolicLink -Path $testLink -Target $testDir | Out-Null; `
     if (Test-Path $testLink) { Write-Host 'Symlink creation: OK' } else { throw 'Symlink creation failed' }; `
     Remove-Item $testLink, $testDir -Force -ErrorAction SilentlyContinue
-
-# 确保 MSYS2/Git Bash 创建原生符号链接
-ENV MSYS=winsymlinks:nativestrict
 
 # 安装 Git for Windows（含 Git Bash / MSYS2）
 RUN choco install git -y --no-progress; `
