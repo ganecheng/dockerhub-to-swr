@@ -6,7 +6,7 @@
 
 ```
 gitea-runner-ubuntu/                ← 基础镜像 (Dockerfile)
-├── Dockerfile                      # 基基础镜像
+├── Dockerfile                      # 基础镜像
 ├── run.sh                          # 容器入口脚本（Docker 启动、Runner 注册、守护进程）
 ├── config.template.yaml            # Runner 配置文件模板（环境变量占位符）
 ├── modules/                        # 模块化安装脚本
@@ -134,7 +134,8 @@ docker run -e CA_CERT_DIR=/etc/my-certs -v /path/to/my-certs:/etc/my-certs:ro ..
 | 环境变量 | 默认值 | 说明 |
 |---------|-------|------|
 | `GITEA_INSTANCE_URL` | - | Gitea 实例地址（必填） |
-| `GITEA_RUNNER_REGISTRATION_TOKEN` | - | 注册令牌（或通过文件提供） |
+| `GITEA_RUNNER_REGISTRATION_TOKEN` | - | 注册令牌（与 `GITEA_RUNNER_REGISTRATION_TOKEN_FILE` 二选一，直接提供时优先） |
+| `GITEA_RUNNER_REGISTRATION_TOKEN_FILE` | - | 注册令牌文件路径（当 `GITEA_RUNNER_REGISTRATION_TOKEN` 为空时从此文件读取） |
 | `GITEA_RUNNER_NAME` | - | Runner 名称 |
 | `GITEA_RUNNER_LABELS` | `GITEA_RUNNER_LABELS_DEFAULT` | Runner 标签（逗号分隔） |
 | `GITEA_RUNNER_TIMEOUT_MINUTES` | `60` | 容器空闲超时（分钟） |
@@ -142,3 +143,8 @@ docker run -e CA_CERT_DIR=/etc/my-certs -v /path/to/my-certs:/etc/my-certs:ro ..
 | `GITEA_RUNNER_REGISTRATION_RETRY_INTERVAL` | `3` | 注册重试间隔（秒） |
 | `INIT_SH_FILE` | - | 自定义初始化脚本路径（容器内） |
 | `CA_CERT_DIR` | `/opt/cloud/security/cert/ca` | 自定义 CA 证书挂载目录 |
+| `GITEA_RUNNER_CONFIG_TEMPLATE_FILE` | `/opt/config.template.yaml` | Runner 配置模板文件路径 |
+| `APT_MIRROR_URI` | `https://mirrors.huaweicloud.com/ubuntu/` | Ubuntu APT 镜像站 |
+| `PIP_INDEX_URL` | `https://mirrors.huaweicloud.com/repository/pypi/simple` | Python PIP 镜像站 |
+| `PIP_TRUSTED_HOST` | `mirrors.huaweicloud.com` | PIP 信任主机 |
+| `NPM_REGISTRY` | `https://mirrors.huaweicloud.com/repository/npm/` | NPM 镜像站 |

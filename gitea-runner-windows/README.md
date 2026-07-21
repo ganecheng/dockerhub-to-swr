@@ -24,7 +24,8 @@ gitea-runner-windows/               ← 基础镜像
 ├── run.sh                         # 容器入口脚本（Git Bash，Runner 注册、守护进程）
 ├── config.template.yaml            # Runner 配置文件模板（环境变量占位符）
 ├── modules/                        # 模块化安装脚本
-│   ├── common.sh                   # 共享函数库 (Web 下载封装、Flutter 安装)
+│   ├── common.sh                   # 共享函数库 (Web 下载封装、Node.js/Gitea Runner/Flutter 安装)
+│   ├── setup.sh                    # 基础镜像安装脚本 (Node.js + Gitea Runner)
 │   └── flutter.sh                  # Flutter SDK 安装模块
 ├── Dockerfile.flutter               # gitea-runner-windows-flutter
 └── README.md
@@ -117,7 +118,8 @@ docker run -e CA_CERT_DIR=C:\my-certs -v C:\path\to\my-certs:C:\my-certs:ro ...
 | 环境变量 | 默认值 | 说明 |
 |---------|-------|------|
 | `GITEA_INSTANCE_URL` | - | Gitea 实例地址（必填） |
-| `GITEA_RUNNER_REGISTRATION_TOKEN` | - | 注册令牌（或通过文件提供） |
+| `GITEA_RUNNER_REGISTRATION_TOKEN` | - | 注册令牌（与 `GITEA_RUNNER_REGISTRATION_TOKEN_FILE` 二选一，直接提供时优先） |
+| `GITEA_RUNNER_REGISTRATION_TOKEN_FILE` | - | 注册令牌文件路径（当 `GITEA_RUNNER_REGISTRATION_TOKEN` 为空时从此文件读取） |
 | `GITEA_RUNNER_NAME` | - | Runner 名称 |
 | `GITEA_RUNNER_LABELS` | `GITEA_RUNNER_LABELS_DEFAULT` | Runner 标签（逗号分隔） |
 | `GITEA_RUNNER_TIMEOUT_MINUTES` | `60` | 容器空闲超时（分钟） |
@@ -126,3 +128,4 @@ docker run -e CA_CERT_DIR=C:\my-certs -v C:\path\to\my-certs:C:\my-certs:ro ...
 | `INIT_SH_FILE` | - | 自定义初始化脚本路径（容器内，由 Git Bash `source` 执行） |
 | `CA_CERT_DIR` | `C:\certs` | 自定义 CA 证书挂载目录 |
 | `NPM_REGISTRY` | `https://mirrors.huaweicloud.com/repository/npm/` | NPM 镜像站 |
+| `GITEA_RUNNER_CONFIG_TEMPLATE_FILE` | `C:\opt\config.template.yaml` | Runner 配置模板文件路径 |
