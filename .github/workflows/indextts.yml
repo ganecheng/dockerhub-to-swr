@@ -25,6 +25,7 @@ jobs:
   ubuntu_container_image_build:
     runs-on: ubuntu-26.04
     needs: main_job
+    timeout-minutes: 60
     env:
       TZ: Asia/Shanghai
       current_datetime: ${{ needs.main_job.outputs.current_datetime }}

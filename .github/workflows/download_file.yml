@@ -16,6 +16,7 @@ jobs:
   build:
     name: download_file
     runs-on: ubuntu-26.04
+    timeout-minutes: 60
     steps:
       - name: git checkout
         uses: actions/checkout@v6
