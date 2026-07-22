@@ -1,12 +1,11 @@
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE}
 
-# OpenJDK 21 (Android 构建)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    openjdk-21-jdk-headless \
-    && rm -rf /var/lib/apt/lists/*
+# Eclipse Temurin JDK 21 (Android 构建)
+COPY gitea-runner-ubuntu/modules/common.sh gitea-runner-ubuntu/modules/flutter.sh /tmp/
+RUN bash /tmp/flutter.sh && rm -f /tmp/*.sh
 
-ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
+ENV JAVA_HOME=/opt/jdk-21
 
 # Android SDK
 ENV ANDROID_SDK_ROOT=/opt/android-sdk
@@ -21,7 +20,7 @@ RUN curl -fsSL ${CMDLINE_TOOLS_URL} -o /tmp/cmdline-tools.zip \
     && mv /tmp/cmdline-tools/cmdline-tools/* ${ANDROID_SDK_ROOT}/cmdline-tools/latest/ \
     && rm -rf /tmp/cmdline-tools /tmp/cmdline-tools.zip
 
-ENV PATH="${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin:${ANDROID_SDK_ROOT}/platform-tools:${PATH}"
+ENV PATH="${JAVA_HOME}/bin:${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin:${ANDROID_SDK_ROOT}/platform-tools:${PATH}"
 
 # Android SDK 组件 (compileSdk 36, NDK 29, build-tools 36)
 # 额外预装传递依赖需要的版本，避免 Gradle 构建时实时下载

@@ -50,9 +50,8 @@
 
 | 组件 | 版本 | MAJOR 最新版本 | MINOR 最新版本 | PATCH 最新版本 | 引用文件 | 说明 |
 |------|------|----------------|----------------|----------------|----------|------|
-| OpenJDK 21 (Temurin) | latest GA | - | - | - | `gitea-runner-ubuntu/modules/jdk21.sh` | Eclipse Temurin JDK 21 |
+| OpenJDK 21 (Temurin) | latest GA | - | - | - | `gitea-runner-ubuntu/modules/jdk21.sh`, `gitea-runner-ubuntu/Dockerfile.flutter` | Eclipse Temurin JDK 21 |
 | OpenJDK 25 (Temurin) | latest GA | - | - | - | `gitea-runner-ubuntu/modules/jdk25.sh`, `gitea-runner-ubuntu/modules/jmeter.sh` | Eclipse Temurin JDK 25 |
-| OpenJDK 21 (apt) | apt 默认最新 | - | - | - | `gitea-runner-ubuntu/Dockerfile.flutter` | Android 构建用 JDK |
 | GraalVM JDK 21 | latest | - | - | - | `gitea-runner-ubuntu/modules/graalvm-jdk21.sh` | Oracle GraalVM JDK 21 |
 | GraalVM JDK 25 | latest | - | - | - | `gitea-runner-ubuntu/modules/graalvm-jdk25.sh` | Oracle GraalVM JDK 25 |
 | Apache Maven | `3.9.16` | `4.0.0-rc-5` (非 GA) | `3.9.16` (已是最新) | `3.9.16` (已是最新) | `gitea-runner-ubuntu/modules/common.sh` (默认值), `graalvm-jdk21.sh`, `graalvm-jdk25.sh`, `jdk21.sh`, `jdk25.sh` | 项目构建工具 |
