@@ -13,7 +13,6 @@
 | Ubuntu (resolute) | `resolute-20260707` | `resolute-20260707` (已是最新) | `resolute-20260707` (已是最新) | `resolute-20260707` (已是最新) | `ubuntu/Dockerfile` | Ubuntu 26.04 基础镜像 |
 | NVIDIA CUDA | `13.2.1-cudnn-runtime-ubuntu24.04` | `13.3.1` | `13.3.1` | `13.2.2` | `pytorch/Dockerfile` | PyTorch GPU 运行时基础镜像 |
 | Windows Server Core (ltsc2025) | `ltsc2025` | `ltsc2025` (已是最新) | `ltsc2025` (已是最新) | `ltsc2025` (已是最新) | `windows/Dockerfile` (via `amitie10g/visualstudio2022-workload-vctools`) | Windows 构建基础镜像 |
-| Windows Server Core (ltsc2022) | `ltsc2022` | `ltsc2025` | `ltsc2022` (已是最新) | `ltsc2022` (已是最新) | `windows/Dockerfile.bak` (via `mcr.microsoft.com/windows/servercore`) | 旧版 Windows 构建基础镜像（备份） |
 | 自建 Ubuntu 镜像 | `20260722_201300` | - | - | - | `k3s/Dockerfile`, `dumbproxy/Dockerfile`, `download_file/Dockerfile`, `gitea-runner-ubuntu/Dockerfile`, `ace-step/Dockerfile`, `indextts/Dockerfile`, `sensevoice/Dockerfile` | 基于 `ubuntu/Dockerfile` 构建的内部镜像 |
 | 自建 Windows 镜像 | `20260720_235850` | - | - | - | `gitea-runner-windows/Dockerfile`, `gitea-runner-windows/Dockerfile.flutter` | 基于 `windows/Dockerfile` 构建的内部镜像 |
 | 自建 PyTorch 镜像 | `20260402_002531` | - | - | - | `comfyui/Dockerfile` | 基于 `pytorch/Dockerfile` 构建的内部镜像 |
@@ -79,17 +78,14 @@
 
 | 组件 | 版本 | MAJOR 最新版本 | MINOR 最新版本 | PATCH 最新版本 | 引用文件 | 说明 |
 |------|------|----------------|----------------|----------------|----------|------|
-| Git for Windows | `2.54.0` (v2.54.0.windows.1) | `2.55.0` | `2.55.0` | `2.54.0` (已是最新) | `windows/Dockerfile.bak` | Git + Git Bash / MSYS2 |
 | Git (Chocolatey) | latest | - | - | - | `windows/Dockerfile` | 通过 Chocolatey 安装 |
-| PowerShell 7 | `7.4.7` | `7.6.4` | `7.6.4` | `7.4.18` | `windows/Dockerfile.bak` | PowerShell Core |
 | PowerShell (Chocolatey) | latest | - | - | - | `windows/Dockerfile` | 通过 Chocolatey 安装 `powershell-core` |
-| NuGet | latest | - | - | - | `windows/Dockerfile`, `windows/Dockerfile.bak` | .NET 包管理器 |
+| NuGet | latest | - | - | - | `windows/Dockerfile` | .NET 包管理器 |
 | Chocolatey | latest | - | - | - | `windows/Dockerfile` | Windows 包管理器 |
-| VS Build Tools 2022 | 17 release | 17 release (已是最新) | 17 release (已是最新) | 17 release (已是最新) | `windows/Dockerfile`, `windows/Dockerfile.bak` | Visual Studio Build Tools |
-| MSVC v143 | latest (VS 2022) | - | - | - | `windows/Dockerfile`, `windows/Dockerfile.bak` | C/C++ 编译器工具链 |
-| Windows 10 SDK | `10.0.19041` | `10.0.26100` | `10.0.19041` (已是最新) | `10.0.19041` (已是最新) | `windows/Dockerfile.bak` | Windows SDK (19041) |
+| VS Build Tools 2022 | 17 release | 17 release (已是最新) | 17 release (已是最新) | 17 release (已是最新) | `windows/Dockerfile` | Visual Studio Build Tools |
+| MSVC v143 | latest (VS 2022) | - | - | - | `windows/Dockerfile` | C/C++ 编译器工具链 |
 | Windows SDK | latest (VS 2022 安装) | - | - | - | `windows/Dockerfile` | 通过 VS Build Tools 安装 |
-| CMake | latest (VS 内置) | - | - | - | `windows/Dockerfile`, `windows/Dockerfile.bak` | C/C++ 构建系统 |
+| CMake | latest (VS 内置) | - | - | - | `windows/Dockerfile` | C/C++ 构建系统 |
 
 ---
 
