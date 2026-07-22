@@ -19,6 +19,9 @@ RUN <<EOF
     command curl -sSfL --connect-timeout 10 --max-time 30 --retry 3 --retry-all-errors "$@"
   }
 
+  # 创建后续所需的目录
+  install -m 0755 -d /etc/docker /data
+
   arch=$(dpkg --print-architecture)
   # Docker 静态二进制使用 uname 架构命名（amd64 -> x86_64, arm64 -> aarch64）
   docker_arch=$(uname -m)
@@ -65,7 +68,6 @@ RUN <<EOF
   chmod +x /usr/local/bin/dind-hack
 
   # 配置 Docker daemon 开启 experimental 模式（支持 --squash）
-  install -m 0755 -d /etc/docker
   echo '{"experimental":true}' > /etc/docker/daemon.json
 
 EOF
