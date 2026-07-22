@@ -11,13 +11,11 @@
 | 组件 | 版本 | 引用文件 | 说明 |
 |------|------|----------|------|
 | Ubuntu (resolute) | `resolute-20260707` | `ubuntu/Dockerfile` | Ubuntu 26.04 基础镜像 |
-| Ubuntu (resolute) | `resolute-20260610` | `flutter/ubuntu/Dockerfile` | Flutter Ubuntu 构建基础镜像 |
 | NVIDIA CUDA | `13.2.1-cudnn-runtime-ubuntu24.04` | `pytorch/Dockerfile` | PyTorch GPU 运行时基础镜像 |
 | Windows Server Core (ltsc2025) | `ltsc2025` | `windows/Dockerfile` (via `amitie10g/visualstudio2022-workload-vctools`) | Windows 构建基础镜像 |
 | Windows Server Core (ltsc2022) | `ltsc2022` | `windows/Dockerfile.bak` (via `mcr.microsoft.com/windows/servercore`) | 旧版 Windows 构建基础镜像（备份） |
-| 自建 Ubuntu 镜像 | `20260722_201300` | `k3s/Dockerfile`, `dumbproxy/Dockerfile`, `gitea-runner-ubuntu/Dockerfile`, `ace-step/Dockerfile`, `indextts/Dockerfile`, `sensevoice/Dockerfile` | 基于 `ubuntu/Dockerfile` 构建的内部镜像 |
-| 自建 Windows 镜像 | `20260720_235850` | `gitea-runner-windows/Dockerfile` | 基于 `windows/Dockerfile` 构建的内部镜像 |
-| 自建 Windows 镜像 | `20260614_200825` | `flutter/windows/Dockerfile` | Flutter Windows 构建基础镜像 |
+| 自建 Ubuntu 镜像 | `20260722_201300` | `k3s/Dockerfile`, `dumbproxy/Dockerfile`, `download_file/Dockerfile`, `gitea-runner-ubuntu/Dockerfile`, `ace-step/Dockerfile`, `indextts/Dockerfile`, `sensevoice/Dockerfile` | 基于 `ubuntu/Dockerfile` 构建的内部镜像 |
+| 自建 Windows 镜像 | `20260720_235850` | `gitea-runner-windows/Dockerfile`, `gitea-runner-windows/Dockerfile.flutter` | 基于 `windows/Dockerfile` 构建的内部镜像 |
 | 自建 PyTorch 镜像 | `20260402_002531` | `comfyui/Dockerfile` | 基于 `pytorch/Dockerfile` 构建的内部镜像 |
 
 ---
@@ -54,7 +52,7 @@
 |------|------|----------|------|
 | OpenJDK 21 (Temurin) | latest GA | `gitea-runner-ubuntu/modules/jdk21.sh` | Eclipse Temurin JDK 21 |
 | OpenJDK 25 (Temurin) | latest GA | `gitea-runner-ubuntu/modules/jdk25.sh`, `gitea-runner-ubuntu/modules/jmeter.sh` | Eclipse Temurin JDK 25 |
-| OpenJDK 21 (apt) | apt 默认最新 | `flutter/ubuntu/Dockerfile`, `gitea-runner-ubuntu/Dockerfile.flutter` | Android 构建用 JDK |
+| OpenJDK 21 (apt) | apt 默认最新 | `gitea-runner-ubuntu/Dockerfile.flutter` | Android 构建用 JDK |
 | GraalVM JDK 21 | latest | `gitea-runner-ubuntu/modules/graalvm-jdk21.sh` | Oracle GraalVM JDK 21 |
 | GraalVM JDK 25 | latest | `gitea-runner-ubuntu/modules/graalvm-jdk25.sh` | Oracle GraalVM JDK 25 |
 | Apache Maven | `3.9.9` | `gitea-runner-ubuntu/modules/common.sh` (默认值), `graalvm-jdk21.sh`, `graalvm-jdk25.sh`, `jdk21.sh`, `jdk25.sh` | 项目构建工具 |
@@ -66,15 +64,15 @@
 
 | 组件 | 版本 | 引用文件 | 说明 |
 |------|------|----------|------|
-| Flutter SDK | `3.44.2` | `flutter/ubuntu/Dockerfile`, `flutter/windows/Dockerfile`, `gitea-runner-ubuntu/Dockerfile.flutter`, `gitea-runner-windows/Dockerfile.flutter` | Flutter 跨平台框架 |
-| Android Command-line Tools | `14742923` | `flutter/ubuntu/Dockerfile`, `gitea-runner-ubuntu/Dockerfile.flutter` | Android SDK 命令行工具 |
-| Android Platform Tools | latest | `flutter/ubuntu/Dockerfile`, `gitea-runner-ubuntu/Dockerfile.flutter` | ADB 等平台工具 |
-| Android SDK Platform 36 | API 36 | `flutter/ubuntu/Dockerfile`, `gitea-runner-ubuntu/Dockerfile.flutter` | Android 36 编译平台 |
-| Android SDK Platform 35 | API 35 | `flutter/ubuntu/Dockerfile`, `gitea-runner-ubuntu/Dockerfile.flutter` | Android 35 编译平台 |
-| Android Build Tools | `36.0.0` | `flutter/ubuntu/Dockerfile`, `gitea-runner-ubuntu/Dockerfile.flutter` | Android 构建工具 |
-| Android NDK 29 | `29.0.14206865` | `flutter/ubuntu/Dockerfile`, `gitea-runner-ubuntu/Dockerfile.flutter` | Android NDK r29 |
-| Android NDK 28 | `28.2.13676358` | `flutter/ubuntu/Dockerfile`, `gitea-runner-ubuntu/Dockerfile.flutter` | Android NDK r28 |
-| Android CMake | `3.22.1` | `flutter/ubuntu/Dockerfile`, `gitea-runner-ubuntu/Dockerfile.flutter` | Android NDK 内置 CMake |
+| Flutter SDK | `3.44.2` | `gitea-runner-ubuntu/Dockerfile.flutter`, `gitea-runner-windows/Dockerfile.flutter` | Flutter 跨平台框架 |
+| Android Command-line Tools | `14742923` | `gitea-runner-ubuntu/Dockerfile.flutter` | Android SDK 命令行工具 |
+| Android Platform Tools | latest | `gitea-runner-ubuntu/Dockerfile.flutter` | ADB 等平台工具 |
+| Android SDK Platform 36 | API 36 | `gitea-runner-ubuntu/Dockerfile.flutter` | Android 36 编译平台 |
+| Android SDK Platform 35 | API 35 | `gitea-runner-ubuntu/Dockerfile.flutter` | Android 35 编译平台 |
+| Android Build Tools | `36.0.0` | `gitea-runner-ubuntu/Dockerfile.flutter` | Android 构建工具 |
+| Android NDK 29 | `29.0.14206865` | `gitea-runner-ubuntu/Dockerfile.flutter` | Android NDK r29 |
+| Android NDK 28 | `28.2.13676358` | `gitea-runner-ubuntu/Dockerfile.flutter` | Android NDK r28 |
+| Android CMake | `3.22.1` | `gitea-runner-ubuntu/Dockerfile.flutter` | Android NDK 内置 CMake |
 
 ---
 
@@ -109,7 +107,7 @@
 | uv | latest (`-U`) | `pytorch/os_init.sh`, `ace-step/os_init.sh`, `indextts/code.sh` | Python 包管理器 |
 | huggingface-hub | latest (`[cli,hf_xet]`) | `pytorch/os_init.sh`, `ace-step/os_init.sh`, `indextts/code.sh` | HuggingFace 模型下载工具 |
 | modelscope | latest | `pytorch/os_init.sh`, `ace-step/os_init.sh`, `indextts/code.sh` | ModelScope 模型下载工具 |
-| ffmpeg | apt 默认最新 | `pytorch/os_init.sh`, `ace-step/os_init.sh`, `sensevoice/os_init.sh` | 音视频处理工具 |
+| ffmpeg | apt 默认最新 | `pytorch/os_init.sh`, `ace-step/os_init.sh`, `sensevoice/os_init.sh`, `indextts/os_init.sh` | 音视频处理工具 |
 
 ---
 
@@ -177,7 +175,7 @@
 
 以下包通过 `apt-get install` 安装在 `ubuntu/Dockerfile` 中，使用 apt 默认最新版本：
 
-`ca-certificates` `curl` `dos2unix` `iptables` `tini` `git` `tzdata` `locales` `libfreetype6` `net-tools` `findutils` `util-linux` `zip` `unzip` `bc` `fontconfig` `sudo` `jq` `openssl` `iproute2` `iputils-ping` `telnet` `bind9-dnsutils` `wget` `zstd` `xz-utils` `bzip2` `gzip` `vim` `tree` `python3` `python3-pip` `python3-venv` `git-lfs` `skopeo` `yq` `kmod` `procps` `gcc` `g++` `zlib1g-dev` `ffmpeg` `git-lfs` `openjdk-21-jdk-headless`
+`ca-certificates` `curl` `dos2unix` `iptables` `tini` `git` `tzdata` `locales` `libfreetype6` `net-tools` `findutils` `util-linux` `zip` `unzip` `bc` `fontconfig` `sudo` `jq` `openssl` `iproute2` `iputils-ping` `telnet` `bind9-dnsutils` `wget` `zstd` `xz-utils` `bzip2` `gzip` `vim` `tree` `python3` `python3-pip` `python3-venv` `git-lfs` `skopeo` `yq`
 
 ---
 
@@ -187,3 +185,4 @@
 - 标注为 "latest" 的组件使用上游项目的最新发布版。
 - AI 模型项目通过 git commit hash 锁定代码版本，具体依赖（如 `requirements.txt`）在构建时从上游仓库动态拉取。
 - 本仓库不存在 `requirements.txt`、`package.json`、`pom.xml`、`go.mod` 等传统依赖声明文件。
+- `flutter-ubuntu.yml` 和 `flutter-windows.yml` 两个 workflow 引用了已删除的 `flutter/` 目录下的 Dockerfile，运行时会失败。Flutter 构建能力现通过 `gitea-runner-ubuntu/Dockerfile.flutter` 和 `gitea-runner-windows/Dockerfile.flutter` 作为扩展镜像提供。
