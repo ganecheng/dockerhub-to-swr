@@ -7,6 +7,10 @@ ARG GITEA_RUNNER_VERSION=1.0.8
 ARG DOCKER_VERSION=28.5.2
 # 构建参数：Node.js 版本号
 ARG NODE_VERSION=24.18.0
+# 构建参数：kubectl 版本号
+ARG KUBECTL_VERSION=1.36.2
+# 构建参数：Helm 版本号
+ARG HELM_VERSION=4.2.3
 
 # 单个 RUN 层完成所有安装，减少镜像层数和体积
 RUN <<EOF
@@ -40,6 +44,17 @@ RUN <<EOF
 
   # 验证 Docker 版本
   docker --version
+
+  # 下载并安装 kubectl
+  curl "https://dl.k8s.io/release/v${KUBECTL_VERSION}/bin/linux/${arch}/kubectl" -o /usr/local/bin/kubectl
+  chmod 755 /usr/local/bin/kubectl
+  kubectl version --client --output=yaml
+
+  # 下载并安装 Helm
+  curl "https://get.helm.sh/helm-v${HELM_VERSION}-linux-${arch}.tar.gz" -o /tmp/helm.tar.gz
+  tar -xzf /tmp/helm.tar.gz -C /usr/local/bin --strip-components=1 linux-${arch}/helm
+  rm -f /tmp/helm.tar.gz
+  helm version
 
   # 切换 iptables 为 legacy 模式，兼容性更好
   update-alternatives --set iptables /usr/sbin/iptables-legacy
