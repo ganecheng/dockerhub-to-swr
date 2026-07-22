@@ -61,10 +61,10 @@ function install_graalvm_jdk() {
 }
 
 # 安装 Apache Maven
-# 参数: $1 - Maven 版本号 (如 3.9.9)
+# 参数: $1 - Maven 版本号 (如 3.9.16)
 # 安装路径: /opt/maven
 function install_maven() {
-  local version=${1:-3.9.9}
+  local version=${1:-3.9.16}
 
   echo ">>> Installing Apache Maven ${version}..."
   curl "https://archive.apache.org/dist/maven/maven-3/${version}/binaries/apache-maven-${version}-bin.tar.gz" -o /tmp/maven.tar.gz
