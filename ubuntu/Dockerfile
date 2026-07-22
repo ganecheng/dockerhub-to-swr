@@ -30,7 +30,7 @@ RUN <<EOF
     locales libfreetype6 net-tools findutils util-linux zip unzip bc fontconfig sudo jq openssl \
     iproute2 iputils-ping telnet bind9-dnsutils wget \
     zstd xz-utils bzip2 gzip vim tree \
-    python3 python3-pip python3-venv git-lfs skopeo
+    python3 python3-pip python3-venv git-lfs skopeo yq
 
   # 验证 Python 安装
   python3 --version
