@@ -184,4 +184,3 @@
 - 标注为 "apt 默认最新" 的组件未锁定具体版本号，随 Ubuntu 仓库更新而变化。
 - AI 模型项目通过 git commit hash 锁定代码版本，具体依赖（如 `requirements.txt`）在构建时从上游仓库动态拉取。
 - 本仓库不存在 `requirements.txt`、`package.json`、`pom.xml`、`go.mod` 等传统依赖声明文件。
-- `flutter-ubuntu.yml` 和 `flutter-windows.yml` 两个 workflow 引用了已删除的 `flutter/` 目录下的 Dockerfile，运行时会失败。Flutter 构建能力现通过 `gitea-runner-ubuntu/Dockerfile.flutter` 和 `gitea-runner-windows/Dockerfile.flutter` 作为扩展镜像提供。
