@@ -70,3 +70,66 @@ jobs:
 
           docker push "${swr_image_url}"
           docker push "${ghcr_image_url}"
+
+  create_pr:
+    runs-on: ubuntu-26.04
+    needs: [main_job, windows_container_image_build]
+    if: needs.windows_container_image_build.result == 'success'
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      TZ: Asia/Shanghai
+      NEW_TAG: ${{ needs.main_job.outputs.current_datetime }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: git checkout
+        uses: actions/checkout@v6
+
+      - name: update FROM tags and create PR
+        run: |
+          set -exuo pipefail
+
+          sed -i "s|ghcr.io/ganecheng/windows:[0-9]\{8\}_[0-9]\{6\}|ghcr.io/ganecheng/windows:${NEW_TAG}|g" gitea-runner-windows/Dockerfile
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          BRANCH="auto/update-windows-base"
+          git checkout -B "${BRANCH}"
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+
+          git commit -m "chore(windows): 更新基础镜像 tag 至 ${NEW_TAG}"
+          git push --force origin "${BRANCH}"
+
+          PR_TITLE="chore(windows): 更新基础镜像 tag 至 ${NEW_TAG}"
+          printf '%s\n' \
+            "Phase 1 基础镜像构建成功，自动更新下游 Dockerfile 的 FROM tag。" \
+            "" \
+            "## 新 tag" \
+            "" \
+            "${NEW_TAG}-x86_64" \
+            "" \
+            "## 更新的文件" \
+            "- gitea-runner-windows/Dockerfile" \
+            "" \
+            "## 构建详情" \
+            "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            "" \
+            "## 后续操作" \
+            "合并此 PR 后，可按 Phase 2 顺序手动触发下游工作流。" \
+            > /tmp/pr_body.md
+
+          EXISTING_PR=$(gh pr list --head "${BRANCH}" --state open --json number --jq '.[0].number // empty' 2>/dev/null || echo "")
+
+          if [ -n "${EXISTING_PR}" ]; then
+            echo "Updating existing PR #${EXISTING_PR}"
+            gh pr edit "${EXISTING_PR}" --title "${PR_TITLE}" --body-file /tmp/pr_body.md
+          else
+            gh pr create --title "${PR_TITLE}" --body-file /tmp/pr_body.md --base main --head "${BRANCH}"
+          fi

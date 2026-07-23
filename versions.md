@@ -177,17 +177,18 @@
 ## 13. 镜像构建依赖与触发顺序 (Phase)
 
 > 下游 Dockerfile 通过 timestamp tag 硬编码引用上游镜像（如 `20260722_201300`）。
-> Phase 1 构建完成后，需手动更新下游 Dockerfile 中的 `FROM` tag，再触发 Phase 2。
+> Phase 1 构建成功后会自动创建 PR 更新下游 Dockerfile 的 FROM tag（分支 `auto/update-*-base`）。
+> 合并 PR 后即可手动触发 Phase 2 工作流。
 
 ### Phase 1 — 基础镜像（无依赖，可并行触发）
 
-| Workflow | 镜像 | FROM | 定时触发 |
-|----------|------|------|---------|
-| `ubuntu.yml` | `gsc-hub/ubuntu:<ts>-x86_64` | 官方 Ubuntu 26.04 | ✅ 周五 15:30 CST (`cron: '30 7 * * 5'`) |
-| `windows.yml` | `gsc-hub/windows:<ts>-x86_64` | Windows Server Core (ltsc2025) | ✅ 周五 15:30 CST (`cron: '30 7 * * 5'`) |
-| `pytorch.yml` | `gsc-hub/pytorch:<ts>-x86_64` | NVIDIA CUDA 13.2 | ✅ 周五 15:30 CST (`cron: '30 7 * * 5'`) |
+| Workflow | 镜像 | FROM | 定时触发 | 自动 PR 分支 |
+|----------|------|------|---------|-------------|
+| `ubuntu.yml` | `gsc-hub/ubuntu:<ts>-x86_64` | 官方 Ubuntu 26.04 | ✅ 周五 15:30 CST | `auto/update-ubuntu-base` |
+| `windows.yml` | `gsc-hub/windows:<ts>-x86_64` | Windows Server Core (ltsc2025) | ✅ 周五 15:30 CST | `auto/update-windows-base` |
+| `pytorch.yml` | `gsc-hub/pytorch:<ts>-x86_64` | NVIDIA CUDA 13.2 | ✅ 周五 15:30 CST | `auto/update-pytorch-base` |
 
-### Phase 2 — 依赖 Phase 1（需先更新 FROM tag 再触发）
+### Phase 2 - 依赖 Phase 1（合并 Phase 1 自动创建的 PR 后触发）
 
 | Workflow | 镜像 | 依赖 (Phase 1) | 引用文件 |
 |----------|------|----------------|----------|
