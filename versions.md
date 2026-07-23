@@ -2,7 +2,7 @@
 
 > 本文件统计本仓库中所有 Dockerfile、GitHub Actions workflow 和 shell 脚本引用的开源组件版本号。
 >
-> 最后更新：2026-07-22
+> 最后更新：2026-07-23
 
 ---
 
@@ -171,6 +171,49 @@
 以下包通过 `apt-get install` 安装在 `ubuntu/Dockerfile` 中，使用 apt 默认最新版本：
 
 `ca-certificates` `curl` `dos2unix` `iptables` `tini` `git` `tzdata` `locales` `libfreetype6` `net-tools` `findutils` `util-linux` `zip` `unzip` `bc` `fontconfig` `sudo` `jq` `openssl` `iproute2` `iputils-ping` `telnet` `bind9-dnsutils` `wget` `zstd` `xz-utils` `bzip2` `gzip` `vim` `tree` `python3` `python3-pip` `python3-venv` `git-lfs` `skopeo` `yq`
+
+---
+
+## 13. 镜像构建依赖与触发顺序 (Phase)
+
+> 下游 Dockerfile 通过 timestamp tag 硬编码引用上游镜像（如 `20260722_201300`）。
+> Phase 1 构建完成后，需手动更新下游 Dockerfile 中的 `FROM` tag，再触发 Phase 2。
+
+### Phase 1 — 基础镜像（无依赖，可并行触发）
+
+| Workflow | 镜像 | FROM | 定时触发 |
+|----------|------|------|---------|
+| `ubuntu.yml` | `gsc-hub/ubuntu:<ts>-x86_64` | 官方 Ubuntu 26.04 | ✅ 周五 15:30 CST (`cron: '30 7 * * 5'`) |
+| `windows.yml` | `gsc-hub/windows:<ts>-x86_64` | Windows Server Core (ltsc2025) | ✅ 周五 15:30 CST (`cron: '30 7 * * 5'`) |
+| `pytorch.yml` | `gsc-hub/pytorch:<ts>-x86_64` | NVIDIA CUDA 13.2 | ✅ 周五 15:30 CST (`cron: '30 7 * * 5'`) |
+
+### Phase 2 — 依赖 Phase 1（需先更新 FROM tag 再触发）
+
+| Workflow | 镜像 | 依赖 (Phase 1) | 引用文件 |
+|----------|------|----------------|----------|
+| `gitea-runner-ubuntu.yml` | `gitea-runner-ubuntu` + 6 扩展 (jdk21 / jdk25 / graalvm-jdk21 / graalvm-jdk25 / jmeter / flutter) | ubuntu | `gitea-runner-ubuntu/Dockerfile` |
+| `gitea-runner-windows.yml` | `gitea-runner-windows` + flutter 扩展 | windows | `gitea-runner-windows/Dockerfile` |
+| `k3s.yml` | `gsc-hub/k3s:<ts>-x86_64` | ubuntu | `k3s/Dockerfile` |
+| `dumbproxy.yml` | `gsc-hub/dumbproxy:<ts>-x86_64` | ubuntu | `dumbproxy/Dockerfile` |
+| `ace-step.yml` | `gsc-hub/ace-step:<ts>-x86_64` | ubuntu | `ace-step/Dockerfile` |
+| `indextts.yml` | `gsc-hub/indextts:<ts>-x86_64` | ubuntu | `indextts/Dockerfile` |
+| `sensevoice.yml` | `gsc-hub/sensevoice:<ts>-x86_64` | ubuntu | `sensevoice/Dockerfile` |
+| `comfyui.yml` | `gsc-hub/comfyui:<ts>-x86_64` | pytorch | `comfyui/Dockerfile` |
+
+> `gitea-runner-ubuntu.yml` 和 `gitea-runner-windows.yml` 内部已通过 `needs:` 保证 base 先于扩展构建。
+
+### 独立工作流（无依赖，随时触发）
+
+| Workflow | 功能 | 说明 |
+|----------|------|------|
+| `batch-sync-image.yaml` | skopeo 批量同步 Longhorn 镜像 | 纯镜像搬运，无构建依赖 |
+
+### 事件驱动（不参与 Phase）
+
+| Workflow | 触发方式 | 说明 |
+|----------|---------|------|
+| `issue-sync-image.yml` | GitHub Issue | 按 Issue 同步指定 DockerHub 镜像 |
+| `download_file.yml` | 手动 + URL 参数 | 下载指定 URL 并打包为镜像 |
 
 ---
 

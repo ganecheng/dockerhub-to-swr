@@ -2,6 +2,8 @@ name: pytorch
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '30 7 * * 5'  # 周五 15:30 北京时间 (周五 07:30 UTC)
 
 env:
   HUAWEICLOUD_IAM_AK: "${{ secrets.HUAWEICLOUD_IAM_AK }}"
