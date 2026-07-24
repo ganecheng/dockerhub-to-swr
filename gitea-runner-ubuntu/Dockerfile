@@ -1,5 +1,5 @@
 # 基础镜像：Ubuntu 26.04 (resolute)
-FROM ghcr.io/ganecheng/ubuntu:20260723_142929-x86_64
+FROM ghcr.io/ganecheng/ubuntu:20260724_174130-x86_64
 
 # 构建参数：Gitea Runner 版本号
 ARG GITEA_RUNNER_VERSION=1.0.8
