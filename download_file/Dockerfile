@@ -1,4 +1,4 @@
-FROM ghcr.io/ganecheng/ubuntu:20260723_142929-x86_64
+FROM ghcr.io/ganecheng/ubuntu:20260724_174130-x86_64
 
 COPY file /file
 

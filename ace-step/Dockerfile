@@ -1,4 +1,4 @@
-FROM ghcr.io/ganecheng/ubuntu:20260723_142929-x86_64
+FROM ghcr.io/ganecheng/ubuntu:20260724_174130-x86_64
 
 COPY ace-step/os_init.sh /os_init.sh
 COPY ace-step/os_clean.sh /os_clean.sh
