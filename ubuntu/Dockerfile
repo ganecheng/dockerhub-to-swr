@@ -21,16 +21,19 @@ RUN <<EOF
   # 将 /bin/sh 指向 bash（dash 不支持 source 命令，Gitea Runner 内部脚本依赖 bash 特性）
   ln -sf /bin/bash /bin/sh
 
-  # 安装基础依赖：证书、下载工具、tini（PID 1 进程管理）、git
-  # 以及常用运行时工具（语言包、字体、网络诊断、压缩、jq/openssl 等）
+  # 按功能类别分组安装，减少镜像层数和体积
   apt-get update
   apt-get upgrade -y
   apt-get install --no-install-recommends -y \
-    ca-certificates curl dos2unix iptables tini git tzdata \
-    locales libfreetype6 net-tools findutils util-linux zip unzip bc fontconfig sudo jq openssl \
-    iproute2 iputils-ping telnet bind9-dnsutils wget \
-    zstd xz-utils bzip2 gzip vim tree \
-    python3 python3-pip python3-venv git-lfs skopeo yq
+    ca-certificates curl wget tini tzdata \
+    git git-lfs \
+    locales fontconfig libfreetype6 \
+    findutils util-linux binutils bc \
+    net-tools iproute2 iputils-ping telnet bind9-dnsutils \
+    zip unzip zstd xz-utils bzip2 gzip dos2unix \
+    vim tree jq yq \
+    sudo openssl iptables \
+    python3 python3-pip python3-venv skopeo
 
   # 验证 Python 安装
   python3 --version
