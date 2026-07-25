@@ -28,7 +28,7 @@ RUN <<EOF
     ca-certificates curl wget tini tzdata \
     git git-lfs \
     locales fontconfig libfreetype6 \
-    findutils util-linux binutils bc \
+    findutils util-linux binutils bc file \
     net-tools iproute2 iputils-ping telnet bind9-dnsutils \
     zip unzip zstd xz-utils bzip2 gzip dos2unix \
     vim tree jq yq \
