@@ -2,7 +2,7 @@
 
 > 本文件统计本仓库中所有 Dockerfile、GitHub Actions workflow 和 shell 脚本引用的开源组件版本号。
 >
-> 最后更新：2026-07-23
+> 最后更新：2026-07-27
 
 ---
 
@@ -13,7 +13,7 @@
 | Ubuntu (resolute) | `resolute-20260707` | `resolute-20260707` (已是最新) | `resolute-20260707` (已是最新) | `resolute-20260707` (已是最新) | `ubuntu/Dockerfile` | Ubuntu 26.04 基础镜像 |
 | NVIDIA CUDA | `13.2.1-cudnn-runtime-ubuntu24.04` | `13.3.1` | `13.3.1` | `13.2.2` | `pytorch/Dockerfile` | PyTorch GPU 运行时基础镜像 |
 | Windows Server Core (ltsc2025) | `ltsc2025` | `ltsc2025` (已是最新) | `ltsc2025` (已是最新) | `ltsc2025` (已是最新) | `windows/Dockerfile` (via `amitie10g/visualstudio2022-workload-vctools`) | Windows 构建基础镜像 |
-| 自建 Ubuntu 镜像 | `20260722_201300` | - | - | - | `k3s/Dockerfile`, `dumbproxy/Dockerfile`, `download_file/Dockerfile`, `gitea-runner-ubuntu/Dockerfile`, `ace-step/Dockerfile`, `indextts/Dockerfile`, `sensevoice/Dockerfile` | 基于 `ubuntu/Dockerfile` 构建的内部镜像 |
+| 自建 Ubuntu 镜像 | `20260722_201300` | - | - | - | `k3s/Dockerfile`, `dumbproxy/Dockerfile`, `mirrorproxy/Dockerfile`, `download_file/Dockerfile`, `gitea-runner-ubuntu/Dockerfile`, `ace-step/Dockerfile`, `indextts/Dockerfile`, `sensevoice/Dockerfile` | 基于 `ubuntu/Dockerfile` 构建的内部镜像 |
 | 自建 Windows 镜像 | `20260720_235850` | - | - | - | `gitea-runner-windows/Dockerfile`, `gitea-runner-windows/Dockerfile.flutter` | 基于 `windows/Dockerfile` 构建的内部镜像 |
 | 自建 PyTorch 镜像 | `20260402_002531` | - | - | - | `comfyui/Dockerfile` | 基于 `pytorch/Dockerfile` 构建的内部镜像 |
 
@@ -31,6 +31,7 @@
 | skopeo | apt 默认最新 | - | - | - | `ubuntu/Dockerfile` | 镜像同步工具 |
 | yq | apt 默认最新 | - | - | - | `ubuntu/Dockerfile` | YAML 处理工具 |
 | dumbproxy | `1.51.1` | `1.51.1` (已是最新) | `1.51.1` (已是最新) | `1.51.1` (已是最新) | `dumbproxy/Dockerfile` | 轻量 HTTP 代理 |
+| MirrorProxy | `1.1.0` | `1.1.0` (已是最新) | `1.1.0` (已是最新) | `1.1.0` (已是最新) | `mirrorproxy/Dockerfile` | 自部署镜像代理平台 |
 
 ---
 
@@ -196,6 +197,7 @@
 | `gitea-runner-windows.yml` | `gitea-runner-windows` + flutter 扩展 | windows | `gitea-runner-windows/Dockerfile` |
 | `k3s.yml` | `gsc-hub/k3s:<ts>-x86_64` | ubuntu | `k3s/Dockerfile` |
 | `dumbproxy.yml` | `gsc-hub/dumbproxy:<ts>-x86_64` | ubuntu | `dumbproxy/Dockerfile` |
+| `mirrorproxy.yml` | `gsc-hub/mirrorproxy:<ts>-x86_64` | ubuntu | `mirrorproxy/Dockerfile` |
 | `ace-step.yml` | `gsc-hub/ace-step:<ts>-x86_64` | ubuntu | `ace-step/Dockerfile` |
 | `indextts.yml` | `gsc-hub/indextts:<ts>-x86_64` | ubuntu | `indextts/Dockerfile` |
 | `sensevoice.yml` | `gsc-hub/sensevoice:<ts>-x86_64` | ubuntu | `sensevoice/Dockerfile` |

@@ -36,9 +36,9 @@ else
 fi
 
 #################################################################
-# 启动 dumbproxy
-# 通过 DUMBPROXY_ARGS 环境变量传递 dumbproxy 参数（如 -auth 'user:pass'）
+# 启动 mirrorproxy-server
+# 通过 MIRRORPROXY_ARGS 环境变量传递 mirrorproxy-server 参数（如 --config /etc/mirrorproxy.toml）
 #################################################################
-read -r -a dumbproxy_args <<< "${DUMBPROXY_ARGS:--bind-address :8080}"
-log INFO "Starting dumbproxy ..."
-exec dumbproxy "${dumbproxy_args[@]}"
+read -r -a mirrorproxy_args <<< "${MIRRORPROXY_ARGS:-}"
+log INFO "Starting mirrorproxy-server ..."
+exec mirrorproxy-server "${mirrorproxy_args[@]}"

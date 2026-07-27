@@ -48,7 +48,5 @@ COPY dumbproxy/run.sh /opt/
 # dumbproxy 监听端口
 EXPOSE 8080/tcp
 
-# 使用 tini 作为 PID 1，正确处理信号和僵尸进程
-# 以 root 用户启动，docker run 时可追加 dumbproxy 参数（如 -auth）
-ENTRYPOINT ["/usr/bin/tini", "--", "/bin/bash", "/opt/run.sh"]
-CMD ["-bind-address", ":8080"]
+# 默认启动命令
+CMD ["/bin/bash", "/opt/run.sh"]
