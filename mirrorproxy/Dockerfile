@@ -2,7 +2,7 @@
 FROM ghcr.io/ganecheng/ubuntu:20260725_145405-x86_64
 
 # 构建参数：mirrorproxy-server 版本号
-ARG MIRRORPROXY_VERSION=1.1.0-sp1
+ARG MIRRORPROXY_VERSION=1.2.0
 
 # 下载并安装 mirrorproxy-server 二进制文件
 RUN <<EOF
@@ -26,7 +26,7 @@ RUN <<EOF
       ;;
   esac
 
-  mirrorproxy_url="https://github.com/ganecheng/MirrorProxy/releases/download/v${MIRRORPROXY_VERSION}/mirrorproxy-server-${mirrorproxy_arch}.tar.gz"
+  mirrorproxy_url="https://github.com/inbjo/MirrorProxy/releases/download/v${MIRRORPROXY_VERSION}/mirrorproxy-server-${mirrorproxy_arch}.tar.gz"
   echo "Downloading mirrorproxy-server from $mirrorproxy_url"
   curl "$mirrorproxy_url" -o /tmp/mirrorproxy-server.tar.gz
   tar -xzf /tmp/mirrorproxy-server.tar.gz -C /tmp/
