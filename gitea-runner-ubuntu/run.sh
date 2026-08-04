@@ -134,10 +134,18 @@ rm -f /var/run/docker.pid /run/docker/containerd/containerd.pid
 dockerd -p /var/run/docker.pid > /var/log/docker.log 2>&1 &
 DOCKER_PID=$!
 # 轮询等待 Docker 引擎就绪
+docker_wait_seconds=120
+docker_wait_start=$(date +%s)
 while ! docker stats --no-stream &>/dev/null; do
   log INFO "Waiting for Docker engine to start..."
-  sleep 2
-  tail -n 1 /var/log/docker.log
+  sleep 5
+  tail -n 20 /var/log/docker.log 2>/dev/null || true
+  # 超时后输出完整日志并退出
+  if (( $(date +%s) - docker_wait_start >= docker_wait_seconds )); then
+    log ERROR "Docker engine failed to start within ${docker_wait_seconds}s, full docker.log:"
+    cat /var/log/docker.log 2>/dev/null || true
+    exit 1
+  fi
 done
 echo "==========================================================="
 docker info
