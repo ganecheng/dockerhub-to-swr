@@ -2,7 +2,7 @@
 
 > 本文件统计本仓库中所有 Dockerfile、GitHub Actions workflow 和 shell 脚本引用的开源组件版本号。
 >
-> 最后更新：2026-07-27
+> 最后更新：2026-08-05
 
 ---
 
@@ -10,7 +10,7 @@
 
 | 组件 | 版本 | MAJOR 最新版本 | MINOR 最新版本 | PATCH 最新版本 | 引用文件 | 说明 |
 |------|------|----------------|----------------|----------------|----------|------|
-| Ubuntu (resolute) | `resolute-20260707` | `resolute-20260707` (已是最新) | `resolute-20260707` (已是最新) | `resolute-20260707` (已是最新) | `ubuntu/Dockerfile` | Ubuntu 26.04 基础镜像 |
+| Ubuntu (resolute) | `resolute-20260724.1` | `resolute-20260724.1` (已是最新) | `resolute-20260724.1` (已是最新) | `resolute-20260724.1` (已是最新) | `ubuntu/Dockerfile` | Ubuntu 26.04 基础镜像 |
 | NVIDIA CUDA | `13.2.1-cudnn-runtime-ubuntu24.04` | `13.3.1` | `13.3.1` | `13.2.2` | `pytorch/Dockerfile` | PyTorch GPU 运行时基础镜像 |
 | Windows Server Core (ltsc2025) | `ltsc2025` | `ltsc2025` (已是最新) | `ltsc2025` (已是最新) | `ltsc2025` (已是最新) | `windows/Dockerfile` (via `amitie10g/visualstudio2022-workload-vctools`) | Windows 构建基础镜像 |
 | 自建 Ubuntu 镜像 | `20260722_201300` | - | - | - | `k3s/Dockerfile`, `dumbproxy/Dockerfile`, `mirrorproxy/Dockerfile`, `download_file/Dockerfile`, `gitea-runner-ubuntu/Dockerfile`, `ace-step/Dockerfile`, `indextts/Dockerfile`, `sensevoice/Dockerfile`, `ttyd/Dockerfile` | 基于 `ubuntu/Dockerfile` 构建的内部镜像 |
