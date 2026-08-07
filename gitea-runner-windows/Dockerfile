@@ -3,8 +3,8 @@
 # 基于 windows（Windows Server Core + VS Build Tools + Git + NuGet）追加 Node.js + Gitea Runner
 FROM ghcr.io/ganecheng/windows:20260731_180542-x86_64
 
-ENV GITEA_RUNNER_VERSION=1.0.8 `
-    NODE_VERSION=24.18.0
+ENV GITEA_RUNNER_VERSION=3.0.2 `
+    NODE_VERSION=24.19.0
 
 # 安装目录
 ENV NODE_HOME="C:\Program Files\nodejs" `

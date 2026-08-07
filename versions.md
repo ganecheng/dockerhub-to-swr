@@ -26,12 +26,12 @@
 | Docker CE | `28.5.2` | `29.7.2` | `28.5.2` (已是最新) | `28.5.2` (已是最新) | `gitea-runner-ubuntu/Dockerfile` (静态二进制), 各 workflow (`docker/setup-docker-action@v5` with `version: 'v28.5.2'`) | 容器引擎 |
 | Docker CE (apt) | apt 默认最新 | - | - | - | `k3s/Dockerfile` | 通过 Docker 官方 APT 源安装 |
 | containerd.io | apt 默认最新 | - | - | - | `k3s/Dockerfile` | Docker CE 运行依赖 |
-| k3s | `v1.34.9+k3s1` | `v1.36.3+k3s1` | `v1.34.10+k3s1` | `v1.34.9+k3s1` (已是最新) | `k3s/Dockerfile` | 轻量级 Kubernetes 发行版 |
+| k3s | `v1.34.10+k3s1` | `v1.36.3+k3s1` | `v1.34.10+k3s1` (已是最新) | `v1.34.10+k3s1` (已是最新) | `k3s/Dockerfile` | 轻量级 Kubernetes 发行版 |
 | tini | apt 默认最新 | - | - | - | `ubuntu/Dockerfile` | PID 1 进程管理 |
 | skopeo | apt 默认最新 | - | - | - | `ubuntu/Dockerfile` | 镜像同步工具 |
 | yq | apt 默认最新 | - | - | - | `ubuntu/Dockerfile` | YAML 处理工具 |
 | dumbproxy | `1.51.1` | `1.51.1` (已是最新) | `1.51.1` (已是最新) | `1.51.1` (已是最新) | `dumbproxy/Dockerfile` | 轻量 HTTP 代理 |
-| MirrorProxy | `1.2.0` | `1.3.1` | `1.3.1` | `1.2.0` (已是最新) | `mirrorproxy/Dockerfile` | 自部署镜像代理平台 |
+| MirrorProxy | `1.3.1` | `1.3.1` (已是最新) | `1.3.1` (已是最新) | `1.3.1` (已是最新) | `mirrorproxy/Dockerfile` | 自部署镜像代理平台 |
 | ttyd | `1.7.7` | `1.7.7` (已是最新) | `1.7.7` (已是最新) | `1.7.7` (已是最新) | `ttyd/Dockerfile` | Web 终端共享工具 |
 
 ---
@@ -40,9 +40,9 @@
 
 | 组件 | 版本 | MAJOR 最新版本 | MINOR 最新版本 | PATCH 最新版本 | 引用文件 | 说明 |
 |------|------|----------------|----------------|----------------|----------|------|
-| Gitea Runner | `1.0.8` | `3.0.2` | `1.0.8` (已是最新) | `1.0.8` (已是最新) | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | CI/CD Runner |
-| Node.js | `24.18.0` | `26.7.0` | `24.19.0` | `24.18.1` | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | JavaScript 运行时 |
-| kubectl | `1.36.2` | `1.36.3` | `1.36.3` | `1.36.3` | `gitea-runner-ubuntu/Dockerfile` | Kubernetes 命令行工具 |
+| Gitea Runner | `3.0.2` | `3.0.2` (已是最新) | `3.0.2` (已是最新) | `3.0.2` (已是最新) | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | CI/CD Runner |
+| Node.js | `24.19.0` | `26.7.0` | `24.19.0` (已是最新) | `24.19.0` (已是最新) | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | JavaScript 运行时 |
+| kubectl | `1.36.3` | `1.36.3` (已是最新) | `1.36.3` (已是最新) | `1.36.3` (已是最新) | `gitea-runner-ubuntu/Dockerfile` | Kubernetes 命令行工具 |
 | Helm | `4.2.3` | `4.2.3` (已是最新) | `4.2.3` (已是最新) | `4.2.3` (已是最新) | `gitea-runner-ubuntu/Dockerfile` | Kubernetes 包管理器 |
 
 ---
@@ -64,7 +64,7 @@
 
 | 组件 | 版本 | MAJOR 最新版本 | MINOR 最新版本 | PATCH 最新版本 | 引用文件 | 说明 |
 |------|------|----------------|----------------|----------------|----------|------|
-| Flutter SDK | `3.44.2` | `3.44.9` | `3.44.9` | `3.44.9` | `gitea-runner-ubuntu/Dockerfile.flutter`, `gitea-runner-windows/Dockerfile.flutter` | Flutter 跨平台框架 |
+| Flutter SDK | `3.44.9` | `3.44.9` (已是最新) | `3.44.9` (已是最新) | `3.44.9` (已是最新) | `gitea-runner-ubuntu/Dockerfile.flutter`, `gitea-runner-windows/Dockerfile.flutter` | Flutter 跨平台框架 |
 | Android Command-line Tools | `14742923` | `15859902` (v22.0) | `14742923` (已是最新) | `14742923` (已是最新) | `gitea-runner-ubuntu/Dockerfile.flutter` | Android SDK 命令行工具 |
 | Android Platform Tools | latest | - | - | - | `gitea-runner-ubuntu/Dockerfile.flutter` | ADB 等平台工具 |
 | Android SDK Platform 36 | API 36 | API 36 (已是最新) | API 36 (已是最新) | API 36 (已是最新) | `gitea-runner-ubuntu/Dockerfile.flutter` | Android 36 编译平台 |
@@ -138,9 +138,9 @@
 
 | Action | 版本 | MAJOR 最新版本 | MINOR 最新版本 | PATCH 最新版本 | 引用文件 | 说明 |
 |--------|------|----------------|----------------|----------------|----------|------|
-| `actions/checkout` | `v6` | `v7.0.1` | `v6.1.0` | `v6.1.0` | 全部 workflow | 代码检出 |
+| `actions/checkout` | `v7` | `v7.0.1` (已是最新) | `v7.0.1` (已是最新) | `v7.0.1` (已是最新) | 全部 workflow | 代码检出 |
 | `docker/setup-docker-action` | `v5` | `v5.4.0` | `v5.4.0` | `v5.4.0` | 全部 workflow | Docker 环境初始化 |
-| `docker/login-action` | `v3` | `v4.6.0` | `v3.7.0` | `v3.7.0` | 全部需登录 ghcr 的 workflow | 容器仓库登录 |
+| `docker/login-action` | `v4` | `v4.6.0` (已是最新) | `v4.6.0` (已是最新) | `v4.6.0` (已是最新) | 全部需登录 ghcr 的 workflow | 容器仓库登录 |
 | `actions/upload-artifact` | `v7` | `v7.0.1` | `v7.0.1` | `v7.0.1` | `issue-sync-image.yml` | 构建产物上传 |
 
 ---

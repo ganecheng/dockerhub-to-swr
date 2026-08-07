@@ -2,7 +2,7 @@
 FROM ghcr.io/ganecheng/ubuntu:20260805_191642-x86_64
 
 # 构建参数：mirrorproxy-server 版本号
-ARG MIRRORPROXY_VERSION=1.2.0
+ARG MIRRORPROXY_VERSION=1.3.1
 
 # 下载并安装 mirrorproxy-server 二进制文件
 RUN <<EOF

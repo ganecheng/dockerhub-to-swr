@@ -32,7 +32,7 @@ jobs:
       current_user: ${{ needs.main_job.outputs.current_user }}
     steps:
       - name: git checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Docker
         uses: docker/setup-docker-action@v5
@@ -40,7 +40,7 @@ jobs:
           version: 'v28.5.2'
 
       - name: login ghcr
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -83,7 +83,7 @@ jobs:
         extension: [ flutter ]
     steps:
       - name: git checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Docker
         uses: docker/setup-docker-action@v5
@@ -91,7 +91,7 @@ jobs:
           version: 'v28.5.2'
 
       - name: login ghcr
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}

@@ -5,7 +5,7 @@
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE}
 
-ENV FLUTTER_VERSION="3.44.2" `
+ENV FLUTTER_VERSION="3.44.9" `
     FLUTTER_ROOT="C:\flutter" `
     FLUTTER_GIT_URL="unknown source" `
     PUB_CACHE="C:\pub-cache"

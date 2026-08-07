@@ -19,7 +19,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: git checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Docker
         uses: docker/setup-docker-action@v5

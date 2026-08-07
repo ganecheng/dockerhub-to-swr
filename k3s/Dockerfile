@@ -2,7 +2,7 @@
 FROM ghcr.io/ganecheng/ubuntu:20260805_191642-x86_64
 
 # 构建参数：k3s 版本号，留空时下载最新发布版二进制文件
-ARG K3S_VERSION='v1.34.9+k3s1'
+ARG K3S_VERSION='v1.34.10+k3s1'
 
 # 单个 RUN 层完成所有安装，减少镜像层数和体积
 RUN <<EOF
