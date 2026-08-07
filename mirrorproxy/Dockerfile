@@ -1,5 +1,5 @@
 # 基础镜像：Ubuntu 26.04 (resolute)
-FROM ghcr.io/ganecheng/ubuntu:20260805_191642-x86_64
+FROM ghcr.io/ganecheng/ubuntu:20260807_163713-x86_64
 
 # 构建参数：mirrorproxy-server 版本号
 ARG MIRRORPROXY_VERSION=1.3.1
