@@ -1,7 +1,7 @@
 # escape=`
 
 # 基于 windows（Windows Server Core + VS Build Tools + Git + NuGet）追加 Node.js + Gitea Runner
-FROM ghcr.io/ganecheng/windows:20260731_180542-x86_64
+FROM ghcr.io/ganecheng/windows:20260807_163700-x86_64
 
 ENV GITEA_RUNNER_VERSION=3.0.2 `
     NODE_VERSION=24.19.0
