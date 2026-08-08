@@ -8,10 +8,8 @@ mkdir -pv /app
 cd /app
 
 # 下载代码
-git init .
-git remote add origin https://github.com/ACE-Step/ACE-Step-1.5.git
-git fetch --depth 1 origin 82252c2
-git checkout FETCH_HEAD
+git clone --filter=blob:none --no-checkout https://github.com/ACE-Step/ACE-Step-1.5.git .
+git checkout 82252c2
 rm -rf .git
 
 # 安装依赖

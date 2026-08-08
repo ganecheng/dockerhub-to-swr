@@ -7,11 +7,9 @@ set -ex
 cd /app
 
 # 下载代码
-git init .
-git remote add origin https://github.com/FunAudioLLM/SenseVoice.git
+git clone --filter=blob:none --no-checkout https://github.com/FunAudioLLM/SenseVoice.git .
 git lfs install
-git fetch --depth 1 origin 4462e35
-git checkout FETCH_HEAD
+git checkout 4462e35
 git lfs pull
 
 git lfs uninstall && rm -rf .git

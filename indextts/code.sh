@@ -7,11 +7,9 @@ set -ex
 cd /app
 
 # 下载代码
-git init .
-git remote add origin https://github.com/index-tts/index-tts.git
+git clone --filter=blob:none --no-checkout https://github.com/index-tts/index-tts.git .
 git lfs install
-git fetch --depth 1 origin 1698b32
-git checkout FETCH_HEAD
+git checkout 1698b32
 git lfs pull
 
 git lfs uninstall && rm -rf .git

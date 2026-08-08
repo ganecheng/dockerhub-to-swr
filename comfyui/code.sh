@@ -8,10 +8,8 @@ mkdir -pv /default_comfyui_bundle/ComfyUI
 cd /default_comfyui_bundle/ComfyUI
 
 # 下载代码
-git init .
-git remote add origin https://github.com/Comfy-Org/ComfyUI.git
-git fetch --depth 1 origin 43cb4ff
-git checkout FETCH_HEAD
+git clone --filter=blob:none --no-checkout https://github.com/Comfy-Org/ComfyUI.git .
+git checkout 43cb4ff
 rm -rf .git
 
 # 安装依赖
