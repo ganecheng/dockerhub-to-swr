@@ -180,7 +180,7 @@
 
 > 下游 Dockerfile 通过 timestamp tag 硬编码引用上游镜像（如 `20260805_191642`）。
 > Phase 1 构建成功后会自动创建 PR 更新下游 Dockerfile 的 FROM tag（分支 `auto/update-*-base`）。
-> 合并 PR 后即可手动触发 Phase 2 工作流。
+> 合并 PR 后即可手动触发 Phase 2 工作流，或等待周六 08:20 CST 定时触发。
 
 ### Phase 1 — 基础镜像（无依赖，可并行触发）
 
@@ -192,18 +192,18 @@
 
 ### Phase 2 - 依赖 Phase 1（合并 Phase 1 自动创建的 PR 后触发）
 
-| Workflow | 镜像 | 依赖 (Phase 1) | 引用文件 |
-|----------|------|----------------|----------|
-| `gitea-runner-ubuntu.yml` | `gitea-runner-ubuntu` + 6 扩展 (jdk21 / jdk25 / graalvm-jdk21 / graalvm-jdk25 / jmeter / flutter) | ubuntu | `gitea-runner-ubuntu/Dockerfile` |
-| `gitea-runner-windows.yml` | `gitea-runner-windows` + flutter 扩展 | windows | `gitea-runner-windows/Dockerfile` |
-| `k3s.yml` | `gsc-hub/k3s:<ts>-x86_64` | ubuntu | `k3s/Dockerfile` |
-| `dumbproxy.yml` | `gsc-hub/dumbproxy:<ts>-x86_64` | ubuntu | `dumbproxy/Dockerfile` |
-| `mirrorproxy.yml` | `gsc-hub/mirrorproxy:<ts>-x86_64` | ubuntu | `mirrorproxy/Dockerfile` |
-| `ttyd.yml` | `gsc-hub/ttyd:<ts>-x86_64` | ubuntu | `ttyd/Dockerfile` |
-| `ace-step.yml` | `gsc-hub/ace-step:<ts>-x86_64` | ubuntu | `ace-step/Dockerfile` |
-| `indextts.yml` | `gsc-hub/indextts:<ts>-x86_64` | ubuntu | `indextts/Dockerfile` |
-| `sensevoice.yml` | `gsc-hub/sensevoice:<ts>-x86_64` | ubuntu | `sensevoice/Dockerfile` |
-| `comfyui.yml` | `gsc-hub/comfyui:<ts>-x86_64` | pytorch | `comfyui/Dockerfile` |
+| Workflow | 镜像 | 依赖 (Phase 1) | 定时触发 | 引用文件 |
+|----------|------|----------------|---------|----------|
+| `gitea-runner-ubuntu.yml` | `gitea-runner-ubuntu` + 6 扩展 (jdk21 / jdk25 / graalvm-jdk21 / graalvm-jdk25 / jmeter / flutter) | ubuntu | ✅ 周六 08:20 CST | `gitea-runner-ubuntu/Dockerfile` |
+| `gitea-runner-windows.yml` | `gitea-runner-windows` + flutter 扩展 | windows | ✅ 周六 08:20 CST | `gitea-runner-windows/Dockerfile` |
+| `k3s.yml` | `gsc-hub/k3s:<ts>-x86_64` | ubuntu | ✅ 周六 08:20 CST | `k3s/Dockerfile` |
+| `dumbproxy.yml` | `gsc-hub/dumbproxy:<ts>-x86_64` | ubuntu | ✅ 周六 08:20 CST | `dumbproxy/Dockerfile` |
+| `mirrorproxy.yml` | `gsc-hub/mirrorproxy:<ts>-x86_64` | ubuntu | ✅ 周六 08:20 CST | `mirrorproxy/Dockerfile` |
+| `ttyd.yml` | `gsc-hub/ttyd:<ts>-x86_64` | ubuntu | ✅ 周六 08:20 CST | `ttyd/Dockerfile` |
+| `ace-step.yml` | `gsc-hub/ace-step:<ts>-x86_64` | ubuntu | ✅ 周六 08:20 CST | `ace-step/Dockerfile` |
+| `indextts.yml` | `gsc-hub/indextts:<ts>-x86_64` | ubuntu | ✅ 周六 08:20 CST | `indextts/Dockerfile` |
+| `sensevoice.yml` | `gsc-hub/sensevoice:<ts>-x86_64` | ubuntu | ✅ 周六 08:20 CST | `sensevoice/Dockerfile` |
+| `comfyui.yml` | `gsc-hub/comfyui:<ts>-x86_64` | pytorch | ✅ 周六 08:20 CST | `comfyui/Dockerfile` |
 
 > `gitea-runner-ubuntu.yml` 和 `gitea-runner-windows.yml` 内部已通过 `needs:` 保证 base 先于扩展构建。
 

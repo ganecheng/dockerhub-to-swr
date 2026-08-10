@@ -2,6 +2,8 @@ name: comfyui
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '20 0 * * 6'  # 周六 08:20 北京时间 (周六 00:20 UTC)
 
 env:
   HUAWEICLOUD_IAM_AK: "${{ secrets.HUAWEICLOUD_IAM_AK }}"
