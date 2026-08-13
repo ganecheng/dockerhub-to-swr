@@ -145,30 +145,7 @@
 
 ---
 
-## 11. Longhorn 存储系统镜像
-
-以下镜像通过 `batch_sync_image/batch_sync_image_list.txt` 使用 skopeo 批量同步：
-
-| 镜像 | 版本 | MAJOR 最新版本 | MINOR 最新版本 | PATCH 最新版本 |
-|------|------|----------------|----------------|----------------|
-| `longhornio/csi-attacher` | `v4.7.0` | `v4.12.0` | `v4.12.0` | `v4.7.0` (已是最新) |
-| `longhornio/csi-provisioner` | `v4.0.1-20241007` | `v6.3.0` | `v4.0.1-20250204` | `v4.0.1-20250204` |
-| `longhornio/csi-resizer` | `v1.12.0` | `v2.2.1` | `v1.14.0` | `v1.12.0` (已是最新) |
-| `longhornio/csi-snapshotter` | `v7.0.2-20241007` | `v8.6.0` | `v7.0.2-20250204` | `v7.0.2-20250204` |
-| `longhornio/csi-node-driver-registrar` | `v2.12.0` | `v2.17.0` | `v2.17.0` | `v2.12.0` (已是最新) |
-| `longhornio/livenessprobe` | `v2.14.0` | `v2.19.0` | `v2.19.0` | `v2.14.0` (已是最新) |
-| `longhornio/backing-image-manager` | `v1.7.2` | `v1.12.0` | `v1.7.3` | `v1.7.3` |
-| `longhornio/longhorn-engine` | `v1.7.2` | `v1.12.0` | `v1.7.3` | `v1.7.3` |
-| `longhornio/longhorn-instance-manager` | `v1.7.2` | `v1.12.0` | `v1.7.3` | `v1.7.3` |
-| `longhornio/longhorn-manager` | `v1.7.2` | `v1.12.0` | `v1.7.3` | `v1.7.3` |
-| `longhornio/longhorn-share-manager` | `v1.7.2` | `v1.12.0` | `v1.7.3` | `v1.7.3` |
-| `longhornio/longhorn-ui` | `v1.7.2` | `v1.12.0` | `v1.7.3` | `v1.7.3` |
-| `longhornio/longhorn-cli` | `v1.7.2` | `v1.12.0` | `v1.7.3` | `v1.7.3` |
-| `longhornio/support-bundle-kit` | `v0.0.45` | `v0.0.92` | `v0.0.92` | `v0.0.92` |
-
----
-
-## 12. Ubuntu 系统包
+## 11. Ubuntu 系统包
 
 以下包通过 `apt-get install` 安装在 `ubuntu/Dockerfile` 中，使用 apt 默认最新版本：
 
@@ -176,7 +153,7 @@
 
 ---
 
-## 13. 镜像构建依赖与触发顺序 (Phase)
+## 12. 镜像构建依赖与触发顺序 (Phase)
 
 > 下游 Dockerfile 通过 timestamp tag 硬编码引用上游镜像（如 `20260805_191642`）。
 > Phase 1 构建成功后会自动创建 PR 更新下游 Dockerfile 的 FROM tag（分支 `auto/update-*-base`）。
@@ -211,7 +188,7 @@
 
 | Workflow | 功能 | 说明 |
 |----------|------|------|
-| `batch-sync-image.yaml` | skopeo 批量同步 Longhorn 镜像 | 纯镜像搬运，无构建依赖 |
+| `batch-sync-image.yaml` | skopeo 批量同步镜像 | 纯镜像搬运，无构建依赖 |
 
 ### 事件驱动（不参与 Phase）
 
