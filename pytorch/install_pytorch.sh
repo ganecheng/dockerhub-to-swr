@@ -7,6 +7,7 @@ pip install --no-cache-dir \
     torch==2.12.* \
     torchvision==0.27.* \
     torchcodec==0.12.* \
+    torchaudio==2.11.* \
     --index-url https://download.pytorch.org/whl/cu132
 
 # 清理无用文件
