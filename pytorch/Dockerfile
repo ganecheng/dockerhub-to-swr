@@ -1,4 +1,4 @@
-FROM nvidia/cuda:13.3.1-cudnn-runtime-ubuntu26.04
+FROM nvidia/cuda:13.3.1-base-ubuntu26.04
 
 # 移除基础镜像的标签
 LABEL maintainer=""
