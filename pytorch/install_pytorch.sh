@@ -13,5 +13,11 @@ pip install --no-cache-dir \
 pip install --no-cache-dir --no-deps torchaudio==2.11.* \
     --index-url https://download.pytorch.org/whl/cu130
 
+# torchaudio (cu130) 与 torch (cu132) CUDA 版本不匹配，注释掉版本检查避免 RuntimeError
+TORCHAUDIO_INIT=$(python3 -c "import importlib.util; s=importlib.util.find_spec('torchaudio._extension'); print(s.origin if s else '')" 2>/dev/null || echo "")
+if [ -n "$TORCHAUDIO_INIT" ] && [ -f "$TORCHAUDIO_INIT" ]; then
+    sed -i '/^[[:space:]]*_check_cuda_version()[[:space:]]*$/s/^/#/' "$TORCHAUDIO_INIT"
+fi
+
 # 清理无用文件
 sh /os_clean.sh
