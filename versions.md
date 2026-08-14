@@ -2,7 +2,7 @@
 
 > 本文件统计本仓库中所有 Dockerfile、GitHub Actions workflow 和 shell 脚本引用的开源组件版本号。
 >
-> 最后更新：2026-08-07
+> 最后更新：2026-08-14
 
 ---
 
@@ -11,11 +11,11 @@
 | 组件 | 版本 | MAJOR 最新版本 | MINOR 最新版本 | PATCH 最新版本 | 引用文件 | 说明 |
 |------|------|----------------|----------------|----------------|----------|------|
 | Ubuntu (resolute) | `resolute-20260724.1` | `resolute-20260724.1` (已是最新) | `resolute-20260724.1` (已是最新) | `resolute-20260724.1` (已是最新) | `ubuntu/Dockerfile` | Ubuntu 26.04 基础镜像 |
-| NVIDIA CUDA | `13.2.1-cudnn-runtime-ubuntu24.04` | `13.3.1` | `13.3.1` | `13.2.1` (已是最新) | `pytorch/Dockerfile` | PyTorch GPU 运行时基础镜像 |
+| NVIDIA CUDA | `13.3.1-cudnn-runtime-ubuntu26.04` | `13.3.1` (已是最新) | `13.3.1` (已是最新) | `13.3.1` (已是最新) | `pytorch/Dockerfile` | PyTorch GPU 运行时基础镜像 |
 | Windows Server Core (ltsc2025) | `ltsc2025` | `ltsc2025` (已是最新) | `ltsc2025` (已是最新) | `ltsc2025` (已是最新) | `windows/Dockerfile` (via `amitie10g/visualstudio2022-workload-vctools`) | Windows 构建基础镜像 |
-| 自建 Ubuntu 镜像 | `20260805_191642` | - | - | - | `k3s/Dockerfile`, `dumbproxy/Dockerfile`, `mirrorproxy/Dockerfile`, `download_file/Dockerfile`, `gitea-runner-ubuntu/Dockerfile`, `ace-step/Dockerfile`, `indextts/Dockerfile`, `sensevoice/Dockerfile`, `ttyd/Dockerfile` | 基于 `ubuntu/Dockerfile` 构建的内部镜像 |
-| 自建 Windows 镜像 | `20260731_180542` | - | - | - | `gitea-runner-windows/Dockerfile`, `gitea-runner-windows/Dockerfile.flutter` | 基于 `windows/Dockerfile` 构建的内部镜像 |
-| 自建 PyTorch 镜像 | `20260402_002531` | - | - | - | `comfyui/Dockerfile` | 基于 `pytorch/Dockerfile` 构建的内部镜像 |
+| 自建 Ubuntu 镜像 | `20260814_164711` | - | - | - | `k3s/Dockerfile`, `dumbproxy/Dockerfile`, `mirrorproxy/Dockerfile`, `download_file/Dockerfile`, `gitea-runner-ubuntu/Dockerfile`, `ace-step/Dockerfile`, `indextts/Dockerfile`, `sensevoice/Dockerfile`, `ttyd/Dockerfile` | 基于 `ubuntu/Dockerfile` 构建的内部镜像 |
+| 自建 Windows 镜像 | `20260814_164716` | - | - | - | `gitea-runner-windows/Dockerfile`, `gitea-runner-windows/Dockerfile.flutter` | 基于 `windows/Dockerfile` 构建的内部镜像 |
+| 自建 PyTorch 镜像 | `20260814_204257` | - | - | - | `comfyui/Dockerfile` | 基于 `pytorch/Dockerfile` 构建的内部镜像 |
 
 ---
 
@@ -40,10 +40,10 @@
 
 | 组件 | 版本 | MAJOR 最新版本 | MINOR 最新版本 | PATCH 最新版本 | 引用文件 | 说明 |
 |------|------|----------------|----------------|----------------|----------|------|
-| Gitea Runner | `3.0.2` | `3.0.2` (已是最新) | `3.0.2` (已是最新) | `3.0.2` (已是最新) | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | CI/CD Runner |
+| Gitea Runner | `3.0.2` | `3.1.0` | `3.1.0` | `3.0.2` (已是最新) | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | CI/CD Runner |
 | Node.js | `24.19.0` | `26.7.0` | `24.19.0` (已是最新) | `24.19.0` (已是最新) | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | JavaScript 运行时 |
 | kubectl | `1.36.3` | `1.36.3` (已是最新) | `1.36.3` (已是最新) | `1.36.3` (已是最新) | `gitea-runner-ubuntu/Dockerfile` | Kubernetes 命令行工具 |
-| Helm | `4.2.3` | `4.2.3` (已是最新) | `4.2.3` (已是最新) | `4.2.3` (已是最新) | `gitea-runner-ubuntu/Dockerfile` | Kubernetes 包管理器 |
+| Helm | `4.2.3` | `4.2.4` | `4.2.4` | `4.2.4` | `gitea-runner-ubuntu/Dockerfile` | Kubernetes 包管理器 |
 
 ---
 
@@ -64,7 +64,7 @@
 
 | 组件 | 版本 | MAJOR 最新版本 | MINOR 最新版本 | PATCH 最新版本 | 引用文件 | 说明 |
 |------|------|----------------|----------------|----------------|----------|------|
-| Flutter SDK | `3.44.9` | `3.44.9` (已是最新) | `3.44.9` (已是最新) | `3.44.9` (已是最新) | `gitea-runner-ubuntu/Dockerfile.flutter`, `gitea-runner-windows/Dockerfile.flutter` | Flutter 跨平台框架 |
+| Flutter SDK | `3.44.9` | `3.47.0` | `3.47.0` | `3.44.9` (已是最新) | `gitea-runner-ubuntu/Dockerfile.flutter`, `gitea-runner-windows/Dockerfile.flutter` | Flutter 跨平台框架 |
 | Android Command-line Tools | `14742923` | `15859902` (v22.0) | `14742923` (已是最新) | `14742923` (已是最新) | `gitea-runner-ubuntu/Dockerfile.flutter` | Android SDK 命令行工具 |
 | Android Platform Tools | latest | - | - | - | `gitea-runner-ubuntu/Dockerfile.flutter` | ADB 等平台工具 |
 | Android SDK Platform 36 | API 36 | API 36 (已是最新) | API 36 (已是最新) | API 36 (已是最新) | `gitea-runner-ubuntu/Dockerfile.flutter` | Android 36 编译平台 |
@@ -96,9 +96,10 @@
 | 组件 | 版本 | MAJOR 最新版本 | MINOR 最新版本 | PATCH 最新版本 | 引用文件 | 说明 |
 |------|------|----------------|----------------|----------------|----------|------|
 | Python 3 | apt 默认最新 | - | - | - | `ubuntu/Dockerfile`, `pytorch/os_init.sh`, `ace-step/os_init.sh`, `indextts/os_init.sh` | Python 运行时 |
-| PyTorch | `2.12.*` | `2.13.0` | `2.12.1` | `2.12.1` (已是最新) | `pytorch/install_pytorch.sh` | 深度学习框架 (CUDA 13.2) |
+| PyTorch | `2.12.*` | `2.13.0` | `2.12.1` | `2.12.1` (已是最新) | `pytorch/install_pytorch.sh` | 深度学习框架 (CUDA 13.3) |
 | torchvision | `0.27.*` | `0.28.0` | `0.27.1` | `0.27.1` (已是最新) | `pytorch/install_pytorch.sh` | 计算机视觉库 |
-| torchcodec | `0.12.*` | `0.15.0` | `0.12.0` (已是最新) | `0.12.0` (已是最新) | `pytorch/install_pytorch.sh` | 视频编解码库 |
+| torchcodec | `0.12.*` | `0.16.0` | `0.12.0` (已是最新) | `0.12.0` (已是最新) | `pytorch/install_pytorch.sh` | 视频编解码库 |
+| torchaudio | `2.11.*` | `2.11.0` (已是最新) | `2.11.0` (已是最新) | `2.11.0` (已是最新) | `pytorch/install_pytorch.sh` | 音频处理库 (cu130 wheel) |
 | PyTorch (CPU) | latest | - | - | - | `sensevoice/code.sh` | SenseVoice 使用 CPU 版 torch |
 | torchaudio (CPU) | latest | - | - | - | `sensevoice/code.sh` | SenseVoice 使用 CPU 版 torchaudio |
 | uv | latest (`-U`) | - | - | - | `pytorch/os_init.sh`, `ace-step/os_init.sh`, `indextts/code.sh` | Python 包管理器 |
@@ -113,7 +114,7 @@
 | 项目 | 仓库 | Commit | 引用文件 | 说明 |
 |------|------|--------|----------|------|
 | ACE-Step 1.5 | `ACE-Step/ACE-Step-1.5` | `82252c2` | `ace-step/code.sh` | AI 音乐生成 |
-| ComfyUI | `Comfy-Org/ComfyUI` | `b1693ec` | `comfyui/code.sh` | AI 图像生成工作流 |
+| ComfyUI | `Comfy-Org/ComfyUI` | `v0.33.1` | `comfyui/code.sh` | AI 图像生成工作流 |
 | IndexTTS | `index-tts/index-tts` | `1698b32` | `indextts/code.sh` | AI 语音合成 (TTS) |
 | SenseVoice | `FunAudioLLM/SenseVoice` | `4462e35` | `sensevoice/code.sh` | AI 语音识别 |
 
@@ -155,7 +156,7 @@
 
 ## 12. 镜像构建依赖与触发顺序 (Phase)
 
-> 下游 Dockerfile 通过 timestamp tag 硬编码引用上游镜像（如 `20260805_191642`）。
+> 下游 Dockerfile 通过 timestamp tag 硬编码引用上游镜像（如 `20260814_164711`）。
 > Phase 1 构建成功后会自动创建 PR 更新下游 Dockerfile 的 FROM tag（分支 `auto/update-*-base`）。
 > 合并 PR 后即可手动触发 Phase 2 工作流，或等待周六 08:20 CST 定时触发。
 
@@ -165,7 +166,7 @@
 |----------|------|------|---------|-------------|
 | `ubuntu.yml` | `gsc-hub/ubuntu:<ts>-x86_64` | 官方 Ubuntu 26.04 | ✅ 周五 15:30 CST | `auto/update-ubuntu-base` |
 | `windows.yml` | `gsc-hub/windows:<ts>-x86_64` | Windows Server Core (ltsc2025) | ✅ 周五 15:30 CST | `auto/update-windows-base` |
-| `pytorch.yml` | `gsc-hub/pytorch:<ts>-x86_64` | NVIDIA CUDA 13.2 | ✅ 周五 15:30 CST | `auto/update-pytorch-base` |
+| `pytorch.yml` | `gsc-hub/pytorch:<ts>-x86_64` | NVIDIA CUDA 13.3 | ✅ 周五 15:30 CST | `auto/update-pytorch-base` |
 
 ### Phase 2 - 依赖 Phase 1（合并 Phase 1 自动创建的 PR 后触发）
 
@@ -207,5 +208,5 @@
 - 标注为 "-" 的组件使用 "latest" 或 "apt 默认最新" 策略，无需手动跟踪版本。
 - 标注为 "已是最新" 表示当前版本即为该版本线的最新版本。
 - 标注为 "apt 默认最新" 的组件未锁定具体版本号，随 Ubuntu 仓库更新而变化。
-- AI 模型项目通过 git commit hash 锁定代码版本，具体依赖（如 `requirements.txt`）在构建时从上游仓库动态拉取。
+- AI 模型项目通过 git commit hash 或 tag 锁定代码版本，具体依赖（如 `requirements.txt`）在构建时从上游仓库动态拉取。
 - 本仓库不存在 `requirements.txt`、`package.json`、`pom.xml`、`go.mod` 等传统依赖声明文件。
