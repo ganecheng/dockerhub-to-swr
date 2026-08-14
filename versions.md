@@ -97,9 +97,9 @@
 |------|------|----------------|----------------|----------------|----------|------|
 | Python 3 | apt 默认最新 | - | - | - | `ubuntu/Dockerfile`, `pytorch/os_init.sh`, `ace-step/os_init.sh`, `indextts/os_init.sh` | Python 运行时 |
 | PyTorch | `2.13.0` (基础镜像内置) | `2.13.0` (已是最新) | `2.13.0` (已是最新) | `2.13.0` (已是最新) | `pytorch/Dockerfile` | 深度学习框架 (pytorch 官方镜像预装) |
-| torchvision | `0.28.*` | `0.28.0` (已是最新) | `0.28.0` (已是最新) | `0.28.0` (已是最新) | `pytorch/Dockerfile` | 计算机视觉库 |
-| torchcodec | `0.16.*` | `0.16.0` (已是最新) | `0.16.0` (已是最新) | `0.16.0` (已是最新) | `pytorch/Dockerfile` | 视频编解码库 |
-| torchaudio | `2.11.*` | `2.11.0` (已是最新) | `2.11.0` (已是最新) | `2.11.0` (已是最新) | `pytorch/Dockerfile` | 音频处理库 (cu130 wheel) |
+| torchvision | `0.28.*` (基础镜像内置) | `0.28.0` (已是最新) | `0.28.0` (已是最新) | `0.28.0` (已是最新) | `pytorch/Dockerfile` | 计算机视觉库 (pytorch 官方镜像预装) |
+| torchcodec | `0.16.*` | `0.16.0` (已是最新) | `0.16.0` (已是最新) | `0.16.0` (已是最新) | `pytorch/install_pytorch.sh` | 视频编解码库 |
+| torchaudio | `2.11.*` | `2.11.0` (已是最新) | `2.11.0` (已是最新) | `2.11.0` (已是最新) | `pytorch/install_pytorch.sh` | 音频处理库 (cu130 wheel) |
 | PyTorch (CPU) | latest | - | - | - | `sensevoice/code.sh` | SenseVoice 使用 CPU 版 torch |
 | torchaudio (CPU) | latest | - | - | - | `sensevoice/code.sh` | SenseVoice 使用 CPU 版 torchaudio |
 | uv | latest (`-U`) | - | - | - | `pytorch/os_init.sh`, `ace-step/os_init.sh`, `indextts/code.sh` | Python 包管理器 |
