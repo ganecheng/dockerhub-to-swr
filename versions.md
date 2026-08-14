@@ -11,7 +11,7 @@
 | 组件 | 版本 | MAJOR 最新版本 | MINOR 最新版本 | PATCH 最新版本 | 引用文件 | 说明 |
 |------|------|----------------|----------------|----------------|----------|------|
 | Ubuntu (resolute) | `resolute-20260724.1` | `resolute-20260724.1` (已是最新) | `resolute-20260724.1` (已是最新) | `resolute-20260724.1` (已是最新) | `ubuntu/Dockerfile` | Ubuntu 26.04 基础镜像 |
-| NVIDIA CUDA | `13.3.1-cudnn-runtime-ubuntu26.04` | `13.3.1` (已是最新) | `13.3.1` (已是最新) | `13.3.1` (已是最新) | `pytorch/Dockerfile`, `pytorch/Dockerfile.wheel` | PyTorch GPU 基础镜像 (wheel 编译用 devel 变体) |
+| pytorch/pytorch | `2.13.0-cuda13.2-cudnn9-runtime` | `2.13.0` (已是最新) | `2.13.0` (已是最新) | `2.13.0` (已是最新) | `pytorch/Dockerfile` | PyTorch 官方运行时基础镜像 (内置 conda/torch/CUDA 13.2) |
 | Windows Server Core (ltsc2025) | `ltsc2025` | `ltsc2025` (已是最新) | `ltsc2025` (已是最新) | `ltsc2025` (已是最新) | `windows/Dockerfile` (via `amitie10g/visualstudio2022-workload-vctools`) | Windows 构建基础镜像 |
 | 自建 Ubuntu 镜像 | `20260814_164711` | - | - | - | `k3s/Dockerfile`, `dumbproxy/Dockerfile`, `mirrorproxy/Dockerfile`, `download_file/Dockerfile`, `gitea-runner-ubuntu/Dockerfile`, `ace-step/Dockerfile`, `indextts/Dockerfile`, `sensevoice/Dockerfile`, `ttyd/Dockerfile` | 基于 `ubuntu/Dockerfile` 构建的内部镜像 |
 | 自建 Windows 镜像 | `20260814_164716` | - | - | - | `gitea-runner-windows/Dockerfile`, `gitea-runner-windows/Dockerfile.flutter` | 基于 `windows/Dockerfile` 构建的内部镜像 |
@@ -96,9 +96,9 @@
 | 组件 | 版本 | MAJOR 最新版本 | MINOR 最新版本 | PATCH 最新版本 | 引用文件 | 说明 |
 |------|------|----------------|----------------|----------------|----------|------|
 | Python 3 | apt 默认最新 | - | - | - | `ubuntu/Dockerfile`, `pytorch/os_init.sh`, `ace-step/os_init.sh`, `indextts/os_init.sh` | Python 运行时 |
-| PyTorch | `2.12.1` (源码编译 sm_120) | `2.13.0` | `2.12.1` | `2.12.1` (已是最新) | `pytorch/Dockerfile.wheel`, `pytorch/Dockerfile` | 深度学习框架 (仅 Blackwell sm_120, wheel 发布于 GitHub Release 复用) |
-| torchvision | `0.27.*` | `0.28.0` | `0.27.1` | `0.27.1` (已是最新) | `pytorch/Dockerfile` | 计算机视觉库 |
-| torchcodec | `0.12.*` | `0.16.0` | `0.12.0` (已是最新) | `0.12.0` (已是最新) | `pytorch/Dockerfile` | 视频编解码库 |
+| PyTorch | `2.13.0` (基础镜像内置) | `2.13.0` (已是最新) | `2.13.0` (已是最新) | `2.13.0` (已是最新) | `pytorch/Dockerfile` | 深度学习框架 (pytorch 官方镜像预装) |
+| torchvision | `0.28.*` | `0.28.0` (已是最新) | `0.28.0` (已是最新) | `0.28.0` (已是最新) | `pytorch/Dockerfile` | 计算机视觉库 |
+| torchcodec | `0.16.*` | `0.16.0` (已是最新) | `0.16.0` (已是最新) | `0.16.0` (已是最新) | `pytorch/Dockerfile` | 视频编解码库 |
 | torchaudio | `2.11.*` | `2.11.0` (已是最新) | `2.11.0` (已是最新) | `2.11.0` (已是最新) | `pytorch/Dockerfile` | 音频处理库 (cu130 wheel) |
 | PyTorch (CPU) | latest | - | - | - | `sensevoice/code.sh` | SenseVoice 使用 CPU 版 torch |
 | torchaudio (CPU) | latest | - | - | - | `sensevoice/code.sh` | SenseVoice 使用 CPU 版 torchaudio |
@@ -166,7 +166,7 @@
 |----------|------|------|---------|-------------|
 | `ubuntu.yml` | `gsc-hub/ubuntu:<ts>-x86_64` | 官方 Ubuntu 26.04 | ✅ 周五 15:30 CST | `auto/update-ubuntu-base` |
 | `windows.yml` | `gsc-hub/windows:<ts>-x86_64` | Windows Server Core (ltsc2025) | ✅ 周五 15:30 CST | `auto/update-windows-base` |
-| `pytorch.yml` | `gsc-hub/pytorch:<ts>-x86_64` | NVIDIA CUDA 13.3 | ✅ 周五 15:30 CST | `auto/update-pytorch-base` |
+| `pytorch.yml` | `gsc-hub/pytorch:<ts>-x86_64` | pytorch/pytorch 2.13.0-cuda13.2 | ✅ 周五 15:30 CST | `auto/update-pytorch-base` |
 
 ### Phase 2 - 依赖 Phase 1（合并 Phase 1 自动创建的 PR 后触发）
 
@@ -190,7 +190,6 @@
 | Workflow | 功能 | 说明 |
 |----------|------|------|
 | `batch-sync-image.yaml` | skopeo 批量同步镜像 | 纯镜像搬运，无构建依赖 |
-| `pytorch-wheel.yml` | 源码编译 PyTorch wheel 并发布 GitHub Release | 仅 sm_120，每个 torch 版本手动触发一次，供 `pytorch.yml` 下载复用 |
 
 ### 事件驱动（不参与 Phase）
 

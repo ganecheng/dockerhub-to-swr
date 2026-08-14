@@ -3,11 +3,8 @@
 # -e当命令发生错误的时候, 停止脚本的执行;
 set -ex
 
-# 软件安装
-apt-get update && apt-get install -y vim git git-lfs net-tools tree curl wget python3 python3-pip ffmpeg
-
-# 设置全局python命令
-ln -s /usr/bin/python3 /usr/bin/python
+# 软件安装（Python/torch 由基础镜像 conda 环境提供，无需 apt 安装）
+apt-get update && apt-get install -y vim git git-lfs net-tools tree curl wget ffmpeg
 
 # 使用uv安装依赖
 pip install --no-cache-dir -U uv
