@@ -32,6 +32,8 @@ jobs:
       TZ: Asia/Shanghai
       current_datetime: ${{ needs.main_job.outputs.current_datetime }}
       current_user: ${{ needs.main_job.outputs.current_user }}
+      # torch 源码编译 wheel 的 Release tag（升级 torch 时先触发 pytorch-wheel 工作流，再改这里）
+      TORCH_RELEASE_TAG: torch-v2.12.1-sm120
     steps:
       - name: Set up Docker
         uses: docker/setup-docker-action@v5
@@ -56,6 +58,21 @@ jobs:
       - name: Login to SWR
         run: docker login -u cn-southwest-2@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.cn-southwest-2.myhuaweicloud.com
 
+      - name: resolve torch wheel url
+        id: torch_wheel
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -exuo pipefail
+          URL=$(gh release view "${TORCH_RELEASE_TAG}" --json assets \
+            --jq '.assets[] | select(.name | startswith("torch-")) | .browser_download_url' \
+            | head -n 1 || true)
+          if [ -z "${URL}" ]; then
+            echo "::error::Release ${TORCH_RELEASE_TAG} 中未找到 torch wheel，请先手动触发 pytorch-wheel 工作流"
+            exit 1
+          fi
+          echo "url=${URL}" >> "$GITHUB_OUTPUT"
+
       - name: build container image
         run: |
           set -exuo pipefail
@@ -63,7 +80,9 @@ jobs:
           swr_image_url=swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/pytorch:${current_datetime}-x86_64
           ghcr_image_url=ghcr.io/${current_user}/pytorch:${current_datetime}-x86_64
 
-          docker build -f pytorch/Dockerfile --no-cache -t ${swr_image_url} .
+          docker build -f pytorch/Dockerfile --no-cache \
+            --build-arg TORCH_WHEEL_URL="${{ steps.torch_wheel.outputs.url }}" \
+            -t ${swr_image_url} .
           docker tag ${swr_image_url} ${ghcr_image_url}
 
           docker images

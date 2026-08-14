@@ -1,4 +1,6 @@
-FROM nvidia/cuda:13.3.1-base-ubuntu26.04
+# 源码编译的 torch 仅 sm_120 (Blackwell)，动态链接 CUDA 库，运行时镜像必须包含 cuBLAS/cuDNN 等，
+# 因此不能用 base 变体；wheel 由 pytorch-wheel 工作流编译发布到 GitHub Release
+FROM nvidia/cuda:13.3.1-cudnn-runtime-ubuntu26.04
 
 # 移除基础镜像的标签
 LABEL maintainer=""
@@ -24,18 +26,24 @@ ENV PATH="$PATH:/root/.local/bin"
 # 构建
 RUN sh /os_init.sh
 
-# 分层安装 PyTorch 生态，每层即时清理临时文件以减小单层大小
-RUN set -ex && pip install --no-cache-dir \
-    torch==2.12.* \
-    --index-url https://download.pytorch.org/whl/cu132 \
-    && rm -rf /root/.cache/pip /tmp/* /var/tmp/*
+# 安装源码编译的 torch wheel（仅 sm_120 kernel，动态链接本镜像的 CUDA 库，不重复打包）
+# wheel 来自 GitHub Release，URL 由 workflow 通过 --build-arg 注入；
+# 本地构建需从 Release 页面复制 wheel 下载链接，见 pytorch/README.md
+ARG TORCH_WHEEL_URL
+RUN set -ex && TORCH_WHL="/tmp/$(basename "${TORCH_WHEEL_URL}")" \
+    && curl -sfL --retry 3 --retry-delay 5 -o "${TORCH_WHL}" "${TORCH_WHEEL_URL}" \
+    && pip install --no-cache-dir "${TORCH_WHL}" \
+    && rm -rf /tmp/* /var/tmp/* /root/.cache/pip
 
-RUN set -ex && pip install --no-cache-dir \
+# --no-deps 避免 pip 拉取官方 fat binary torch 覆盖源码编译版本；
+# numpy/pillow 是 torchvision 的运行时依赖，被 --no-deps 跳过后需手动安装
+RUN set -ex && pip install --no-cache-dir --no-deps \
     torchvision==0.27.* \
     --index-url https://download.pytorch.org/whl/cu132 \
+    && pip install --no-cache-dir numpy pillow \
     && rm -rf /root/.cache/pip /tmp/* /var/tmp/*
 
-RUN set -ex && pip install --no-cache-dir \
+RUN set -ex && pip install --no-cache-dir --no-deps \
     torchcodec==0.12.* \
     --index-url https://download.pytorch.org/whl/cu132 \
     && rm -rf /root/.cache/pip /tmp/* /var/tmp/*
@@ -46,7 +54,7 @@ RUN set -ex && pip install --no-cache-dir --no-deps \
     --index-url https://download.pytorch.org/whl/cu130 \
     && rm -rf /root/.cache/pip /tmp/* /var/tmp/*
 
-# torchaudio (cu130) 与 torch (cu132) CUDA 版本不匹配，注释掉版本检查避免 RuntimeError
+# torchaudio (cu130) 与 torch (源码编译) CUDA 版本不匹配，注释掉版本检查避免 RuntimeError
 RUN set -ex && \
     SITE_PACKAGES=$(python3 -c "import site; print(site.getsitepackages()[0])" 2>/dev/null) && \
     TORCHAUDIO_INIT="${SITE_PACKAGES}/torchaudio/_extension/__init__.py" && \
