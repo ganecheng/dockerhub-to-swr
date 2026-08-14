@@ -5,6 +5,8 @@ LABEL maintainer=""
 LABEL org.opencontainers.image.ref.name=""
 LABEL org.opencontainers.image.version=""
 
+# 忽略 PEP 668 的安全检查（基础镜像为 Ubuntu 24.04 系统 Python 3.12，externally-managed）
+ENV PIP_BREAK_SYSTEM_PACKAGES=1
 # 设置环境变量，防止 Python 生成 .pyc 文件，缓冲输出以便实时查看日志
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
@@ -18,8 +20,11 @@ ENV TZ=Asia/Shanghai
 # 设置全局命令
 ENV PATH="$PATH:/root/.local/bin"
 
-# 构建（Python/torch/CUDA 由基础镜像 conda 环境提供）
+# 构建（Python/torch/CUDA 由基础镜像提供）
 RUN sh /os_init.sh
+
+# 校验 torch 对当前 python 可见，失败快速暴露（避免后续 pip 拉取重复的 fat binary torch）
+RUN python3 -c "import torch; print(torch.__version__, torch.version.cuda)"
 
 # torchvision 0.28 配套 torch 2.13；torch 依赖已由基础镜像满足，pip 不会重装
 RUN set -ex && pip install --no-cache-dir \

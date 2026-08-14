@@ -11,7 +11,7 @@
 | 组件 | 版本 | MAJOR 最新版本 | MINOR 最新版本 | PATCH 最新版本 | 引用文件 | 说明 |
 |------|------|----------------|----------------|----------------|----------|------|
 | Ubuntu (resolute) | `resolute-20260724.1` | `resolute-20260724.1` (已是最新) | `resolute-20260724.1` (已是最新) | `resolute-20260724.1` (已是最新) | `ubuntu/Dockerfile` | Ubuntu 26.04 基础镜像 |
-| pytorch/pytorch | `2.13.0-cuda13.2-cudnn9-runtime` | `2.13.0` (已是最新) | `2.13.0` (已是最新) | `2.13.0` (已是最新) | `pytorch/Dockerfile` | PyTorch 官方运行时基础镜像 (内置 conda/torch/CUDA 13.2) |
+| pytorch/pytorch | `2.13.0-cuda13.2-cudnn9-runtime` | `2.13.0` (已是最新) | `2.13.0` (已是最新) | `2.13.0` (已是最新) | `pytorch/Dockerfile` | PyTorch 官方运行时基础镜像 (Ubuntu 24.04 + Python 3.12 + torch/CUDA 13.2 预装) |
 | Windows Server Core (ltsc2025) | `ltsc2025` | `ltsc2025` (已是最新) | `ltsc2025` (已是最新) | `ltsc2025` (已是最新) | `windows/Dockerfile` (via `amitie10g/visualstudio2022-workload-vctools`) | Windows 构建基础镜像 |
 | 自建 Ubuntu 镜像 | `20260814_164711` | - | - | - | `k3s/Dockerfile`, `dumbproxy/Dockerfile`, `mirrorproxy/Dockerfile`, `download_file/Dockerfile`, `gitea-runner-ubuntu/Dockerfile`, `ace-step/Dockerfile`, `indextts/Dockerfile`, `sensevoice/Dockerfile`, `ttyd/Dockerfile` | 基于 `ubuntu/Dockerfile` 构建的内部镜像 |
 | 自建 Windows 镜像 | `20260814_164716` | - | - | - | `gitea-runner-windows/Dockerfile`, `gitea-runner-windows/Dockerfile.flutter` | 基于 `windows/Dockerfile` 构建的内部镜像 |

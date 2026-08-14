@@ -3,8 +3,11 @@
 # -e当命令发生错误的时候, 停止脚本的执行;
 set -ex
 
-# 软件安装（Python/torch 由基础镜像 conda 环境提供，无需 apt 安装）
+# 软件安装（Python/pip/torch 由基础镜像提供，无需 apt 安装）
 apt-get update && apt-get install -y vim git git-lfs net-tools tree curl wget ffmpeg
+
+# 兜底提供 python 命令（基础镜像可能只有 python3）
+[ -e /usr/bin/python ] || ln -s /usr/bin/python3 /usr/bin/python
 
 # 使用uv安装依赖
 pip install --no-cache-dir -U uv
