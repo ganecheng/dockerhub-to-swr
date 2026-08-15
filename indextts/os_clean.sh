@@ -6,5 +6,5 @@ set -ex
 # 清理无用文件（Python 环境随基础镜像提供，勿删）
 apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 uv cache clean
-rm -rf /app/checkpoints/.cache /root/.cache/huggingface/xet /root/.cache/pip
+rm -rf /app/checkpoints/.cache /root/.cache/huggingface/xet /root/.cache/huggingface/hub/.locks /root/.cache/pip /root/.cache/torch
 apt-get autoremove -y

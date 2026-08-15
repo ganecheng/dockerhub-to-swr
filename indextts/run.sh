@@ -7,4 +7,4 @@ cd /app
 
 uv run python tools/gpu_check.py
 
-uv run python webui.py --host 0.0.0.0 --port 7860
+exec uv run python webui.py --host 0.0.0.0 --port 7860
