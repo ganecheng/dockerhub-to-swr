@@ -2,7 +2,7 @@
 FROM ghcr.io/ganecheng/ubuntu:20260814_164711-x86_64
 
 # 构建参数：Gitea Runner 版本号
-ARG GITEA_RUNNER_VERSION=3.0.2
+ARG GITEA_RUNNER_VERSION=3.1.0
 # 构建参数：Docker 引擎版本号（静态二进制）
 ARG DOCKER_VERSION=28.5.2
 # 构建参数：Node.js 版本号
@@ -10,7 +10,7 @@ ARG NODE_VERSION=24.19.0
 # 构建参数：kubectl 版本号
 ARG KUBECTL_VERSION=1.36.3
 # 构建参数：Helm 版本号
-ARG HELM_VERSION=4.2.3
+ARG HELM_VERSION=4.2.4
 
 # 单个 RUN 层完成所有安装，减少镜像层数和体积
 RUN <<EOF

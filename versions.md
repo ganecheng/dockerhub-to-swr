@@ -40,10 +40,10 @@
 
 | 组件 | 版本 | MAJOR 最新版本 | MINOR 最新版本 | PATCH 最新版本 | 引用文件 | 说明 |
 |------|------|----------------|----------------|----------------|----------|------|
-| Gitea Runner | `3.0.2` | `3.1.0` | `3.1.0` | `3.0.2` (已是最新) | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | CI/CD Runner |
+| Gitea Runner | `3.1.0` | `3.1.0` (已是最新) | `3.1.0` (已是最新) | `3.1.0` (已是最新) | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | CI/CD Runner |
 | Node.js | `24.19.0` | `26.7.0` | `24.19.0` (已是最新) | `24.19.0` (已是最新) | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | JavaScript 运行时 |
 | kubectl | `1.36.3` | `1.36.3` (已是最新) | `1.36.3` (已是最新) | `1.36.3` (已是最新) | `gitea-runner-ubuntu/Dockerfile` | Kubernetes 命令行工具 |
-| Helm | `4.2.3` | `4.2.4` | `4.2.4` | `4.2.4` | `gitea-runner-ubuntu/Dockerfile` | Kubernetes 包管理器 |
+| Helm | `4.2.4` | `4.2.4` (已是最新) | `4.2.4` (已是最新) | `4.2.4` (已是最新) | `gitea-runner-ubuntu/Dockerfile` | Kubernetes 包管理器 |
 
 ---
 
