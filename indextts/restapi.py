@@ -18,6 +18,7 @@ class SpeechRequest(BaseModel):
     input: str  # 文本
     voice: str  # 映射为 speaker 音频文件名（如 "voice_01"）
     response_format: Optional[str] = "wav"  # 支持 wav/mp3，这里只支持 wav
+    lang: Optional[str] = "ZH"  # 语言代码，IndexTTS-2.5 支持 ZH/EN/JA/ES/AR
 
 
 @app.post("/v1/audio/speech")
@@ -34,7 +35,7 @@ async def create_speech(request: SpeechRequest):
     timestamp_wav = f"spk_{int(time.time())}.wav"
     file_path = f"outputs/{timestamp_wav}"
 
-    tts.infer(spk_audio_prompt=spk_audio_path, text=text, output_path=file_path, verbose=True)
+    tts.infer(spk_audio_prompt=spk_audio_path, text=text, output_path=file_path, lang=request.lang, verbose=True)
 
     print(file_path)
     return FileResponse(file_path, media_type="audio/wav", filename=timestamp_wav)

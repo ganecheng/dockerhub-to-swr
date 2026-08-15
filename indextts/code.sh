@@ -9,7 +9,7 @@ cd /app
 # 下载代码
 git clone --filter=blob:none --no-checkout https://github.com/index-tts/index-tts.git .
 git lfs install
-git checkout 1698b32
+git checkout v2.5.0
 git lfs pull
 
 git lfs uninstall && rm -rf .git

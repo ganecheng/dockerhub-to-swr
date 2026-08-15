@@ -5,10 +5,6 @@ set -ex
 
 cd /app
 
-source .venv/bin/activate
+uv run python tools/gpu_check.py
 
-python -V
-
-python tools/gpu_check.py
-
-python webui.py --host 0.0.0.0 --port 7860 --fp16
+uv run python webui.py --host 0.0.0.0 --port 7860

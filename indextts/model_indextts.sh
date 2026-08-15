@@ -7,7 +7,7 @@ set -ex
 cd /app
 
 # 下载模型
-hf download IndexTeam/IndexTTS-2 --local-dir=checkpoints
+hf download IndexTeam/IndexTTS-2.5 --local-dir=checkpoints
 
 # 清理无用文件
 sh /os_clean.sh
