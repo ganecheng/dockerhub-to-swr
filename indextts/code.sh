@@ -22,12 +22,7 @@ sed -i '/__main__/,$d' webui.py
 cat /restapi.py >> webui.py
 
 # 使用uv安装依赖
-pip install -U uv --no-cache-dir
 uv sync --extra webui --no-cache
-
-# 模型工具
-uv tool install "huggingface-hub[cli,hf_xet]"
-uv tool install "modelscope"
 
 # 清理无用文件
 sh /os_clean.sh

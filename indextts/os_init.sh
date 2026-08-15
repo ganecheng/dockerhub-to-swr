@@ -9,3 +9,6 @@ chmod 777 /run.sh
 # 应用目录
 mkdir -pv /app
 cd /app
+
+# 清理无用文件
+sh /os_clean.sh
