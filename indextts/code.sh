@@ -14,6 +14,15 @@ git lfs pull
 
 git lfs uninstall && rm -rf .git
 
+# 移除pyproject.toml中基础镜像已提供的torch/torchaudio/torchvision依赖
+# 同时移除pytorch-cuda源配置，避免uv尝试从pytorch.org下载
+sed -i '/"torch==/d; /"torchaudio==/d; /"torchvision==/d' pyproject.toml
+sed -i '/\[tool\.uv\.sources\]/,/^$/d' pyproject.toml
+sed -i '/\[\[tool\.uv\.index\]\]/,/^$/d' pyproject.toml
+
+# 创建可访问系统包的虚拟环境，复用基础镜像已有的PyTorch
+uv venv --system-site-packages
+
 # 使用uv安装依赖
 uv sync --extra webui --no-cache
 
