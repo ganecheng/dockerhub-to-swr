@@ -15,7 +15,7 @@ git lfs pull
 git lfs uninstall && rm -rf .git
 
 # 使用uv安装依赖
-uv sync --all-extras --no-cache
+uv sync --extra webui --no-cache
 
 # 清理无用文件
 sh /os_clean.sh
