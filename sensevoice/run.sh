@@ -5,8 +5,6 @@ set -ex
 
 cd /app
 
-. .venv/bin/activate
-
 python -V
 
 python webui.py

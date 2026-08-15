@@ -14,17 +14,12 @@ git lfs pull
 
 git lfs uninstall && rm -rf .git
 
-# 使用CPU运行, 打开公网访问
+# 使用GPU运行, 打开公网访问
 cat /webui.py > webui.py
 
-# 安装依赖
-python3 -m venv .venv
-. .venv/bin/activate
-# 安装CPU版torch
-pip install torch torchaudio --index-url https://download.pytorch.org/whl/cpu
-# 删除包含torch的所有行
+# 安装依赖（torch/torchaudio 已由 pytorch 基础镜像提供）
 sed -i '/torch/d' requirements.txt
-pip install -r requirements.txt
+pip install --no-cache-dir -r requirements.txt
 
 # 清理无用文件
 sh /os_clean.sh

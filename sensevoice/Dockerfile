@@ -1,4 +1,4 @@
-FROM ghcr.io/ganecheng/ubuntu:20260814_164711-x86_64
+FROM ghcr.io/ganecheng/pytorch:20260814_225414-x86_64
 
 COPY sensevoice/os_init.sh /os_init.sh
 COPY sensevoice/os_clean.sh /os_clean.sh

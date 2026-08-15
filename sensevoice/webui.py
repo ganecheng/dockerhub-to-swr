@@ -26,7 +26,7 @@ model = AutoModel(
     vad_model="./models/"+"iic/speech_fsmn_vad_zh-cn-16k-common-pytorch",
     vad_kwargs={"max_single_segment_time": 30000},
     trust_remote_code=False,
-    device="cpu",
+    device="cuda:0",
     disable_update=True,
 )
 import re
