@@ -2,7 +2,7 @@
 
 > 本文件统计本仓库中所有 Dockerfile、GitHub Actions workflow 和 shell 脚本引用的开源组件版本号。
 >
-> 最后更新：2026-08-14
+> 最后更新：2026-08-15
 
 ---
 
@@ -13,9 +13,9 @@
 | Ubuntu (resolute) | `resolute-20260724.1` | `resolute-20260724.1` (已是最新) | `resolute-20260724.1` (已是最新) | `resolute-20260724.1` (已是最新) | `ubuntu/Dockerfile` | Ubuntu 26.04 基础镜像 |
 | pytorch/pytorch | `2.13.0-cuda13.2-cudnn9-runtime` | `2.13.0` (已是最新) | `2.13.0` (已是最新) | `2.13.0` (已是最新) | `pytorch/Dockerfile` | PyTorch 官方运行时基础镜像 (Ubuntu 24.04 + Python 3.12 + torch/CUDA 13.2 预装) |
 | Windows Server Core (ltsc2025) | `ltsc2025` | `ltsc2025` (已是最新) | `ltsc2025` (已是最新) | `ltsc2025` (已是最新) | `windows/Dockerfile` (via `amitie10g/visualstudio2022-workload-vctools`) | Windows 构建基础镜像 |
-| 自建 Ubuntu 镜像 | `20260814_164711` | - | - | - | `k3s/Dockerfile`, `dumbproxy/Dockerfile`, `mirrorproxy/Dockerfile`, `download_file/Dockerfile`, `gitea-runner-ubuntu/Dockerfile`, `ace-step/Dockerfile`, `indextts/Dockerfile`, `sensevoice/Dockerfile`, `ttyd/Dockerfile` | 基于 `ubuntu/Dockerfile` 构建的内部镜像 |
+| 自建 Ubuntu 镜像 | `20260814_164711` | - | - | - | `k3s/Dockerfile`, `dumbproxy/Dockerfile`, `mirrorproxy/Dockerfile`, `download_file/Dockerfile`, `gitea-runner-ubuntu/Dockerfile`, `ace-step/Dockerfile`, `ttyd/Dockerfile` | 基于 `ubuntu/Dockerfile` 构建的内部镜像 |
 | 自建 Windows 镜像 | `20260814_164716` | - | - | - | `gitea-runner-windows/Dockerfile`, `gitea-runner-windows/Dockerfile.flutter` | 基于 `windows/Dockerfile` 构建的内部镜像 |
-| 自建 PyTorch 镜像 | `20260814_204257` | - | - | - | `comfyui/Dockerfile` | 基于 `pytorch/Dockerfile` 构建的内部镜像 |
+| 自建 PyTorch 镜像 | `20260815_014227` | - | - | - | `comfyui/Dockerfile`, `indextts/Dockerfile`, `sensevoice/Dockerfile` | 基于 `pytorch/Dockerfile` 构建的内部镜像 |
 
 ---
 
@@ -100,8 +100,6 @@
 | torchvision | `0.28.*` (基础镜像内置) | `0.28.0` (已是最新) | `0.28.0` (已是最新) | `0.28.0` (已是最新) | `pytorch/Dockerfile` | 计算机视觉库 (pytorch 官方镜像预装) |
 | torchcodec | `0.16.*` | `0.16.0` (已是最新) | `0.16.0` (已是最新) | `0.16.0` (已是最新) | `pytorch/install_pytorch.sh` | 视频编解码库 |
 | torchaudio | `2.11.*` | `2.11.0` (已是最新) | `2.11.0` (已是最新) | `2.11.0` (已是最新) | `pytorch/install_pytorch.sh` | 音频处理库 (cu130 wheel) |
-| PyTorch (CPU) | latest | - | - | - | `sensevoice/code.sh` | SenseVoice 使用 CPU 版 torch |
-| torchaudio (CPU) | latest | - | - | - | `sensevoice/code.sh` | SenseVoice 使用 CPU 版 torchaudio |
 | uv | latest (`-U`) | - | - | - | `pytorch/os_init.sh`, `ace-step/os_init.sh`, `indextts/code.sh` | Python 包管理器 |
 | huggingface-hub | latest (`[cli,hf_xet]`) | - | - | - | `pytorch/os_init.sh`, `ace-step/os_init.sh`, `indextts/code.sh` | HuggingFace 模型下载工具 |
 | modelscope | latest | - | - | - | `pytorch/os_init.sh`, `ace-step/os_init.sh`, `indextts/code.sh` | ModelScope 模型下载工具 |
@@ -115,7 +113,7 @@
 |------|------|--------|----------|------|
 | ACE-Step 1.5 | `ACE-Step/ACE-Step-1.5` | `82252c2` | `ace-step/code.sh` | AI 音乐生成 |
 | ComfyUI | `Comfy-Org/ComfyUI` | `v0.33.1` | `comfyui/code.sh` | AI 图像生成工作流 |
-| IndexTTS | `index-tts/index-tts` | `1698b32` | `indextts/code.sh` | AI 语音合成 (TTS) |
+| IndexTTS | `index-tts/index-tts` | `v2.5.0` | `indextts/code.sh` | AI 语音合成 (TTS) |
 | SenseVoice | `FunAudioLLM/SenseVoice` | `4462e35` | `sensevoice/code.sh` | AI 语音识别 |
 
 ---
@@ -124,8 +122,8 @@
 
 | 模型 | 来源 | 引用文件 | 说明 |
 |------|------|----------|------|
-| IndexTTS-2 | `IndexTeam/IndexTTS-2` (HuggingFace) | `indextts/model_indextts.sh` | IndexTTS v2 模型 |
-| w2v-bert-2.0 | `facebook/w2v-bert-2.0` (HuggingFace) | `indextts/model_additional.sh` | 语音特征提取 |
+| IndexTTS-2.5 | `IndexTeam/IndexTTS-2.5` (HuggingFace) | `indextts/model_indextts.sh` | IndexTTS v2.5 模型 |
+| w2v-bert-2.0 | `AI-ModelScope/w2v-bert-2.0` (ModelScope) | `indextts/model_additional.sh` | 语音特征提取 |
 | MaskGCT | `amphion/MaskGCT` (HuggingFace) | `indextts/model_additional.sh` | 语音转换模型 |
 | campplus | `funasr/campplus` (HuggingFace) | `indextts/model_additional.sh` | 说话人识别 |
 | bigvgan_v2 | `nvidia/bigvgan_v2_22khz_80band_256x` (HuggingFace) | `indextts/model_additional.sh` | 声码器 |
@@ -179,8 +177,8 @@
 | `mirrorproxy.yml` | `gsc-hub/mirrorproxy:<ts>-x86_64` | ubuntu | ✅ 周六 08:20 CST | `mirrorproxy/Dockerfile` |
 | `ttyd.yml` | `gsc-hub/ttyd:<ts>-x86_64` | ubuntu | ✅ 周六 08:20 CST | `ttyd/Dockerfile` |
 | `ace-step.yml` | `gsc-hub/ace-step:<ts>-x86_64` | ubuntu | ✅ 周六 08:20 CST | `ace-step/Dockerfile` |
-| `indextts.yml` | `gsc-hub/indextts:<ts>-x86_64` | ubuntu | ✅ 周六 08:20 CST | `indextts/Dockerfile` |
-| `sensevoice.yml` | `gsc-hub/sensevoice:<ts>-x86_64` | ubuntu | ✅ 周六 08:20 CST | `sensevoice/Dockerfile` |
+| `indextts.yml` | `gsc-hub/indextts:<ts>-x86_64` | pytorch | ✅ 周六 08:20 CST | `indextts/Dockerfile` |
+| `sensevoice.yml` | `gsc-hub/sensevoice:<ts>-x86_64` | pytorch | ✅ 周六 08:20 CST | `sensevoice/Dockerfile` |
 | `comfyui.yml` | `gsc-hub/comfyui:<ts>-x86_64` | pytorch | ✅ 周六 08:20 CST | `comfyui/Dockerfile` |
 
 > `gitea-runner-ubuntu.yml` 和 `gitea-runner-windows.yml` 内部已通过 `needs:` 保证 base 先于扩展构建。
