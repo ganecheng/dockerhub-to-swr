@@ -93,7 +93,9 @@ jobs:
         run: |
           set -exuo pipefail
 
-          sed -i "s|ghcr.io/ganecheng/pytorch:[0-9]\{8\}_[0-9]\{6\}|ghcr.io/ganecheng/pytorch:${NEW_TAG}|g" comfyui/Dockerfile
+          for f in comfyui/Dockerfile indextts/Dockerfile sensevoice/Dockerfile; do
+            sed -i "s|ghcr.io/ganecheng/pytorch:[0-9]\{8\}_[0-9]\{6\}|ghcr.io/ganecheng/pytorch:${NEW_TAG}|g" "$f"
+          done
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -120,6 +122,8 @@ jobs:
             "" \
             "## 更新的文件" \
             "- comfyui/Dockerfile" \
+            "- indextts/Dockerfile" \
+            "- sensevoice/Dockerfile" \
             "" \
             "## 构建详情" \
             "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
