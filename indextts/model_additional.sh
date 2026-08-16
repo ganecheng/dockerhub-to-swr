@@ -8,7 +8,6 @@ export HF_HUB_DISABLE_PROGRESS_BARS=1
 export CI=true
 export TERM=dumb
 export TQDM_DISABLE=1
-export MODELSCOPE_LOG_LEVEL=ERROR
 
 # 应用目录
 cd /app
