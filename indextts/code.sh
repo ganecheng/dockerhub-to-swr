@@ -29,15 +29,19 @@ rm -f uv.lock
 # 创建可访问系统包的虚拟环境，复用基础镜像已有的PyTorch
 uv venv --system-site-packages
 
-# 使用uv安装依赖
-uv sync --extra webui --no-cache
+# 用 uv pip compile 生成完整锁定依赖列表，过滤掉基础镜像已提供的 PyTorch 系列包
+# 这样 uv pip install 不会去下载 torch（避免了 uv sync 必然下载传递依赖的问题）
+uv pip compile pyproject.toml --extra webui --no-annotate --no-header -o /tmp/requirements.txt
+# 过滤掉 torch/torchaudio/nvidia-*/triton/cuda-* 系列（基础镜像已有）
+grep -vE '^(torch|torchaudio|nvidia-|triton|cuda-bindings|cuda-pathfinder|cuda-toolkit)' /tmp/requirements.txt | grep -v '^#' > /tmp/requirements_filtered.txt
+echo "=== 过滤后的依赖列表（已排除 PyTorch 系列）==="
+cat /tmp/requirements_filtered.txt
+echo ""
+# --no-deps 关键：requirements_filtered.txt 已是完整展开的依赖树，无需再解析
+uv pip install --no-deps -r /tmp/requirements_filtered.txt
 
-# 卸载uv安装的torch/torchaudio/nvidia-*，让虚拟环境复用系统site-packages中的PyTorch
-uv pip uninstall torch torchaudio nvidia-cublas-cu12 nvidia-cuda-cupti-cu12 \
-  nvidia-cuda-nvrtc-cu12 nvidia-cuda-runtime-cu12 nvidia-cudnn-cu12 \
-  nvidia-cufft-cu12 nvidia-cufile-cu12 nvidia-curand-cu12 \
-  nvidia-cusolver-cu12 nvidia-cusparse-cu12 nvidia-cusparselt-cu12 \
-  nvidia-nccl-cu12 nvidia-nvjitlink-cu12 nvidia-nvtx-cu12 triton --yes 2>/dev/null || true
+# 兜底清理：万一有漏网之鱼，动态匹配所有 nvidia-* 包并卸载
+uv pip list --format=freeze | grep -E '^(torch|torchaudio|nvidia-|triton|cuda-bindings|cuda-pathfinder|cuda-toolkit)==' | cut -d= -f1 | xargs -r uv pip uninstall --yes 2>/dev/null || true
 
 # === 诊断：打印依赖来源，方便出错时确认问题边界 ===
 echo "=== uv 管理的虚拟环境依赖 ==="
