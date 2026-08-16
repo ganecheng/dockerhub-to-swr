@@ -93,7 +93,7 @@ jobs:
         run: |
           set -exuo pipefail
 
-          for f in comfyui/Dockerfile indextts/Dockerfile sensevoice/Dockerfile; do
+          for f in comfyui/Dockerfile; do
             sed -i "s|ghcr.io/ganecheng/pytorch:[0-9]\{8\}_[0-9]\{6\}|ghcr.io/ganecheng/pytorch:${NEW_TAG}|g" "$f"
           done
 
@@ -122,8 +122,6 @@ jobs:
             "" \
             "## 更新的文件" \
             "- comfyui/Dockerfile" \
-            "- indextts/Dockerfile" \
-            "- sensevoice/Dockerfile" \
             "" \
             "## 构建详情" \
             "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}" \

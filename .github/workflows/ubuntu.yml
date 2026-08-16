@@ -95,7 +95,7 @@ jobs:
 
           for f in k3s/Dockerfile dumbproxy/Dockerfile mirrorproxy/Dockerfile download_file/Dockerfile \
                    gitea-runner-ubuntu/Dockerfile ace-step/Dockerfile \
-                   indextts/Dockerfile sensevoice/Dockerfile ttyd/Dockerfile; do
+                   ttyd/Dockerfile; do
             sed -i "s|ghcr.io/ganecheng/ubuntu:[0-9]\{8\}_[0-9]\{6\}|ghcr.io/ganecheng/ubuntu:${NEW_TAG}|g" "$f"
           done
 
@@ -129,8 +129,6 @@ jobs:
             "- download_file/Dockerfile" \
             "- gitea-runner-ubuntu/Dockerfile" \
             "- ace-step/Dockerfile" \
-            "- indextts/Dockerfile" \
-            "- sensevoice/Dockerfile" \
             "- ttyd/Dockerfile" \
             "" \
             "## 构建详情" \
