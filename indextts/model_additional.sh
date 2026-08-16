@@ -29,5 +29,18 @@ hf download nvidia/bigvgan_v2_22khz_80band_256x bigvgan_generator.pt config.json
 # 下载 JDCnet
 hf download Plachta/JDCnet bst.t7 --local-dir ./checkpoints/hf_cache/
 
+# 预下载示例音频文件（避免启动时从 HuggingFace 下载）
+mkdir -p ./examples
+BASE_URL="https://huggingface.co/spaces/IndexTeam/IndexTTS-2-Demo/resolve/main/examples"
+for f in voice_01.wav voice_02.wav voice_03.wav voice_04.wav voice_05.wav \
+  voice_06.wav voice_07.wav voice_08.wav voice_09.wav voice_11.wav \
+  voice_12.wav emo_hate.wav emo_sad.wav; do
+  curl -sSL "${BASE_URL}/${f}" -o "./examples/${f}"
+done
+
+# 预构建 zh_normalizer FST 文件（首次构建耗时约 13 秒）
+mkdir -p ./indextts/utils/tagger_cache
+uv run python -c "from wetext import Normalizer; Normalizer(['zh']); print('zh_normalizer FST pre-built')"
+
 # 清理无用文件
 sh /os_clean.sh
