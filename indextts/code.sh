@@ -21,7 +21,7 @@ sed -i 's/.*getdefaultlocale.*/            language =\"zh_CN\"/' tools/i18n/i18n
 sed -i '/"torch==/d; /"torchaudio==/d' pyproject.toml
 
 # 放宽 requires-python 上限，兼容未来系统 Python 版本
-sed -i 's/, <[0-9.]*//' pyproject.toml
+sed -i '/^requires-python/c\requires-python = ">=3.12"' pyproject.toml
 
 # 移除 [tool.uv.sources] 及之后所有内容（pytorch-cuda源配置，已不需要）
 sed -i '/^\[tool\.uv\.sources\]/,$d' pyproject.toml
