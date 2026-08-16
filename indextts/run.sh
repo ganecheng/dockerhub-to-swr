@@ -5,6 +5,7 @@ set -ex
 
 cd /app
 
-uv run python tools/gpu_check.py
+# 直接用 venv 的 python，不用 uv run（uv run 会重新同步环境，把 torch 装回来）
+/app/.venv/bin/python tools/gpu_check.py
 
-exec uv run python webui.py --host 0.0.0.0 --port 7860
+exec /app/.venv/bin/python webui.py --host 0.0.0.0 --port 7860

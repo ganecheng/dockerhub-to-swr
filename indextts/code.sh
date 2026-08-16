@@ -27,11 +27,13 @@ sed -i '/^\[tool\.uv\.sources\]/,$d' pyproject.toml
 rm -f uv.lock
 
 # 创建可访问系统包的虚拟环境，复用基础镜像已有的PyTorch
-uv venv --system-site-packages
+# 动态获取系统 Python 版本，确保 venv 与系统一致
+PY_VER=$(python3 -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
+uv venv --python "$PY_VER" --system-site-packages
 
 # 用 uv pip compile 生成完整锁定依赖列表，过滤掉基础镜像已提供的 PyTorch 系列包
 # 这样 uv pip install 不会去下载 torch（避免了 uv sync 必然下载传递依赖的问题）
-uv pip compile pyproject.toml --extra webui --no-annotate --no-header -o /tmp/requirements.txt
+uv pip compile pyproject.toml --python "$PY_VER" --extra webui --no-annotate --no-header -o /tmp/requirements.txt
 # 过滤掉 torch/torchaudio/nvidia-*/triton/cuda-* 系列（基础镜像已有）
 grep -vE '^(torch|torchaudio|nvidia-|triton|cuda-bindings|cuda-pathfinder|cuda-toolkit)' /tmp/requirements.txt | grep -v '^#' > /tmp/requirements_filtered.txt
 echo "=== 过滤后的依赖列表（已排除 PyTorch 系列）==="

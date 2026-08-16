@@ -7,7 +7,6 @@ set -ex
 export HF_HUB_DISABLE_PROGRESS_BARS=1
 export CI=true
 export TERM=dumb
-export TQDM_DISABLE=1
 
 # 应用目录
 cd /app
