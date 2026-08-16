@@ -14,6 +14,33 @@ git lfs pull
 
 git lfs uninstall && rm -rf .git
 
+# 修复 BigVGAN 输出爆音：硬截断 → DC偏移消除 + 峰值归一化 + 安全截断
+# 匹配 infer_v2.py (16空格缩进) 和 infer.py (12空格缩进)
+python3 -c "
+import re, pathlib
+
+# (indent)wav = torch.clamp(32767 * wav, -32767.0, 32767.0)
+pattern = re.compile(r'^(\s*)wav = torch\.clamp\(32767 \* wav, -32767\.0, 32767\.0\)$', re.MULTILINE)
+
+replacement = r'''\1wav = wav - wav.mean(dim=-1, keepdim=True)
+\1mx = wav.abs().max()
+\1if mx > 0:
+\1    wav = wav * (0.95 / mx)
+\1wav = torch.clamp(32767 * wav, -32767.0, 32767.0)'''
+
+for f in ['indextts/infer.py', 'indextts/infer_v2.py', 'indextts/infer_v2_5.py']:
+    p = pathlib.Path(f)
+    if not p.exists():
+        continue
+    content = p.read_text()
+    new_content, count = pattern.subn(replacement, content)
+    if count > 0:
+        p.write_text(new_content)
+        print(f'Patched {count} audio clamping line(s) in {f}')
+    else:
+        print(f'Pattern not found in {f}, skipping')
+"
+
 # 语言修改为默认中文
 sed -i 's/.*getdefaultlocale.*/            language =\"zh_CN\"/' tools/i18n/i18n.py
 
