@@ -40,7 +40,7 @@ done
 
 # 预构建 zh_normalizer FST 文件（首次构建耗时约 13 秒）
 mkdir -p ./indextts/utils/tagger_cache
-uv run python -c "from wetext import Normalizer; Normalizer(['zh']); print('zh_normalizer FST pre-built')"
+/app/.venv/bin/python -c "from wetext import Normalizer; Normalizer(['zh']); print('zh_normalizer FST pre-built')"
 
 # 清理无用文件
 sh /os_clean.sh
