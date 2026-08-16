@@ -32,7 +32,7 @@ jobs:
       - name: DockerHub to SWR
         run: |
           set -exuo pipefail
-          
+
           sudo apt-get update && sudo apt-get install -y aria2
 
           DOWNLOAD_URL="${{ github.event.inputs.download_file }}"
@@ -40,7 +40,16 @@ jobs:
             --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36" \
             -o file \
             ${DOWNLOAD_URL}
-          
+
+          # 每500MB分块，数字后缀（file.part-00, file.part-01, ...）
+          split -b 500M -d file file.part-
+
+          # 生成 COPY 指令并填充到 Dockerfile 占位符
+          for part in file.part-*; do
+            echo "COPY ${part} /tmp/${part}"
+          done > copy_lines.txt
+          sed -i -e "/{{COPY_PLACEHOLDER}}/r copy_lines.txt" -e "/{{COPY_PLACEHOLDER}}/d" download_file/Dockerfile
+
           current_datetime=$(date +'%Y%m%d_%H%M%S')
           docker build -t swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/file:${current_datetime}-x86_64 -f download_file/Dockerfile .
 
@@ -53,4 +62,4 @@ jobs:
 
       - name: Clean up intermediate files
         run: |
-          rm file
+          rm -f file file.part-* copy_lines.txt
