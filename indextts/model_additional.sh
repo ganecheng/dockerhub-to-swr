@@ -12,8 +12,8 @@ cd /app
 # 创建hf_cache目录（运行时模型缓存目录）
 mkdir -p ./checkpoints/hf_cache
 
-# 下载 w2v-bert-2.0（运行时使用modelscope下载，此处保持一致）
-modelscope download --model AI-ModelScope/w2v-bert-2.0 --local_dir ./checkpoints/hf_cache/w2v-bert-2.0
+# 下载 w2v-bert-2.0（modelscope 速度慢，改用 huggingface）
+hf download facebook/w2v-bert-2.0 --local-dir ./checkpoints/hf_cache/w2v-bert-2.0
 
 # 下载 MaskGCT semantic codec（运行时保存为 semantic_codec_model.safetensors）
 hf download amphion/MaskGCT semantic_codec/model.safetensors --local-dir ./checkpoints/hf_cache/
