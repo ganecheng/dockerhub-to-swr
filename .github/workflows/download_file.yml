@@ -33,8 +33,13 @@ jobs:
         run: |
           set -exuo pipefail
           
-          images="${{ github.event.inputs.download_file }}"
-          curl -o file ${images}
+          sudo apt-get update && sudo apt-get install -y aria2
+
+          DOWNLOAD_URL="${{ github.event.inputs.download_file }}"
+          aria2c -x 16 -s 16 -k 1M --file-allocation=none --check-certificate=false \
+            --user-agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36" \
+            -o file \
+            ${DOWNLOAD_URL}
           
           current_datetime=$(date +'%Y%m%d_%H%M%S')
           docker build -t swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/file:${current_datetime}-x86_64 -f download_file/Dockerfile .
