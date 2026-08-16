@@ -41,8 +41,8 @@ jobs:
             -o file \
             ${DOWNLOAD_URL}
 
-          # 每500MB分块，数字后缀（file.part-00, file.part-01, ...）
-          split -b 500M -d file file.part-
+          # 每200MB分块，数字后缀（file.part-00, file.part-01, ...）
+          split -b 200M -d file file.part-
 
           # 生成 COPY 指令并填充到 Dockerfile 占位符
           for part in file.part-*; do
