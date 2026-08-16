@@ -5,8 +5,6 @@ set -ex
 
 # CI 环境禁用进度条，避免刷屏
 export HF_HUB_DISABLE_PROGRESS_BARS=1
-export CI=true
-export TERM=dumb
 
 # 应用目录
 cd /app
