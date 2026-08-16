@@ -99,6 +99,12 @@ jobs:
           for image in "${image_array[@]}"; do
             docker pull "${image}" --platform "linux/amd64"
             docker tag "${image}" swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/${image}-x86_64
+
+            docker images
+            docker history swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/${image}-x86_64
+            pwd
+            df -h
+
             docker push swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/${image}-x86_64
 
             docker tag "${image}" ${image}-x86_64
@@ -116,6 +122,12 @@ jobs:
           for image in "${image_array[@]}"; do
             docker pull "${image}" --platform "linux/arm64"
             docker tag "${image}" swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/${image}-aarch64
+
+            docker images
+            docker history swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/${image}-aarch64
+            pwd
+            df -h
+
             docker push swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/${image}-aarch64
           
             docker tag "${image}" ${image}-aarch64
