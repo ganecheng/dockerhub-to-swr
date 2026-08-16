@@ -3,6 +3,9 @@
 # -e当命令发生错误的时候, 停止脚本的执行;
 set -ex
 
+# CI 环境禁用进度条，避免刷屏
+export HF_HUB_DISABLE_PROGRESS_BARS=1
+
 # 应用目录
 cd /app
 
@@ -10,7 +13,7 @@ cd /app
 mkdir -p ./checkpoints/hf_cache
 
 # 下载 w2v-bert-2.0（运行时使用modelscope下载，此处保持一致）
-modelscope download --model AI-ModelScope/w2v-bert-2.0 --local_dir ./checkpoints/hf_cache/w2v-bert-2.0
+modelscope download --no-progress --model AI-ModelScope/w2v-bert-2.0 --local_dir ./checkpoints/hf_cache/w2v-bert-2.0
 
 # 下载 MaskGCT semantic codec（运行时保存为 semantic_codec_model.safetensors）
 hf download amphion/MaskGCT semantic_codec/model.safetensors --local-dir ./checkpoints/hf_cache/

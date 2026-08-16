@@ -14,6 +14,9 @@ git lfs pull
 
 git lfs uninstall && rm -rf .git
 
+# 语言修改为默认中文
+sed -i 's/.*getdefaultlocale.*/            language =\"zh_CN\"/' tools/i18n/i18n.py
+
 # 移除pyproject.toml中基础镜像已提供的torch/torchaudio依赖
 sed -i '/"torch==/d; /"torchaudio==/d' pyproject.toml
 
