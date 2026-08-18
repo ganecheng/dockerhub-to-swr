@@ -94,7 +94,7 @@ jobs:
           set -exuo pipefail
 
           for f in k3s/Dockerfile dumbproxy/Dockerfile mirrorproxy/Dockerfile download_file/Dockerfile \
-                   gitea-runner-ubuntu/Dockerfile ace-step/Dockerfile \
+                   gitea-runner-ubuntu/Dockerfile \
                    ttyd/Dockerfile; do
             sed -i "s|ghcr.io/ganecheng/ubuntu:[0-9]\{8\}_[0-9]\{6\}|ghcr.io/ganecheng/ubuntu:${NEW_TAG}|g" "$f"
           done
@@ -128,7 +128,6 @@ jobs:
             "- mirrorproxy/Dockerfile" \
             "- download_file/Dockerfile" \
             "- gitea-runner-ubuntu/Dockerfile" \
-            "- ace-step/Dockerfile" \
             "- ttyd/Dockerfile" \
             "" \
             "## 构建详情" \
