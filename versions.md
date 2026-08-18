@@ -13,7 +13,7 @@
 | Ubuntu (resolute) | `resolute-20260724.1` | `resolute-20260724.1` (已是最新) | `resolute-20260724.1` (已是最新) | `resolute-20260724.1` (已是最新) | `ubuntu/Dockerfile` | Ubuntu 26.04 基础镜像 |
 | pytorch/pytorch | `2.13.0-cuda13.2-cudnn9-runtime` | `2.13.0` (已是最新) | `2.13.0` (已是最新) | `2.13.0` (已是最新) | `pytorch/Dockerfile` | PyTorch 官方运行时基础镜像 (Ubuntu 24.04 + Python 3.12 + torch/CUDA 13.2 预装) |
 | Windows Server Core (ltsc2025) | `ltsc2025` | `ltsc2025` (已是最新) | `ltsc2025` (已是最新) | `ltsc2025` (已是最新) | `windows/Dockerfile` (via `amitie10g/visualstudio2022-workload-vctools`) | Windows 构建基础镜像 |
-| 自建 Ubuntu 镜像 | `20260814_164711` | - | - | - | `k3s/Dockerfile`, `dumbproxy/Dockerfile`, `mirrorproxy/Dockerfile`, `download_file/Dockerfile`, `gitea-runner-ubuntu/Dockerfile`, `ace-step/Dockerfile`, `ttyd/Dockerfile` | 基于 `ubuntu/Dockerfile` 构建的内部镜像 |
+| 自建 Ubuntu 镜像 | `20260814_164711` | - | - | - | `k3s/Dockerfile`, `dumbproxy/Dockerfile`, `mirrorproxy/Dockerfile`, `download_file/Dockerfile`, `gitea-runner-ubuntu/Dockerfile`, `ttyd/Dockerfile` | 基于 `ubuntu/Dockerfile` 构建的内部镜像 |
 | 自建 Windows 镜像 | `20260814_164716` | - | - | - | `gitea-runner-windows/Dockerfile`, `gitea-runner-windows/Dockerfile.flutter` | 基于 `windows/Dockerfile` 构建的内部镜像 |
 | 自建 PyTorch 镜像 | `20260815_014227` | - | - | - | `comfyui/Dockerfile` | 基于 `pytorch/Dockerfile` 构建的内部镜像 |
 
@@ -95,15 +95,15 @@
 
 | 组件 | 版本 | MAJOR 最新版本 | MINOR 最新版本 | PATCH 最新版本 | 引用文件 | 说明 |
 |------|------|----------------|----------------|----------------|----------|------|
-| Python 3 | apt 默认最新 | - | - | - | `ubuntu/Dockerfile`, `pytorch/os_init.sh`, `ace-step/os_init.sh` | Python 运行时 |
+| Python 3 | apt 默认最新 | - | - | - | `ubuntu/Dockerfile`, `pytorch/os_init.sh` | Python 运行时 |
 | PyTorch | `2.13.0` (基础镜像内置) | `2.13.0` (已是最新) | `2.13.0` (已是最新) | `2.13.0` (已是最新) | `pytorch/Dockerfile` | 深度学习框架 (pytorch 官方镜像预装) |
 | torchvision | `0.28.*` (基础镜像内置) | `0.28.0` (已是最新) | `0.28.0` (已是最新) | `0.28.0` (已是最新) | `pytorch/Dockerfile` | 计算机视觉库 (pytorch 官方镜像预装) |
 | torchcodec | `0.16.*` | `0.16.0` (已是最新) | `0.16.0` (已是最新) | `0.16.0` (已是最新) | `pytorch/install_pytorch.sh` | 视频编解码库 |
 | torchaudio | `2.11.*` | `2.11.0` (已是最新) | `2.11.0` (已是最新) | `2.11.0` (已是最新) | `pytorch/install_pytorch.sh` | 音频处理库 (cu130 wheel) |
-| uv | latest (`-U`) | - | - | - | `pytorch/os_init.sh`, `ace-step/os_init.sh` | Python 包管理器 |
-| huggingface-hub | latest (`[cli,hf_xet]`) | - | - | - | `pytorch/os_init.sh`, `ace-step/os_init.sh` | HuggingFace 模型下载工具 |
-| modelscope | latest | - | - | - | `pytorch/os_init.sh`, `ace-step/os_init.sh` | ModelScope 模型下载工具 |
-| ffmpeg | apt 默认最新 | - | - | - | `pytorch/os_init.sh`, `ace-step/os_init.sh` | 音视频处理工具 |
+| uv | latest (`-U`) | - | - | - | `pytorch/os_init.sh` | Python 包管理器 |
+| huggingface-hub | latest (`[cli,hf_xet]`) | - | - | - | `pytorch/os_init.sh` | HuggingFace 模型下载工具 |
+| modelscope | latest | - | - | - | `pytorch/os_init.sh` | ModelScope 模型下载工具 |
+| ffmpeg | apt 默认最新 | - | - | - | `pytorch/os_init.sh` | 音视频处理工具 |
 
 ---
 
@@ -111,7 +111,6 @@
 
 | 项目 | 仓库 | Commit | 引用文件 | 说明 |
 |------|------|--------|----------|------|
-| ACE-Step 1.5 | `ACE-Step/ACE-Step-1.5` | `82252c2` | `ace-step/code.sh` | AI 音乐生成 |
 | ComfyUI | `Comfy-Org/ComfyUI` | `v0.33.1` | `comfyui/code.sh` | AI 图像生成工作流 |
 
 ---
@@ -159,7 +158,6 @@
 | `dumbproxy.yml` | `gsc-hub/dumbproxy:<ts>-x86_64` | ubuntu | ✅ 周六 08:20 CST | `dumbproxy/Dockerfile` |
 | `mirrorproxy.yml` | `gsc-hub/mirrorproxy:<ts>-x86_64` | ubuntu | ✅ 周六 08:20 CST | `mirrorproxy/Dockerfile` |
 | `ttyd.yml` | `gsc-hub/ttyd:<ts>-x86_64` | ubuntu | ✅ 周六 08:20 CST | `ttyd/Dockerfile` |
-| `ace-step.yml` | `gsc-hub/ace-step:<ts>-x86_64` | ubuntu | ✅ 周六 08:20 CST | `ace-step/Dockerfile` |
 | `comfyui.yml` | `gsc-hub/comfyui:<ts>-x86_64` | pytorch | ✅ 周六 08:20 CST | `comfyui/Dockerfile` |
 
 > `gitea-runner-ubuntu.yml` 和 `gitea-runner-windows.yml` 内部已通过 `needs:` 保证 base 先于扩展构建。
