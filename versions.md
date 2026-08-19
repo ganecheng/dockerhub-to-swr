@@ -2,7 +2,7 @@
 
 > 本文件统计本仓库中所有 Dockerfile、GitHub Actions workflow 和 shell 脚本引用的开源组件版本号。
 >
-> 最后更新：2026-08-15
+> 最后更新：2026-08-19
 
 ---
 
@@ -130,7 +130,7 @@
 
 以下包通过 `apt-get install` 安装在 `ubuntu/Dockerfile` 中，使用 apt 默认最新版本：
 
-`ca-certificates` `curl` `dos2unix` `iptables` `tini` `git` `tzdata` `locales` `libfreetype6` `net-tools` `findutils` `util-linux` `zip` `unzip` `bc` `fontconfig` `sudo` `jq` `openssl` `iproute2` `iputils-ping` `telnet` `bind9-dnsutils` `wget` `zstd` `xz-utils` `bzip2` `gzip` `vim` `tree` `python3` `python3-pip` `python3-venv` `git-lfs` `skopeo` `yq`
+`ca-certificates` `curl` `dos2unix` `iptables` `tini` `git` `tzdata` `locales` `libfreetype6` `net-tools` `findutils` `util-linux` `binutils` `zip` `unzip` `bc` `file` `fontconfig` `sudo` `jq` `openssl` `iproute2` `iputils-ping` `telnet` `bind9-dnsutils` `wget` `zstd` `xz-utils` `bzip2` `gzip` `vim` `tree` `python3` `python3-pip` `python3-venv` `git-lfs` `skopeo` `yq`
 
 ---
 
