@@ -31,7 +31,7 @@
 | skopeo | apt 默认最新 | - | - | - | `ubuntu/Dockerfile` | 镜像同步工具 |
 | yq | apt 默认最新 | - | - | - | `ubuntu/Dockerfile` | YAML 处理工具 |
 | dumbproxy | `1.51.1` | `1.51.1` (已是最新) | `1.51.1` (已是最新) | `1.51.1` (已是最新) | `dumbproxy/Dockerfile` | 轻量 HTTP 代理 |
-| MirrorProxy | `1.3.1` | `1.3.2` | `1.3.2` | `1.3.2` | `mirrorproxy/Dockerfile` | 自部署镜像代理平台 |
+| MirrorProxy | `1.3.2` | `1.3.2` (已是最新) | `1.3.2` (已是最新) | `1.3.2` (已是最新) | `mirrorproxy/Dockerfile` | 自部署镜像代理平台 |
 | ttyd | `1.7.7` | `1.7.7` (已是最新) | `1.7.7` (已是最新) | `1.7.7` (已是最新) | `ttyd/Dockerfile` | Web 终端共享工具 |
 
 ---
