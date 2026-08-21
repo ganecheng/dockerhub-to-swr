@@ -10,7 +10,7 @@
 
 | 组件 | 版本 | MAJOR 最新版本 | MINOR 最新版本 | PATCH 最新版本 | 引用文件 | 说明 |
 |------|------|----------------|----------------|----------------|----------|------|
-| Ubuntu (resolute) | `resolute-20260724.1` | `resolute-20260811.1` | `resolute-20260811.1` | `resolute-20260724.1` (已是最新) | `ubuntu/Dockerfile` | Ubuntu 26.04 基础镜像 |
+| Ubuntu (resolute) | `resolute-20260811.1` | `resolute-20260811.1` (已是最新) | `resolute-20260811.1` (已是最新) | `resolute-20260811.1` (已是最新) | `ubuntu/Dockerfile` | Ubuntu 26.04 基础镜像 |
 | pytorch/pytorch | `2.13.0-cuda13.2-cudnn9-runtime` | `2.13.0` (已是最新) | `2.13.0` (已是最新) | `2.13.0` (已是最新) | `pytorch/Dockerfile` | PyTorch 官方运行时基础镜像 (Ubuntu 24.04 + Python 3.12 + torch/CUDA 13.2 预装) |
 | Windows Server Core (ltsc2025) | `ltsc2025` | `ltsc2025` (已是最新) | `ltsc2025` (已是最新) | `ltsc2025` (已是最新) | `windows/Dockerfile` (via `amitie10g/visualstudio2022-workload-vctools`) | Windows 构建基础镜像 |
 | 自建 Ubuntu 镜像 | `20260821_161808` | - | - | - | `k3s/Dockerfile`, `dumbproxy/Dockerfile`, `mirrorproxy/Dockerfile`, `download_file/Dockerfile`, `gitea-runner-ubuntu/Dockerfile`, `ttyd/Dockerfile` | 基于 `ubuntu/Dockerfile` 构建的内部镜像 |
@@ -40,9 +40,9 @@
 
 | 组件 | 版本 | MAJOR 最新版本 | MINOR 最新版本 | PATCH 最新版本 | 引用文件 | 说明 |
 |------|------|----------------|----------------|----------------|----------|------|
-| Gitea Runner | `3.1.0` | `3.3.0` | `3.3.0` | `3.1.0` (已是最新) | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | CI/CD Runner |
+| Gitea Runner | `3.3.0` | `3.3.0` (已是最新) | `3.3.0` (已是最新) | `3.3.0` (已是最新) | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | CI/CD Runner |
 | Node.js | `24.19.0` | `26.7.0` | `24.19.0` (已是最新) | `24.19.0` (已是最新) | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | JavaScript 运行时 |
-| kubectl | `1.36.3` | `1.36.4` | `1.36.4` | `1.36.4` | `gitea-runner-ubuntu/Dockerfile` | Kubernetes 命令行工具 |
+| kubectl | `1.36.4` | `1.36.4` (已是最新) | `1.36.4` (已是最新) | `1.36.4` (已是最新) | `gitea-runner-ubuntu/Dockerfile` | Kubernetes 命令行工具 |
 | Helm | `4.2.4` | `4.2.4` (已是最新) | `4.2.4` (已是最新) | `4.2.4` (已是最新) | `gitea-runner-ubuntu/Dockerfile` | Kubernetes 包管理器 |
 
 ---
