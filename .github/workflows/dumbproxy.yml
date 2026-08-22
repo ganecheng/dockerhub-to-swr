@@ -3,7 +3,7 @@ name: dumbproxy
 on:
   workflow_dispatch:
   schedule:
-    - cron: '20 0 * * 6'  # 周六 08:20 北京时间 (周六 00:20 UTC)
+    - cron: '0 19 * * 5'  # 周六 03:00 北京时间 (周五 19:00 UTC)
 
 env:
   HUAWEICLOUD_IAM_AK: "${{ secrets.HUAWEICLOUD_IAM_AK }}"
