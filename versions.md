@@ -111,7 +111,7 @@
 
 | 项目    | 仓库                | Commit    | 引用文件          | 说明              |
 |---------|---------------------|-----------|-------------------|-------------------|
-| ComfyUI | `Comfy-Org/ComfyUI` | `v0.33.1` | `comfyui/code.sh` | AI 图像生成工作流 |
+| ComfyUI | `Comfy-Org/ComfyUI` | `v0.34.0` | `comfyui/code.sh` | AI 图像生成工作流 |
 
 ---
 
