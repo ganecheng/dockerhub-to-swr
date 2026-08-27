@@ -24,6 +24,7 @@ ENV `
     INIT_SH_FILE='' `
     CA_CERT_DIR='C:\certs' `
     NPM_REGISTRY='https://mirrors.huaweicloud.com/repository/npm/' `
+    NODE_USE_SYSTEM_CA=1 `
     GITEA_RUNNER_CONFIG_TEMPLATE_FILE='C:\opt\config.template.yaml' `
     GITEA_RUNNER_NAME='' `
     GITEA_RUNNER_LABELS='' `

@@ -77,6 +77,7 @@ ENV \
   INIT_SH_FILE='' \
   CA_CERT_DIR='/opt/cloud/security/cert/ca' \
   NPM_REGISTRY='https://mirrors.huaweicloud.com/repository/npm/' \
+  NODE_USE_SYSTEM_CA=1 \
   APT_MIRROR_URI='https://mirrors.huaweicloud.com/ubuntu/' \
   PIP_INDEX_URL='https://mirrors.huaweicloud.com/repository/pypi/simple' \
   PIP_TRUSTED_HOST='mirrors.huaweicloud.com' \
