@@ -1,5 +1,5 @@
 # 基础镜像：Ubuntu 26.04 (resolute)
-FROM ghcr.io/ganecheng/ubuntu:20260821_205550-x86_64
+FROM ghcr.io/ganecheng/ubuntu:20260828_213101-x86_64
 
 # 构建参数：dumbproxy 版本号
 ARG DUMBPROXY_VERSION=1.51.1
