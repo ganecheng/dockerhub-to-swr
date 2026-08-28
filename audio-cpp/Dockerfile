@@ -1,5 +1,5 @@
 # 基础镜像：Ubuntu 26.04 (resolute)
-FROM ghcr.io/ganecheng/ubuntu:20260828_213101-x86_64
+FROM ghcr.io/ganecheng/ubuntu:20260829_031258-x86_64
 
 # 构建参数：audio.cpp 版本号（latest 跟随最新 release，其他值视为固定 tag）
 ARG APP_VERSION=v0.7.0
