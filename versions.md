@@ -2,7 +2,7 @@
 
 > 本文件统计本仓库中所有 Dockerfile、GitHub Actions workflow 和 shell 脚本引用的开源组件版本号。
 >
-> 最后更新：2026-08-27
+> 最后更新：2026-08-28
 
 ---
 
@@ -31,19 +31,19 @@
 | skopeo          | apt 默认最新    | -                   | -                          | -                          | `ubuntu/Dockerfile`                                                                                                    | 镜像同步工具                   |
 | yq              | apt 默认最新    | -                   | -                          | -                          | `ubuntu/Dockerfile`                                                                                                    | YAML 处理工具                  |
 | dumbproxy       | `1.51.1`        | `1.51.1` (已是最新) | `1.51.1` (已是最新)        | `1.51.1` (已是最新)        | `dumbproxy/Dockerfile`                                                                                                 | 轻量 HTTP 代理                 |
-| MirrorProxy     | `1.3.2`         | `1.4.0`             | `1.4.0`                    | `1.3.2` (已是最新)         | `mirrorproxy/Dockerfile`                                                                                               | 自部署镜像代理平台             |
+| MirrorProxy     | `1.4.0`         | `1.4.0` (已是最新)  | `1.4.0` (已是最新)         | `1.4.0` (已是最新)         | `mirrorproxy/Dockerfile`                                                                                               | 自部署镜像代理平台             |
 | ttyd            | `1.7.7`         | `1.7.7` (已是最新)  | `1.7.7` (已是最新)         | `1.7.7` (已是最新)         | `ttyd/Dockerfile`                                                                                                      | Web 终端共享工具               |
 
 ---
 
 ## 3. Gitea Runner & CI/CD 工具
 
-| 组件         | 版本      | MAJOR 最新版本     | MINOR 最新版本      | PATCH 最新版本       | 引用文件                                                            | 说明                  |
-|--------------|-----------|--------------------|---------------------|----------------------|---------------------------------------------------------------------|-----------------------|
-| Gitea Runner | `3.3.0`   | `3.3.1`            | `3.3.1`             | `3.3.1`              | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | CI/CD Runner          |
-| Node.js      | `24.19.0` | `26.8.1`           | `24.20.0`           | `24.19.0` (已是最新) | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | JavaScript 运行时     |
-| kubectl      | `1.36.4`  | `1.37.0`           | `1.36.4` (已是最新) | `1.36.4` (已是最新)  | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 命令行工具 |
-| Helm         | `4.2.4`   | `4.2.4` (已是最新) | `4.2.4` (已是最新)  | `4.2.4` (已是最新)   | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 包管理器   |
+| 组件         | 版本      | MAJOR 最新版本      | MINOR 最新版本       | PATCH 最新版本       | 引用文件                                                            | 说明                  |
+|--------------|-----------|---------------------|----------------------|----------------------|---------------------------------------------------------------------|-----------------------|
+| Gitea Runner | `3.3.1`   | `3.3.1` (已是最新)  | `3.3.1` (已是最新)   | `3.3.1` (已是最新)   | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | CI/CD Runner          |
+| Node.js      | `24.20.0` | `26.8.1`            | `24.20.0` (已是最新) | `24.20.0` (已是最新) | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | JavaScript 运行时     |
+| kubectl      | `1.37.0`  | `1.37.0` (已是最新) | `1.37.0` (已是最新)  | `1.37.0` (已是最新)  | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 命令行工具 |
+| Helm         | `4.2.4`   | `4.2.4` (已是最新)  | `4.2.4` (已是最新)   | `4.2.4` (已是最新)   | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 包管理器   |
 
 ---
 

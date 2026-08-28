@@ -2,13 +2,13 @@
 FROM ghcr.io/ganecheng/ubuntu:20260821_205550-x86_64
 
 # 构建参数：Gitea Runner 版本号
-ARG GITEA_RUNNER_VERSION=3.3.0
+ARG GITEA_RUNNER_VERSION=3.3.1
 # 构建参数：Docker 引擎版本号（静态二进制）
 ARG DOCKER_VERSION=28.5.2
 # 构建参数：Node.js 版本号
-ARG NODE_VERSION=24.19.0
+ARG NODE_VERSION=24.20.0
 # 构建参数：kubectl 版本号
-ARG KUBECTL_VERSION=1.36.4
+ARG KUBECTL_VERSION=1.37.0
 # 构建参数：Helm 版本号
 ARG HELM_VERSION=4.2.4
 
