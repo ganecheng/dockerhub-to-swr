@@ -39,6 +39,9 @@ RUN <<EOF
   tar -xzf /tmp/audio-vulkan.tar.gz -C /app
   rm -f /tmp/audio-vulkan.tar.gz
 
+  # 赋予二进制文件可执行权限
+  chmod +x /app/audiocpp_cli /app/audiocpp_server /app/audiocpp_gguf
+
   # 创建模型目录
   install -d -m 0755 /app/models
 
