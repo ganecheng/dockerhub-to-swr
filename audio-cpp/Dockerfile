@@ -1,70 +1,64 @@
-ARG UBUNTU_VERSION=24.04
-ARG APP_VERSION=latest
-ARG BUILD_DATE=N/A
-ARG APP_REVISION=N/A
-ARG IMAGE_URL=N/A
-ARG IMAGE_SOURCE=N/A
+# 基础镜像：Ubuntu 26.04 (resolute)
+FROM ghcr.io/ganecheng/ubuntu:20260821_205550-x86_64
 
-FROM docker.io/ubuntu:${UBUNTU_VERSION} AS base
+# 构建参数：audio.cpp 版本号（latest 跟随最新 release，其他值视为固定 tag）
+ARG APP_VERSION=v0.7.0
 
-ARG APP_VERSION=latest
-ARG BUILD_DATE
-ARG APP_REVISION
-ARG IMAGE_URL
-ARG IMAGE_SOURCE
+# 安装运行时依赖并下载 audio.cpp 预编译 Vulkan 二进制文件
+RUN <<EOF
+  # 封装 curl：统一超时和重试策略
+  function curl() {
+    command curl -sSfL --connect-timeout 10 --max-time 30 --retry 3 --retry-all-errors "$@"
+  }
 
-LABEL org.opencontainers.image.created=$BUILD_DATE \
-      org.opencontainers.image.version=$APP_VERSION \
-      org.opencontainers.image.revision=$APP_REVISION \
-      org.opencontainers.image.title="audio.cpp" \
-      org.opencontainers.image.description="An all-in-one, pure C++ inference engine for audio models, powered by ggml (Vulkan, prebuilt)" \
-      org.opencontainers.image.url=$IMAGE_URL \
-      org.opencontainers.image.source=$IMAGE_SOURCE
+  # 安装 audio.cpp 运行时依赖
+  # - libgomp1: OpenMP 线程支持
+  # - ffmpeg: 音频 I/O
+  # - libvulkan1: Vulkan 加载器
+  # - mesa-vulkan-drivers: Mesa Vulkan ICD（RADV for AMD, ANV for Intel）
+  apt-get update
+  apt-get install -y --no-install-recommends \
+    libgomp1 ffmpeg libvulkan1 mesa-vulkan-drivers
 
-# Runtime deps:
-# - libgomp1: OpenMP threading
-# - curl: healthcheck + GitHub release download
-# - ffmpeg: audio I/O
-# - python3: model installer
-# - libvulkan1: Vulkan loader
-# - mesa-vulkan-drivers: Mesa Vulkan ICDs (RADV for AMD, ANV for Intel)
-# - ca-certificates: TLS for GitHub downloads
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-        libgomp1 curl ffmpeg python3 ca-certificates \
-        libvulkan1 mesa-vulkan-drivers && \
-    apt-get autoremove -y && \
-    apt-get clean -y && \
-    rm -rf /tmp/* /var/tmp/* && \
-    find /var/cache/apt/archives /var/lib/apt/lists -not -name lock -type f -delete && \
-    find /var/cache -type f -delete
+  # 解析 release tag（latest 跟随最新 release，其他值自动补 "v" 前缀）
+  GITHUB_REPO="0xShug0/audio.cpp"
+  if [ "$APP_VERSION" = "latest" ]; then
+    TAG=$(curl -o /dev/null -w '%{redirect_url}' \
+        "https://github.com/${GITHUB_REPO}/releases/latest" | \
+        sed 's|.*/tag/||')
+  else
+    TAG="$APP_VERSION"
+    case "$TAG" in v*) ;; *) TAG="v${TAG}" ;; esac
+  fi
+
+  # 下载并解压预编译 Vulkan 二进制文件
+  audio_url="https://github.com/${GITHUB_REPO}/releases/download/${TAG}/audio-${TAG}-bin-ubuntu-x64-vulkan.tar.gz"
+  echo "Downloading audio.cpp from $audio_url"
+  curl "$audio_url" -o /tmp/audio-vulkan.tar.gz
+  install -d -m 0755 /app
+  tar -xzf /tmp/audio-vulkan.tar.gz -C /app
+  rm -f /tmp/audio-vulkan.tar.gz
+
+  # 创建模型目录
+  install -d -m 0755 /app/models
+
+  # 清理缓存和临时文件，减小镜像体积
+  rm -rf /var/cache/{apt,debconf} /var/lib/apt/lists/* /var/log/{apt,alternatives.log,bootstrap.log,dpkg.log} /tmp/* /var/tmp/*
+
+EOF
+
+# 默认环境变量：均可在 docker run 时覆盖
+ENV CA_CERT_DIR='/opt/cloud/security/cert/ca'
+ENV AUDIO_CPP_COMMAND='server'
+ENV AUDIO_CPP_ARGS=''
 
 WORKDIR /app
 
-# Download prebuilt Vulkan binaries from GitHub Release.
-# APP_VERSION=latest follows the most recent release tag; any other value
-# is treated as a pinned tag (e.g. v0.5.0 or 0.5.0 — "v" is added if missing).
-ARG APP_VERSION=latest
-ARG GITHUB_REPO=0xShug0/audio.cpp
-RUN if [ "$APP_VERSION" = "latest" ]; then \
-        TAG=$(curl -fsSL -o /dev/null -w '%{redirect_url}' \
-            "https://github.com/${GITHUB_REPO}/releases/latest" | \
-            sed 's|.*/tag/||'); \
-    else \
-        TAG="$APP_VERSION"; \
-        case "$TAG" in v*) ;; *) TAG="v${TAG}" ;; esac; \
-    fi && \
-    URL="https://github.com/${GITHUB_REPO}/releases/download/${TAG}/audio-${TAG}-bin-ubuntu-x64-vulkan.tar.gz" && \
-    echo "Downloading ${URL}" && \
-    curl -fsSL "$URL" -o /tmp/audio-vulkan.tar.gz && \
-    tar -xzf /tmp/audio-vulkan.tar.gz -C /app && \
-    rm /tmp/audio-vulkan.tar.gz
+# 复制启动脚本到镜像
+COPY audio-cpp/run.sh /opt/
 
-COPY .devops/entrypoint-vulkan.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
+# audio.cpp server 默认监听端口
+EXPOSE 8080/tcp
 
-RUN mkdir -p /app/models && chown ubuntu:ubuntu /app/models
-
-USER ubuntu
-
-ENTRYPOINT ["/app/entrypoint.sh"]
+# 默认启动命令
+CMD ["/bin/bash", "/opt/run.sh"]
