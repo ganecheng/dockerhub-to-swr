@@ -30,10 +30,10 @@
 | tini            | apt 默认最新    | -                   | -                    | -                    | `ubuntu/Dockerfile`                                                                                                    | PID 1 进程管理                   |
 | skopeo          | apt 默认最新    | -                   | -                    | -                    | `ubuntu/Dockerfile`                                                                                                    | 镜像同步工具                     |
 | yq              | apt 默认最新    | -                   | -                    | -                    | `ubuntu/Dockerfile`                                                                                                    | YAML 处理工具                    |
-| dumbproxy       | `1.51.1`        | `1.51.2`            | `1.51.2`             | `1.51.2`             | `dumbproxy/Dockerfile`                                                                                                 | 轻量 HTTP 代理                   |
-| MirrorProxy     | `1.4.0`         | `1.4.1`             | `1.4.1`              | `1.4.1`              | `mirrorproxy/Dockerfile`                                                                                               | 自部署镜像代理平台               |
+| dumbproxy       | `1.51.2`        | `1.51.2` (已是最新) | `1.51.2` (已是最新)  | `1.51.2` (已是最新)  | `dumbproxy/Dockerfile`                                                                                                 | 轻量 HTTP 代理                   |
+| MirrorProxy     | `1.4.1`         | `1.4.1` (已是最新)  | `1.4.1` (已是最新)   | `1.4.1` (已是最新)   | `mirrorproxy/Dockerfile`                                                                                               | 自部署镜像代理平台               |
 | ttyd            | `1.7.7`         | `1.7.7` (已是最新)  | `1.7.7` (已是最新)   | `1.7.7` (已是最新)   | `ttyd/Dockerfile`                                                                                                      | Web 终端共享工具                 |
-| audio.cpp       | `v0.7.0`        | `v0.7.1`            | `v0.7.1`             | `v0.7.1`             | `audio-cpp/Dockerfile`                                                                                                 | 语音 AI 推理服务 (Vulkan 预编译二进制) |
+| audio.cpp       | `v0.7.1`        | `v0.7.1` (已是最新) | `v0.7.1` (已是最新)  | `v0.7.1` (已是最新)  | `audio-cpp/Dockerfile`                                                                                                 | 语音 AI 推理服务 (Vulkan 预编译二进制) |
 
 ---
 
@@ -41,7 +41,7 @@
 
 | 组件         | 版本      | MAJOR 最新版本      | MINOR 最新版本       | PATCH 最新版本       | 引用文件                                                            | 说明                  |
 |--------------|-----------|---------------------|----------------------|----------------------|---------------------------------------------------------------------|-----------------------|
-| Gitea Runner | `3.3.1`   | `3.3.2`             | `3.3.2`              | `3.3.2`              | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | CI/CD Runner          |
+| Gitea Runner | `3.3.2`   | `3.3.2` (已是最新) | `3.3.2` (已是最新)   | `3.3.2` (已是最新)   | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | CI/CD Runner          |
 | Node.js      | `24.20.0` | `26.8.1`            | `24.20.0` (已是最新) | `24.20.0` (已是最新) | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | JavaScript 运行时     |
 | kubectl      | `1.37.0`  | `1.37.0` (已是最新) | `1.37.0` (已是最新)  | `1.37.0` (已是最新)  | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 命令行工具 |
 | Helm         | `4.2.4`   | `4.2.4` (已是最新)  | `4.2.4` (已是最新)   | `4.2.4` (已是最新)   | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 包管理器   |
