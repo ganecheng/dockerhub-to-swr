@@ -2,7 +2,7 @@
 FROM ghcr.io/ganecheng/ubuntu:20260829_031258-x86_64
 
 # 构建参数：audio.cpp 版本号（latest 跟随最新 release，其他值视为固定 tag）
-ARG APP_VERSION=v0.7.0
+ARG APP_VERSION=v0.7.1
 
 # 安装运行时依赖并下载 audio.cpp 预编译 Vulkan 二进制文件
 RUN <<EOF
