@@ -1,4 +1,4 @@
-FROM pytorch/pytorch:2.13.0-cuda13.2-cudnn9-runtime
+FROM pytorch/pytorch:2.14.0-cuda13.2-cudnn9-runtime
 
 # 移除基础镜像的标签
 LABEL maintainer=""
