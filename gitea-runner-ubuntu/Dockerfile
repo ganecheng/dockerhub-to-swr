@@ -2,7 +2,7 @@
 FROM ghcr.io/ganecheng/ubuntu:20260829_031258-x86_64
 
 # 构建参数：Gitea Runner 版本号
-ARG GITEA_RUNNER_VERSION=3.3.1
+ARG GITEA_RUNNER_VERSION=3.3.2
 # 构建参数：Docker 引擎版本号（静态二进制）
 ARG DOCKER_VERSION=28.5.2
 # 构建参数：Node.js 版本号
