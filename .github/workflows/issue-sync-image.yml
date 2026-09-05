@@ -34,7 +34,7 @@ jobs:
           set -exuo pipefail
           gh issue comment ${{ github.event.issue.number }} -b "Hi @${{ github.event.issue.user.login }}, 正在处理您的issue...<br><br>[详情请查看](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
 
-      - name: clean disk
+      - name: 查看系统信息
         run: |
           set -exuo pipefail
           pwd; id; uname -a; docker info; docker images; df -h
