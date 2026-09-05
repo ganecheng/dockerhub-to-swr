@@ -38,7 +38,7 @@ jobs:
         with:
           version: 'v28.5.2'
 
-      - name: clean disk
+      - name: 查看系统信息
         run: |
           set -exuo pipefail
           pwd; id; uname -a; docker info; docker images; df -h
@@ -94,6 +94,11 @@ jobs:
         uses: docker/setup-docker-action@v5
         with:
           version: 'v28.5.2'
+
+      - name: 查看系统信息
+        run: |
+          set -exuo pipefail
+          pwd; id; uname -a; docker info; docker images; df -h
 
       - name: login ghcr
         uses: docker/login-action@v4

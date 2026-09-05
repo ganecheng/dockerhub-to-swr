@@ -21,6 +21,11 @@ jobs:
         with:
           version: 'v28.5.2'
 
+      - name: 查看系统信息
+        run: |
+          set -exuo pipefail
+          pwd; id; uname -a; docker info; docker images; df -h
+
       - name: Login to SWR
         run: docker login -u cn-southwest-2@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.cn-southwest-2.myhuaweicloud.com
 
