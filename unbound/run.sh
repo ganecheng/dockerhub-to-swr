@@ -134,6 +134,10 @@ chown unbound:unbound /var/lib/unbound/root.key 2>/dev/null || true
 unbound-checkconf "${conf_file}"
 log INFO "Configuration check passed: ${conf_file}"
 
+# 打印最终生效的配置文件完整内容（自动生成或 UNBOUND_CONF 指定），便于通过 docker logs 排查
+log INFO "Effective configuration (${conf_file}):"
+log INFO < "${conf_file}"
+
 # 额外命令行参数
 unbound_args=(-d -c "${conf_file}")
 if [[ -n "${UNBOUND_ARGS:-}" ]]; then
