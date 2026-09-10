@@ -2,7 +2,7 @@
 FROM ghcr.io/ganecheng/ubuntu:20260904_195713-x86_64
 
 # 构建参数：dumbproxy 版本号
-ARG DUMBPROXY_VERSION=1.51.2
+ARG DUMBPROXY_VERSION=1.52.1
 
 # 下载并安装 dumbproxy 二进制文件
 RUN <<EOF
