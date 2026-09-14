@@ -1,10 +1,13 @@
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE}
 
+# 构建参数：Runner 默认标签的架构后缀（x86_64 构建为空，aarch64 构建为 -aarch64）
+ARG ARCH_SUFFIX=
+
 COPY gitea-runner-ubuntu/modules/common.sh gitea-runner-ubuntu/modules/jdk21.sh gitea-runner-ubuntu/modules/settings.xml /tmp/
 RUN bash /tmp/jdk21.sh && rm -f /tmp/*.sh /tmp/settings.xml
 
 ENV JAVA_HOME=/opt/jdk-21 \
     MAVEN_HOME=/opt/maven \
     PATH="/opt/jdk-21/bin:/opt/maven/bin:${PATH}" \
-    GITEA_RUNNER_LABELS_DEFAULT='ubuntu-latest,ubuntu-26.04,ubuntu-jdk-21'
+    GITEA_RUNNER_LABELS_DEFAULT="ubuntu${ARCH_SUFFIX}-latest,ubuntu${ARCH_SUFFIX}-26.04,ubuntu-jdk-21"

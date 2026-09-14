@@ -25,9 +25,17 @@ jobs:
           echo "current_datetime=$(date +'%Y%m%d_%H%M%S')" >> $GITHUB_OUTPUT
 
   build_base:
-    runs-on: ubuntu-26.04
+    runs-on: ${{ matrix.runs-on }}
     needs: main_job
     timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x86_64
+            runs-on: ubuntu-26.04
+          - arch: aarch64
+            runs-on: ubuntu-26.04-arm
     env:
       TZ: Asia/Shanghai
       current_datetime: ${{ needs.main_job.outputs.current_datetime }}
@@ -60,12 +68,19 @@ jobs:
         run: |
           set -exuo pipefail
 
-          base_tag=gitea-runner-ubuntu:${current_datetime}-x86_64
+          arch=${{ matrix.arch }}
+          base_tag=gitea-runner-ubuntu:${current_datetime}-${arch}
           swr_base=swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/${base_tag}
           ghcr_base=ghcr.io/${current_user}/${base_tag}
 
-          docker build -f gitea-runner-ubuntu/Dockerfile --no-cache -t ${swr_base} -t ${ghcr_base} .
-          
+          # aarch64 构建的 Runner 默认标签带 -aarch64 后缀
+          build_args="--build-arg BASE_ARCH=${arch}"
+          if [ "${arch}" = "aarch64" ]; then
+            build_args="${build_args} --build-arg ARCH_SUFFIX=-aarch64"
+          fi
+
+          docker build -f gitea-runner-ubuntu/Dockerfile ${build_args} --no-cache -t ${swr_base} -t ${ghcr_base} .
+
           docker history ${swr_base}
           docker images
           pwd
@@ -75,7 +90,7 @@ jobs:
           docker push ${ghcr_base}
 
   build_extensions:
-    runs-on: ubuntu-26.04
+    runs-on: ${{ matrix.runs-on }}
     needs: [ main_job, build_base ]
     timeout-minutes: 60
     env:
@@ -85,7 +100,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        arch: [ x86_64, aarch64 ]
         extension: [ jdk21, jdk25, graalvm-jdk21, graalvm-jdk25, jmeter, flutter ]
+        exclude:
+          # Flutter 官方未发布 linux-arm64 的 Dart SDK 与 Android 构建工具链二进制，aarch64 暂不支持
+          - arch: aarch64
+            extension: flutter
+        include:
+          - arch: x86_64
+            runs-on: ubuntu-26.04
+          - arch: aarch64
+            runs-on: ubuntu-26.04-arm
     steps:
       - name: git checkout
         uses: actions/checkout@v7
@@ -115,18 +140,25 @@ jobs:
           set -exuo pipefail
 
           ext=${{ matrix.extension }}
-          base_tag=gitea-runner-ubuntu:${current_datetime}-x86_64
+          arch=${{ matrix.arch }}
+          base_tag=gitea-runner-ubuntu:${current_datetime}-${arch}
 
           # 从 GHCR 拉取基础镜像
           docker pull ghcr.io/${current_user}/${base_tag}
 
-          ext_tag=gitea-runner-ubuntu-${ext}:${current_datetime}-x86_64
+          ext_tag=gitea-runner-ubuntu-${ext}:${current_datetime}-${arch}
           swr_ext=swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/${ext_tag}
           ghcr_ext=ghcr.io/${current_user}/${ext_tag}
 
-          echo ">>> Building gitea-runner-ubuntu-${ext}..."
-          docker build -f gitea-runner-ubuntu/Dockerfile.${ext} --build-arg BASE_IMAGE=ghcr.io/${current_user}/${base_tag} --no-cache -t ${swr_ext} -t ${ghcr_ext} .
-          
+          # aarch64 构建的 Runner 默认标签带 -aarch64 后缀
+          build_args="--build-arg BASE_IMAGE=ghcr.io/${current_user}/${base_tag}"
+          if [ "${arch}" = "aarch64" ]; then
+            build_args="${build_args} --build-arg ARCH_SUFFIX=-aarch64"
+          fi
+
+          echo ">>> Building gitea-runner-ubuntu-${ext} (${arch})..."
+          docker build -f gitea-runner-ubuntu/Dockerfile.${ext} ${build_args} --no-cache -t ${swr_ext} -t ${ghcr_ext} .
+
           docker history ${swr_ext}
           docker images
           pwd

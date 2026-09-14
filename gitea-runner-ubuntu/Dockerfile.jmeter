@@ -1,10 +1,13 @@
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE}
 
+# 构建参数：Runner 默认标签的架构后缀（x86_64 构建为空，aarch64 构建为 -aarch64）
+ARG ARCH_SUFFIX=
+
 COPY gitea-runner-ubuntu/modules/common.sh gitea-runner-ubuntu/modules/jmeter.sh /tmp/
 RUN bash /tmp/jmeter.sh && rm -f /tmp/*.sh
 
 ENV JAVA_HOME=/opt/jdk-25 \
     JMETER_HOME=/opt/jmeter \
     PATH="/opt/jdk-25/bin:/opt/jmeter/bin:${PATH}" \
-    GITEA_RUNNER_LABELS_DEFAULT='ubuntu-latest,ubuntu-26.04,ubuntu-jmeter'
+    GITEA_RUNNER_LABELS_DEFAULT="ubuntu${ARCH_SUFFIX}-latest,ubuntu${ARCH_SUFFIX}-26.04,ubuntu-jmeter"

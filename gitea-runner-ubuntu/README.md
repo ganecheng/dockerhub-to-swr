@@ -38,15 +38,41 @@ gitea-runner-ubuntu/                ← 基础镜像 (Dockerfile)
 | `gitea-runner-ubuntu-flutter` | `Dockerfile.flutter` | + Flutter 3.44.2 + Android SDK (compileSdk 36, NDK 29, build-tools 36) + OpenJDK 21 | `ubuntu-latest,ubuntu-26.04,ubuntu-flutter` |
 
 > 扩展镜像在基础标签之上追加各自的功能标签，无需重复声明基础标签。
+> 表中 Runner 标签为 x86_64 默认值，aarch64 镜像的标签见下文「镜像架构」。
+
+## 镜像架构
+
+基础镜像与各扩展镜像同时构建 x86_64 与 aarch64 两种架构，通过 tag 后缀区分，
+aarch64 版本在 GitHub 托管的 ARM64 runner（`ubuntu-26.04-arm`）上原生构建：
+
+| 架构    | tag 后缀   |
+|---------|------------|
+| x86_64  | `-x86_64`  |
+| aarch64 | `-aarch64` |
+
+Runner 默认标签（`GITEA_RUNNER_LABELS_DEFAULT`）随架构变化，避免 Gitea
+调度时把任务分配到错误架构的 Runner：
+
+- x86_64 镜像：`ubuntu-latest,ubuntu-26.04`
+- aarch64 镜像：`ubuntu-aarch64-latest,ubuntu-aarch64-26.04`
+
+扩展镜像在此基础上追加各自的功能标签（如 `ubuntu-jdk-21`）。
+
+> `flutter` 扩展仅提供 x86_64 版本：Flutter 官方未发布 linux-arm64 的 Dart SDK
+> 与 Android 构建工具链二进制。
 
 ## 本地构建
 
 ```bash
-# 1. 先构建基础镜像
+# 1. 先构建基础镜像（默认 x86_64）
 docker build -f gitea-runner-ubuntu/Dockerfile -t gitea-runner-ubuntu:base .
 
 # 2. 构建扩展镜像（以 jdk21 为例）
 docker build -f gitea-runner-ubuntu/Dockerfile.jdk21 --build-arg BASE_IMAGE=gitea-runner-ubuntu:base -t gitea-runner-ubuntu-jdk21:local .
+
+# 3. 构建 aarch64 版本（在 ARM 机器上原生构建，或配合 buildx --platform linux/arm64）
+docker build -f gitea-runner-ubuntu/Dockerfile --build-arg BASE_ARCH=aarch64 --build-arg ARCH_SUFFIX=-aarch64 -t gitea-runner-ubuntu:base-arm .
+docker build -f gitea-runner-ubuntu/Dockerfile.jdk21 --build-arg BASE_IMAGE=gitea-runner-ubuntu:base-arm --build-arg ARCH_SUFFIX=-aarch64 -t gitea-runner-ubuntu-jdk21:local-arm .
 ```
 
 ## 工作原理

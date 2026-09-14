@@ -1,5 +1,8 @@
+# 构建参数：基础镜像架构后缀（x86_64 / aarch64）
+ARG BASE_ARCH=x86_64
+
 # 基础镜像：Ubuntu 26.04 (resolute)
-FROM ghcr.io/ganecheng/ubuntu:20260911_200005-x86_64
+FROM ghcr.io/ganecheng/ubuntu:20260911_200005-${BASE_ARCH}
 
 # 构建参数：Gitea Runner 版本号
 ARG GITEA_RUNNER_VERSION=3.4.2
@@ -11,6 +14,8 @@ ARG NODE_VERSION=24.21.0
 ARG KUBECTL_VERSION=1.37.0
 # 构建参数：Helm 版本号
 ARG HELM_VERSION=4.3.0
+# 构建参数：Runner 默认标签的架构后缀（x86_64 构建为空，aarch64 构建为 -aarch64）
+ARG ARCH_SUFFIX=
 
 # 单个 RUN 层完成所有安装，减少镜像层数和体积
 RUN <<EOF
@@ -84,7 +89,7 @@ ENV \
   GITEA_RUNNER_CONFIG_TEMPLATE_FILE='/opt/config.template.yaml' \
   GITEA_RUNNER_NAME='' \
   GITEA_RUNNER_LABELS='' \
-  GITEA_RUNNER_LABELS_DEFAULT='ubuntu-latest,ubuntu-26.04' \
+  GITEA_RUNNER_LABELS_DEFAULT="ubuntu${ARCH_SUFFIX}-latest,ubuntu${ARCH_SUFFIX}-26.04" \
   GITEA_RUNNER_REGISTRATION_TIMEOUT=30 \
   GITEA_RUNNER_REGISTRATION_RETRY_INTERVAL=3 \
   GITEA_RUNNER_TIMEOUT_MINUTES=60

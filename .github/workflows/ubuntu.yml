@@ -25,9 +25,17 @@ jobs:
           echo "current_datetime=$(date +'%Y%m%d_%H%M%S')" >> $GITHUB_OUTPUT
 
   ubuntu_container_image_build:
-    runs-on: ubuntu-26.04
+    runs-on: ${{ matrix.runs-on }}
     needs: main_job
     timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x86_64
+            runs-on: ubuntu-26.04
+          - arch: aarch64
+            runs-on: ubuntu-26.04-arm
     env:
       TZ: Asia/Shanghai
       current_datetime: ${{ needs.main_job.outputs.current_datetime }}
@@ -60,8 +68,8 @@ jobs:
         run: |
           set -exuo pipefail
 
-          swr_image_url=swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/ubuntu:${current_datetime}-x86_64
-          ghcr_image_url=ghcr.io/${current_user}/ubuntu:${current_datetime}-x86_64
+          swr_image_url=swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/ubuntu:${current_datetime}-${{ matrix.arch }}
+          ghcr_image_url=ghcr.io/${current_user}/ubuntu:${current_datetime}-${{ matrix.arch }}
 
           docker build -f ubuntu/Dockerfile --no-cache --output type=docker -t ${swr_image_url} .
           docker tag ${swr_image_url} ${ghcr_image_url}
@@ -121,6 +129,7 @@ jobs:
             "## 新 tag" \
             "" \
             "${NEW_TAG}-x86_64" \
+            "${NEW_TAG}-aarch64" \
             "" \
             "## 更新的文件" \
             "- k3s/Dockerfile" \
