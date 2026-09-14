@@ -15,7 +15,7 @@ ARG KUBECTL_VERSION=1.37.0
 # 构建参数：Helm 版本号
 ARG HELM_VERSION=4.3.0
 # 构建参数：Runner 默认标签的架构后缀（x86_64 构建为空，aarch64 构建为 -aarch64）
-ARG ARCH_SUFFIX=
+ARG ARCH_SUFFIX
 
 # 单个 RUN 层完成所有安装，减少镜像层数和体积
 RUN <<EOF

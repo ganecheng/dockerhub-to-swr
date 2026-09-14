@@ -2,7 +2,7 @@ ARG BASE_IMAGE
 FROM ${BASE_IMAGE}
 
 # 构建参数：Runner 默认标签的架构后缀（x86_64 构建为空，aarch64 构建为 -aarch64）
-ARG ARCH_SUFFIX=
+ARG ARCH_SUFFIX
 
 COPY gitea-runner-ubuntu/modules/common.sh gitea-runner-ubuntu/modules/graalvm-jdk25.sh gitea-runner-ubuntu/modules/settings.xml /tmp/
 RUN bash /tmp/graalvm-jdk25.sh && rm -f /tmp/*.sh /tmp/settings.xml
