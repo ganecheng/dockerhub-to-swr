@@ -56,7 +56,8 @@ Runner 默认标签（`GITEA_RUNNER_LABELS_DEFAULT`）随架构变化，避免 G
 - x86_64 镜像：`ubuntu-latest,ubuntu-26.04`
 - aarch64 镜像：`ubuntu-aarch64-latest,ubuntu-aarch64-26.04`
 
-扩展镜像在此基础上追加各自的功能标签（如 `ubuntu-jdk-21`）。
+扩展镜像在此基础上追加各自的功能标签（如 jdk21 的 `ubuntu-jdk-21`，
+aarch64 镜像对应为 `ubuntu-aarch64-jdk-21`）。
 
 > `flutter` 扩展仅提供 x86_64 版本：Flutter 官方未发布 linux-arm64 的 Dart SDK
 > 与 Android 构建工具链二进制。

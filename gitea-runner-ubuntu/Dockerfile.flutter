@@ -1,6 +1,9 @@
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE}
 
+# 构建参数：Runner 默认标签的架构后缀（x86_64 构建为空，aarch64 构建为 -aarch64）
+ARG ARCH_SUFFIX
+
 # Eclipse Temurin JDK 21 (Android 构建)
 COPY gitea-runner-ubuntu/modules/common.sh gitea-runner-ubuntu/modules/flutter.sh /tmp/
 RUN bash /tmp/flutter.sh && rm -f /tmp/*.sh
@@ -61,4 +64,4 @@ RUN git clone --depth 1 --branch ${FLUTTER_VERSION} https://github.com/flutter/f
 RUN mkdir -p /root/.gradle \
     && printf 'org.gradle.daemon=false\norg.gradle.jvmargs=-Xmx8096m\n' > /root/.gradle/gradle.properties
 
-ENV GITEA_RUNNER_LABELS_DEFAULT='ubuntu-latest,ubuntu-26.04,ubuntu-flutter'
+ENV GITEA_RUNNER_LABELS_DEFAULT="ubuntu${ARCH_SUFFIX}-latest,ubuntu${ARCH_SUFFIX}-26.04,ubuntu${ARCH_SUFFIX}-flutter"

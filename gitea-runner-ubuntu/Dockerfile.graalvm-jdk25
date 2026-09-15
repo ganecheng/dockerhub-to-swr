@@ -10,4 +10,4 @@ RUN bash /tmp/graalvm-jdk25.sh && rm -f /tmp/*.sh /tmp/settings.xml
 ENV JAVA_HOME=/opt/graalvm-jdk-25 \
     MAVEN_HOME=/opt/maven \
     PATH="/opt/graalvm-jdk-25/bin:/opt/maven/bin:${PATH}" \
-    GITEA_RUNNER_LABELS_DEFAULT="ubuntu${ARCH_SUFFIX}-latest,ubuntu${ARCH_SUFFIX}-26.04,ubuntu-graalvm-jdk-25"
+    GITEA_RUNNER_LABELS_DEFAULT="ubuntu${ARCH_SUFFIX}-latest,ubuntu${ARCH_SUFFIX}-26.04,ubuntu${ARCH_SUFFIX}-graalvm-jdk-25"

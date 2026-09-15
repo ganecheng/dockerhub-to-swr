@@ -10,4 +10,4 @@ RUN bash /tmp/jmeter.sh && rm -f /tmp/*.sh
 ENV JAVA_HOME=/opt/jdk-25 \
     JMETER_HOME=/opt/jmeter \
     PATH="/opt/jdk-25/bin:/opt/jmeter/bin:${PATH}" \
-    GITEA_RUNNER_LABELS_DEFAULT="ubuntu${ARCH_SUFFIX}-latest,ubuntu${ARCH_SUFFIX}-26.04,ubuntu-jmeter"
+    GITEA_RUNNER_LABELS_DEFAULT="ubuntu${ARCH_SUFFIX}-latest,ubuntu${ARCH_SUFFIX}-26.04,ubuntu${ARCH_SUFFIX}-jmeter"
