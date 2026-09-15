@@ -18,10 +18,10 @@ jobs:
     runs-on: ubuntu-26.04
     timeout-minutes: 60
     steps:
-      - name: git checkout
+      - name: 检出代码
         uses: actions/checkout@v7
 
-      - name: Set up Docker
+      - name: 安装配置 Docker
         uses: docker/setup-docker-action@v5
         with:
           version: 'v28.5.2'
@@ -31,10 +31,10 @@ jobs:
           set -exuo pipefail
           pwd; id; uname -a; docker info; docker images; df -h
 
-      - name: Login to SWR
+      - name: 登录 SWR
         run: docker login -u cn-southwest-2@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.cn-southwest-2.myhuaweicloud.com
 
-      - name: DockerHub to SWR
+      - name: 从 DockerHub 同步到 SWR
         run: |
           set -exuo pipefail
 
@@ -65,6 +65,6 @@ jobs:
 
           docker push swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/file:${current_datetime}-x86_64
 
-      - name: Clean up intermediate files
+      - name: 清理中间文件
         run: |
           rm -f file file.part-* copy_lines.txt

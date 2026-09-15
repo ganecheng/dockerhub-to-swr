@@ -21,15 +21,15 @@ jobs:
     runs-on: ubuntu-26.04
     timeout-minutes: 60
     steps:
-      - name: git checkout
+      - name: 检出代码
         uses: actions/checkout@v7
 
-      - name: Set up Docker
+      - name: 安装配置 Docker
         uses: docker/setup-docker-action@v5
         with:
           version: 'v28.5.2'
 
-      - name: welcome
+      - name: 欢迎评论
         run: |
           set -exuo pipefail
           gh issue comment ${{ github.event.issue.number }} -b "Hi @${{ github.event.issue.user.login }}, 正在处理您的issue...<br><br>[详情请查看](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
@@ -39,28 +39,28 @@ jobs:
           set -exuo pipefail
           pwd; id; uname -a; docker info; docker images; df -h
 
-      - name: add label sync-image
+      - name: 添加 sync-image 标签
         if: contains(github.event.issue.body, 'sync-image')
         run: |
           set -exuo pipefail
           gh issue edit ${{ github.event.issue.number }} --add-label "sync-image"
           echo -n " sync-image" >> label.txt
 
-      - name: add label x86_64
+      - name: 添加 x86_64 标签
         if: contains(github.event.issue.body, 'x86_64')
         run: |
           set -exuo pipefail
           gh issue edit ${{ github.event.issue.number }} --add-label "x86_64"
           echo -n " x86_64" >> label.txt
 
-      - name: add label aarch64
+      - name: 添加 aarch64 标签
         if: contains(github.event.issue.body, 'aarch64')
         run: |
           set -exuo pipefail
           gh issue edit ${{ github.event.issue.number }} --add-label "aarch64"
           echo -n " aarch64" >> label.txt
 
-      - name: check sync condition
+      - name: 检查同步条件
         run: |
           set -exuo pipefail
           sleep 3s
@@ -80,15 +80,15 @@ jobs:
             exit 1
           fi
 
-      - name: init
+      - name: 同步开始
         run: |
           gh issue comment ${{ github.event.issue.number }} -b "Hi @${{ github.event.issue.user.login }}, 镜像 ${{ github.event.issue.title }} 正在同步中...<br><br>[详情请查看](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
 
-      - name: Login to SWR
+      - name: 登录 SWR
         if: contains(github.event.issue.body, 'x86_64')
         run: docker login -u cn-southwest-2@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.cn-southwest-2.myhuaweicloud.com
 
-      - name: DockerHub to SWR x86_64
+      - name: 从 DockerHub 同步到 SWR (x86_64)
         if: contains(github.event.issue.body, 'x86_64')
         run: |
           set -exuo pipefail
@@ -111,7 +111,7 @@ jobs:
             echo -n " ${image}-x86_64" >> images.txt
           done
 
-      - name: DockerHub to SWR aarch64
+      - name: 从 DockerHub 同步到 SWR (aarch64)
         if: contains(github.event.issue.body, 'aarch64')
         run: |
           set -exuo pipefail
@@ -134,19 +134,19 @@ jobs:
             echo -n " ${image}-aarch64" >> images.txt
           done
 
-      - name: Offline images tar gz
+      - name: 打包离线镜像 tar.gz
         run: |
           set -exuo pipefail
           docker save $(cat images.txt) | gzip > images.tar.gz
 
-      - name: Upload artifact
+      - name: 上传制品
         uses: actions/upload-artifact@v7
         with:
           name: images.tar.gz
           path: images.tar.gz
           retention-days: 90  # 将保留天数设置为1天 最多可设置90天
 
-      - name: success
+      - name: 同步成功处理
         run: |
           IFS=' ' read -r -a image_name_array <<< "$(cat images.txt)"
           for image in "${image_name_array[@]}"; do
@@ -157,7 +157,7 @@ jobs:
           gh issue edit ${{ github.event.issue.number }} --add-label "sync-image-success"
           gh issue close ${{ github.event.issue.number }}
 
-      - name: fail
+      - name: 同步失败处理
         if: failure()
         run: |
           gh issue comment ${{ github.event.issue.number }} -b "镜像 ${{ github.event.issue.title }} 同步失败<br><br>[失败详情请查看](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
