@@ -27,15 +27,15 @@ gitea-runner-ubuntu/                ← 基础镜像 (Dockerfile)
 
 ## 镜像列表
 
-| 镜像名称 | Dockerfile | 包含组件 | Runner 标签 |
-|---------|-----------|---------|------------|
-| `gitea-runner-ubuntu` | `Dockerfile` | Ubuntu 26.04 + Docker 28.5.2 + Gitea Runner 1.0.8 + Node.js 24.18.0 + Python 3 + 常用工具 | `ubuntu-latest,ubuntu-26.04` |
-| `gitea-runner-ubuntu-jdk21` | `Dockerfile.jdk21` | + Temurin JDK 21 + Maven 3.9.16 | `ubuntu-latest,ubuntu-26.04,ubuntu-jdk-21` |
-| `gitea-runner-ubuntu-jdk25` | `Dockerfile.jdk25` | + Temurin JDK 25 + Maven 3.9.16 | `ubuntu-latest,ubuntu-26.04,ubuntu-jdk-25` |
-| `gitea-runner-ubuntu-graalvm-jdk21` | `Dockerfile.graalvm-jdk21` | + GraalVM JDK 21 + Maven 3.9.16 + gcc/g++/zlib1g-dev (native-image) | `ubuntu-latest,ubuntu-26.04,ubuntu-graalvm-jdk-21` |
-| `gitea-runner-ubuntu-graalvm-jdk25` | `Dockerfile.graalvm-jdk25` | + GraalVM JDK 25 + Maven 3.9.16 + gcc/g++/zlib1g-dev (native-image) | `ubuntu-latest,ubuntu-26.04,ubuntu-graalvm-jdk-25` |
-| `gitea-runner-ubuntu-jmeter` | `Dockerfile.jmeter` | + Temurin JDK 25 + JMeter 5.6.3 | `ubuntu-latest,ubuntu-26.04,ubuntu-jmeter` |
-| `gitea-runner-ubuntu-flutter` | `Dockerfile.flutter` | + Flutter 3.44.2 + Android SDK (compileSdk 36, NDK 29, build-tools 36) + OpenJDK 21 | `ubuntu-latest,ubuntu-26.04,ubuntu-flutter` |
+| 镜像名称                            | Dockerfile                 | 包含组件                                                                                  | Runner 标签                                        |
+|-------------------------------------|----------------------------|-------------------------------------------------------------------------------------------|----------------------------------------------------|
+| `gitea-runner-ubuntu`               | `Dockerfile`               | Ubuntu 26.04 + Docker 28.5.2 + Gitea Runner 1.0.8 + Node.js 24.18.0 + Python 3 + 常用工具 | `ubuntu-latest,ubuntu-26.04`                       |
+| `gitea-runner-ubuntu-jdk21`         | `Dockerfile.jdk21`         | + Temurin JDK 21 + Maven 3.9.16                                                           | `ubuntu-latest,ubuntu-26.04,ubuntu-jdk-21`         |
+| `gitea-runner-ubuntu-jdk25`         | `Dockerfile.jdk25`         | + Temurin JDK 25 + Maven 3.9.16                                                           | `ubuntu-latest,ubuntu-26.04,ubuntu-jdk-25`         |
+| `gitea-runner-ubuntu-graalvm-jdk21` | `Dockerfile.graalvm-jdk21` | + GraalVM JDK 21 + Maven 3.9.16 + gcc/g++/zlib1g-dev (native-image)                       | `ubuntu-latest,ubuntu-26.04,ubuntu-graalvm-jdk-21` |
+| `gitea-runner-ubuntu-graalvm-jdk25` | `Dockerfile.graalvm-jdk25` | + GraalVM JDK 25 + Maven 3.9.16 + gcc/g++/zlib1g-dev (native-image)                       | `ubuntu-latest,ubuntu-26.04,ubuntu-graalvm-jdk-25` |
+| `gitea-runner-ubuntu-jmeter`        | `Dockerfile.jmeter`        | + Temurin JDK 25 + JMeter 5.6.3                                                           | `ubuntu-latest,ubuntu-26.04,ubuntu-jmeter`         |
+| `gitea-runner-ubuntu-flutter`       | `Dockerfile.flutter`       | + Flutter 3.44.2 + Android SDK (compileSdk 36, NDK 29, build-tools 36) + OpenJDK 21       | `ubuntu-latest,ubuntu-26.04,ubuntu-flutter`        |
 
 > 扩展镜像在基础标签之上追加各自的功能标签，无需重复声明基础标签。
 > 表中 Runner 标签为 x86_64 默认值，aarch64 镜像的标签见下文「镜像架构」。
@@ -78,7 +78,8 @@ docker build -f gitea-runner-ubuntu/Dockerfile.jdk21 --build-arg BASE_IMAGE=gite
 
 ## 工作原理
 
-基础镜像已包含 Docker 守护进程和 Gitea Runner，扩展镜像在此基础上安装特定 JDK/Maven/JMeter 等工具。构建时通过 `ARG BASE_IMAGE` 引用基础镜像，无需手动处理任何依赖关系。
+基础镜像已包含 Docker 守护进程和 Gitea Runner，扩展镜像在此基础上安装特定 JDK/Maven/JMeter 等工具。构建时通过
+`ARG BASE_IMAGE` 引用基础镜像，无需手动处理任何依赖关系。
 
 ### 启动流程（`run.sh`）
 
@@ -97,7 +98,8 @@ docker build -f gitea-runner-ubuntu/Dockerfile.jdk21 --build-arg BASE_IMAGE=gite
 
 Runner 以 **ephemeral 模式**运行：完成一个任务后自动退出，容器随之销毁。
 
-容器空闲超时由 `GITEA_RUNNER_TIMEOUT_MINUTES`（默认 `60`）控制。启动时计算 deadline，任务被接收后 deadline 刷新，确保任务有充足执行时间。超时后容器自动退出。
+容器空闲超时由 `GITEA_RUNNER_TIMEOUT_MINUTES`（默认 `60`）控制。启动时计算 deadline，任务被接收后 deadline
+刷新，确保任务有充足执行时间。超时后容器自动退出。
 
 ### 配置模板（`config.template.yaml`）
 
@@ -126,14 +128,15 @@ Runner 以 **ephemeral 模式**运行：完成一个任务后自动退出，容�
 
 容器启动时自动配置国内镜像站（通过环境变量可覆盖默认值）：
 
-| 镜像站 | 环境变量 | 默认值 |
-|-------|---------|-------|
-| Ubuntu APT | `APT_MIRROR_URI` | `https://mirrors.huaweicloud.com/ubuntu/` |
-| Python PIP | `PIP_INDEX_URL` | `https://mirrors.huaweicloud.com/repository/pypi/simple` |
-| Python PIP (信任主机) | `PIP_TRUSTED_HOST` | `mirrors.huaweicloud.com` |
-| NPM | `NPM_REGISTRY` | `https://mirrors.huaweicloud.com/repository/npm/` |
+| 镜像站                | 环境变量           | 默认值                                                   |
+|-----------------------|--------------------|----------------------------------------------------------|
+| Ubuntu APT            | `APT_MIRROR_URI`   | `https://mirrors.huaweicloud.com/ubuntu/`                |
+| Python PIP            | `PIP_INDEX_URL`    | `https://mirrors.huaweicloud.com/repository/pypi/simple` |
+| Python PIP (信任主机) | `PIP_TRUSTED_HOST` | `mirrors.huaweicloud.com`                                |
+| NPM                   | `NPM_REGISTRY`     | `https://mirrors.huaweicloud.com/repository/npm/`        |
 
-Maven 镜像在构建时通过 `modules/settings.xml` 固定为阿里云公共仓库（`https://maven.aliyun.com/repository/public`），不可在运行时覆盖。
+Maven 镜像在构建时通过 `modules/settings.xml`
+固定为阿里云公共仓库（`https://maven.aliyun.com/repository/public`），不可在运行时覆盖。
 
 > APT 和 PIP 镜像仅在首次启动时配置（检测到已存在配置文件则跳过），可安全重启。NPM 镜像每次启动均刷新。
 
@@ -145,7 +148,8 @@ Maven 镜像在构建时通过 `modules/settings.xml` 固定为阿里云公共�
 
 将 PEM 格式的证书文件挂载到 `CA_CERT_DIR`（默认 `/opt/cloud/security/cert/ca`），启动时逐个导入：
 
-- **系统侧**：拷贝到 `/usr/local/share/ca-certificates/ca-{N}.crt` 后运行 `update-ca-certificates` 刷新 `/etc/ssl/certs/ca-certificates.crt`
+- **系统侧**：拷贝到 `/usr/local/share/ca-certificates/ca-{N}.crt` 后运行 `update-ca-certificates` 刷新
+  `/etc/ssl/certs/ca-certificates.crt`
 - **Java 侧**：通过 `keytool` 导入到 `${JAVA_HOME}/lib/security/cacerts`（仅扩展镜像有 JAVA_HOME）
 
 ```bash
@@ -154,24 +158,25 @@ docker run -v /path/to/my-certs:/opt/cloud/security/cert/ca:ro ...
 docker run -e CA_CERT_DIR=/etc/my-certs -v /path/to/my-certs:/etc/my-certs:ro ...
 ```
 
-> 证书文件应为 PEM 格式（以 `-----BEGIN CERTIFICATE-----` 开头）；所有文件按文件名排序导入，别名为 `ca-1`、`ca-2`...（storepass: `changeit`）。
+> 证书文件应为 PEM 格式（以 `-----BEGIN CERTIFICATE-----` 开头）；所有文件按文件名排序导入，别名为 `ca-1`、`ca-2`
+> ...（storepass: `changeit`）。
 
 ## 主要环境变量
 
-| 环境变量 | 默认值 | 说明 |
-|---------|-------|------|
-| `GITEA_INSTANCE_URL` | - | Gitea 实例地址（必填） |
-| `GITEA_RUNNER_REGISTRATION_TOKEN` | - | 注册令牌（与 `GITEA_RUNNER_REGISTRATION_TOKEN_FILE` 二选一，直接提供时优先） |
-| `GITEA_RUNNER_REGISTRATION_TOKEN_FILE` | - | 注册令牌文件路径（当 `GITEA_RUNNER_REGISTRATION_TOKEN` 为空时从此文件读取） |
-| `GITEA_RUNNER_NAME` | - | Runner 名称 |
-| `GITEA_RUNNER_LABELS` | `GITEA_RUNNER_LABELS_DEFAULT` | Runner 标签（逗号分隔） |
-| `GITEA_RUNNER_TIMEOUT_MINUTES` | `60` | 容器空闲超时（分钟） |
-| `GITEA_RUNNER_REGISTRATION_TIMEOUT` | `30` | 注册超时（秒） |
-| `GITEA_RUNNER_REGISTRATION_RETRY_INTERVAL` | `3` | 注册重试间隔（秒） |
-| `INIT_SH_FILE` | - | 自定义初始化脚本路径（容器内） |
-| `CA_CERT_DIR` | `/opt/cloud/security/cert/ca` | 自定义 CA 证书挂载目录 |
-| `GITEA_RUNNER_CONFIG_TEMPLATE_FILE` | `/opt/config.template.yaml` | Runner 配置模板文件路径 |
-| `APT_MIRROR_URI` | `https://mirrors.huaweicloud.com/ubuntu/` | Ubuntu APT 镜像站 |
-| `PIP_INDEX_URL` | `https://mirrors.huaweicloud.com/repository/pypi/simple` | Python PIP 镜像站 |
-| `PIP_TRUSTED_HOST` | `mirrors.huaweicloud.com` | PIP 信任主机 |
-| `NPM_REGISTRY` | `https://mirrors.huaweicloud.com/repository/npm/` | NPM 镜像站 |
+| 环境变量                                   | 默认值                                                   | 说明                                                                         |
+|--------------------------------------------|----------------------------------------------------------|------------------------------------------------------------------------------|
+| `GITEA_INSTANCE_URL`                       | -                                                        | Gitea 实例地址（必填）                                                       |
+| `GITEA_RUNNER_REGISTRATION_TOKEN`          | -                                                        | 注册令牌（与 `GITEA_RUNNER_REGISTRATION_TOKEN_FILE` 二选一，直接提供时优先） |
+| `GITEA_RUNNER_REGISTRATION_TOKEN_FILE`     | -                                                        | 注册令牌文件路径（当 `GITEA_RUNNER_REGISTRATION_TOKEN` 为空时从此文件读取）  |
+| `GITEA_RUNNER_NAME`                        | -                                                        | Runner 名称                                                                  |
+| `GITEA_RUNNER_LABELS`                      | `GITEA_RUNNER_LABELS_DEFAULT`                            | Runner 标签（逗号分隔）                                                      |
+| `GITEA_RUNNER_TIMEOUT_MINUTES`             | `60`                                                     | 容器空闲超时（分钟）                                                         |
+| `GITEA_RUNNER_REGISTRATION_TIMEOUT`        | `30`                                                     | 注册超时（秒）                                                               |
+| `GITEA_RUNNER_REGISTRATION_RETRY_INTERVAL` | `3`                                                      | 注册重试间隔（秒）                                                           |
+| `INIT_SH_FILE`                             | -                                                        | 自定义初始化脚本路径（容器内）                                               |
+| `CA_CERT_DIR`                              | `/opt/cloud/security/cert/ca`                            | 自定义 CA 证书挂载目录                                                       |
+| `GITEA_RUNNER_CONFIG_TEMPLATE_FILE`        | `/opt/config.template.yaml`                              | Runner 配置模板文件路径                                                      |
+| `APT_MIRROR_URI`                           | `https://mirrors.huaweicloud.com/ubuntu/`                | Ubuntu APT 镜像站                                                            |
+| `PIP_INDEX_URL`                            | `https://mirrors.huaweicloud.com/repository/pypi/simple` | Python PIP 镜像站                                                            |
+| `PIP_TRUSTED_HOST`                         | `mirrors.huaweicloud.com`                                | PIP 信任主机                                                                 |
+| `NPM_REGISTRY`                             | `https://mirrors.huaweicloud.com/repository/npm/`        | NPM 镜像站                                                                   |
