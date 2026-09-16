@@ -45,6 +45,7 @@
 |--------------|-----------|---------------------|----------------------|----------------------|---------------------------------------------------------------------------------------------------|-----------------------|
 | Gitea Runner | `3.5.0`   | `3.5.0` (已是最新)  | `3.5.0` (已是最新)   | `3.5.0` (已是最新)   | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile`                               | CI/CD Runner          |
 | Node.js      | `24.21.0` | `26.8.2`            | `24.21.0` (已是最新) | `24.21.0` (已是最新) | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile`                               | JavaScript 运行时     |
+| Qwen Code    | `0.23.4`  | `0.23.4` (已是最新) | `0.23.4` (已是最新)  | `0.23.4` (已是最新)  | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile`                               | 终端 AI 编码助手      |
 | kubectl      | `1.37.0`  | `1.37.0` (已是最新) | `1.37.0` (已是最新)  | `1.37.0` (已是最新)  | `gitea-runner-ubuntu/Dockerfile`                                                                  | Kubernetes 命令行工具 |
 | Helm         | `4.3.0`   | `4.3.0` (已是最新)  | `4.3.0` (已是最新)   | `4.3.0` (已是最新)   | `gitea-runner-ubuntu/Dockerfile`                                                                  | Kubernetes 包管理器   |
 

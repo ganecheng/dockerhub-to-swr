@@ -10,4 +10,5 @@ set -exuo pipefail
 source "$(dirname "$0")/common.sh"
 
 install_node "${NODE_VERSION:?NODE_VERSION is required}"
+install_qwen_code "${QWEN_CODE_VERSION:?QWEN_CODE_VERSION is required}"
 install_gitea_runner "${GITEA_RUNNER_VERSION:?GITEA_RUNNER_VERSION is required}"

@@ -1,17 +1,19 @@
 # escape=`
 
-# 基于 windows（Windows Server Core + VS Build Tools + Git + NuGet）追加 Node.js + Gitea Runner
+# 基于 windows（Windows Server Core + VS Build Tools + Git + NuGet）追加 Node.js + Qwen Code + Gitea Runner
 FROM ghcr.io/ganecheng/windows:20260911_195655-x86_64
 
 ENV GITEA_RUNNER_VERSION=3.5.0 `
-    NODE_VERSION=24.21.0
+    NODE_VERSION=24.21.0 `
+    QWEN_CODE_VERSION=0.23.4
 
 # 安装目录
 ENV NODE_HOME="C:\Program Files\nodejs" `
+    NPM_GLOBAL_HOME="C:\opt\npm" `
     GITEA_RUNNER_HOME="C:\opt\bin"
 
-# 追加 Node.js 和 Gitea Runner 到系统 PATH
-RUN [Environment]::SetEnvironmentVariable('PATH', \"${env:PATH};${env:NODE_HOME};${env:GITEA_RUNNER_HOME}\", 'Machine')
+# 追加 Node.js、npm 全局目录和 Gitea Runner 到系统 PATH
+RUN [Environment]::SetEnvironmentVariable('PATH', \"${env:PATH};${env:NODE_HOME};${env:NPM_GLOBAL_HOME};${env:GITEA_RUNNER_HOME}\", 'Machine')
 
 # 模块化安装脚本（Git Bash 版）
 COPY gitea-runner-windows/modules/common.sh gitea-runner-windows/modules/setup.sh C:/tmp/

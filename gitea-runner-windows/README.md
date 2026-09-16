@@ -24,8 +24,8 @@ gitea-runner-windows/               ← 基础镜像
 ├── run.sh                         # 容器入口脚本（Git Bash，Runner 注册、守护进程）
 ├── config.template.yaml            # Runner 配置文件模板（环境变量占位符）
 ├── modules/                        # 模块化安装脚本
-│   ├── common.sh                   # 共享函数库 (Web 下载封装、Node.js/Gitea Runner/Flutter 安装)
-│   ├── setup.sh                    # 基础镜像安装脚本 (Node.js + Gitea Runner)
+│   ├── common.sh                   # 共享函数库 (Web 下载封装、Node.js/Qwen Code CLI/Gitea Runner/Flutter 安装)
+│   ├── setup.sh                    # 基础镜像安装脚本 (Node.js + Qwen Code + Gitea Runner)
 │   └── flutter.sh                  # Flutter SDK 安装模块
 ├── Dockerfile.flutter               # gitea-runner-windows-flutter
 └── README.md
@@ -35,7 +35,7 @@ gitea-runner-windows/               ← 基础镜像
 
 | 镜像名称 | Dockerfile | 包含组件 | Runner 标签 |
 |---------|-----------|---------|------------|
-| `gitea-runner-windows` | `Dockerfile` | windows 全部组件 + Node.js 24.21.0 + Gitea Runner 3.5.0 | `windows-latest,windows-2022` |
+| `gitea-runner-windows` | `Dockerfile` | windows 全部组件 + Node.js 24.21.0 + Qwen Code 0.23.4 + Gitea Runner 3.5.0 | `windows-latest,windows-2022` |
 | `gitea-runner-windows-flutter` | `Dockerfile.flutter` | + Flutter 3.44.9 (仅 Windows 桌面) | `windows-latest,windows-2022,windows-flutter` |
 
 > windows 已包含：Windows Server Core ltsc2022 + VS Build Tools (MSVC v143, Windows 10 SDK 19041, CMake) + 完整版 Git for Windows 2.54.0 (含 Git Bash) + NuGet
@@ -54,7 +54,7 @@ docker build -f gitea-runner-windows/Dockerfile.flutter --build-arg BASE_IMAGE=g
 
 ## 工作原理
 
-基础镜像在 windows 之上补充 Node.js 和 Gitea Runner 二进制，扩展镜像在此基础上安装特定工具（Flutter SDK 等）。构建时通过 `ARG BASE_IMAGE` 引用基础镜像，无需手动处理任何依赖关系。
+基础镜像在 windows 之上补充 Node.js、Qwen Code CLI 和 Gitea Runner 二进制，扩展镜像在此基础上安装特定工具（Flutter SDK 等）。构建时通过 `ARG BASE_IMAGE` 引用基础镜像，无需手动处理任何依赖关系。
 
 ### 启动流程（`run.sh`）
 

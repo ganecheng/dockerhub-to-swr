@@ -10,6 +10,8 @@ ARG GITEA_RUNNER_VERSION=3.5.0
 ARG DOCKER_VERSION=28.5.2
 # 构建参数：Node.js 版本号
 ARG NODE_VERSION=24.21.0
+# 构建参数：Qwen Code 版本号
+ARG QWEN_CODE_VERSION=0.23.4
 # 构建参数：kubectl 版本号
 ARG KUBECTL_VERSION=1.37.0
 # 构建参数：Helm 版本号
@@ -39,6 +41,10 @@ RUN <<EOF
   rm -f /tmp/node.tar.xz
   node --version
   npm --version
+
+  # 通过 npm 全局安装 Qwen Code CLI（安装到 /usr/local，与 Node.js 同目录，已在 PATH 中）
+  npm install -g "@qwen-code/qwen-code@${QWEN_CODE_VERSION}"
+  qwen --version
 
   # 下载并安装 Gitea Runner 二进制文件
   curl "https://gitea.com/gitea/runner/releases/download/v${GITEA_RUNNER_VERSION}/gitea-runner-${GITEA_RUNNER_VERSION}-linux-${arch}" -o /usr/local/bin/gitea-runner

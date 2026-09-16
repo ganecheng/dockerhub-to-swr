@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 共享安装函数库 (Git Bash 版)：Web 下载封装、Node.js/Gitea Runner/Flutter 安装
+# 共享安装函数库 (Git Bash 版)：Web 下载封装、Node.js/Qwen Code CLI/Gitea Runner/Flutter 安装
 # 对应 Linux 版的 modules/common.sh
 # VS Build Tools 和 NuGet 已由基础镜像 (windows) 提供，无需在此安装
 
@@ -103,6 +103,23 @@ function install_node() {
   echo ">>> Node.js $version installed:"
   "$node_home/node.exe" --version
   "$node_home/npm.cmd" --version
+}
+
+# 安装 Qwen Code CLI（npm 全局安装）
+# 参数: $1 - Qwen Code 版本号 (如 0.23.4)
+# 全局安装目录: 通过 NPM_GLOBAL_HOME 环境变量指定 (默认 C:/opt/npm)
+function install_qwen_code() {
+  local version=${1:?}
+  local node_home=${NODE_HOME:-C:/Program Files/nodejs}
+  local npm_global_home=${NPM_GLOBAL_HOME:-C:/opt/npm}
+
+  echo ">>> Installing Qwen Code $version to $npm_global_home..."
+
+  # npm 在 Windows 的默认全局前缀为 %APPDATA%\npm（不在 PATH 中），显式指定前缀以便 qwen 可直接调用
+  NPM_CONFIG_PREFIX="$npm_global_home" "$node_home/npm.cmd" install -g "@qwen-code/qwen-code@${version}"
+
+  echo ">>> Qwen Code $version installed:"
+  "$npm_global_home/qwen.cmd" --version
 }
 
 # 安装 Gitea Runner
