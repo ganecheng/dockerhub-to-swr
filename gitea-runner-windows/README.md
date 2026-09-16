@@ -109,8 +109,9 @@ timeout 3600 \
   2>&1 | tee result.txt | python3 -u "C:/opt/bin/fmt_stream.py" | tee pretty.txt
 ```
 
-> 脚本仅依赖 Python 3 标准库（`sys` / `json` / `shutil`）；需通过 `python3 -u`（或 `python -u`）
-> 调用以关闭输出缓冲，保证日志实时刷新。
+> 脚本仅依赖 Python 3 标准库；需通过 `python3 -u`（或 `python -u`）调用
+> 以关闭输出缓冲，保证日志实时刷新。默认不输出颜色（CI/落盘场景无法渲染），
+> 设置 `FORCE_COLOR` 环境变量可开启颜色。
 
 ## 扩展新场景
 

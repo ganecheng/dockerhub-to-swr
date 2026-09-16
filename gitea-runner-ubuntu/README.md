@@ -132,8 +132,9 @@ timeout 3600 \
   2>&1 | tee result.txt | python3 -u /opt/fmt_stream.py | tee pretty.txt
 ```
 
-> 脚本仅依赖 Python 3 标准库（`sys` / `json` / `shutil`），镜像已自带 `python3`；
-> 需通过 `python3 -u` 调用以关闭输出缓冲，保证日志实时刷新。
+> 脚本仅依赖 Python 3 标准库，镜像已自带 `python3`；需通过 `python3 -u` 调用
+> 以关闭输出缓冲，保证日志实时刷新。默认不输出颜色（CI/落盘场景无法渲染），
+> 设置 `FORCE_COLOR` 环境变量可开启颜色。
 > Windows 版镜像的等价脚本位于 `C:\opt\bin\fmt_stream.py`（见 [gitea-runner-windows](../gitea-runner-windows/README.md)）。
 
 ## 扩展新场景
