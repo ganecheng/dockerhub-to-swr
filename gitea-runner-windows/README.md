@@ -35,8 +35,8 @@ gitea-runner-windows/               ← 基础镜像
 
 | 镜像名称 | Dockerfile | 包含组件 | Runner 标签 |
 |---------|-----------|---------|------------|
-| `gitea-runner-windows` | `Dockerfile` | windows 全部组件 + Node.js 24.18.0 + Gitea Runner 1.0.8 | `windows-latest,windows-2022` |
-| `gitea-runner-windows-flutter` | `Dockerfile.flutter` | + Flutter 3.44.2 (仅 Windows 桌面) | `windows-latest,windows-2022,windows-flutter` |
+| `gitea-runner-windows` | `Dockerfile` | windows 全部组件 + Node.js 24.21.0 + Gitea Runner 3.5.0 | `windows-latest,windows-2022` |
+| `gitea-runner-windows-flutter` | `Dockerfile.flutter` | + Flutter 3.44.9 (仅 Windows 桌面) | `windows-latest,windows-2022,windows-flutter` |
 
 > windows 已包含：Windows Server Core ltsc2022 + VS Build Tools (MSVC v143, Windows 10 SDK 19041, CMake) + 完整版 Git for Windows 2.54.0 (含 Git Bash) + NuGet
 
