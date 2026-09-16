@@ -34,9 +34,15 @@ for _stream in (sys.stdin, sys.stdout):
 # 各类输出行的前缀 (图标+标签) 宽度不同, 按终端宽度分别预留开销;
 # 管道/CI 下取不到终端宽度时回退为 200 列
 TERM_WIDTH = shutil.get_terminal_size((200, 24)).columns
-W_PROMPT = max(80, TERM_WIDTH - 25)   # 👤 [User Prompt]
+W_PROMPT = max(80, TERM_WIDTH - 25)   # 👤 [用户提示词]
 W_CMD    = max(80, TERM_WIDTH - 20)   # ⚡ [Bash] $
 W_LINE   = max(80, TERM_WIDTH - 15)   # 结果行 "      │ "
+
+# result 事件子类型的中文说明 (未收录的原样输出)
+SUBTYPE_CN = {
+    'error_max_turns': '超出最大轮次',
+    'error_during_execution': '执行出错',
+}
 
 
 def p(s, end='\n'):
@@ -66,12 +72,12 @@ def emit_lines(lines, color):
     for ln in lines[:CONTENT_LINES]:
         p(f"{color}      │ {trunc(ln.rstrip(), W_LINE)}{C_RESET}")
     if len(lines) > CONTENT_LINES:
-        p(f"{color}      │ ... ({len(lines) - CONTENT_LINES} more lines){C_RESET}")
+        p(f"{color}      │ ... (还有 {len(lines) - CONTENT_LINES} 行){C_RESET}")
 
 
 def render_tool_result(block):
     is_err = bool(block.get('is_error'))
-    icon, color, title = ('❌', C_ERR, '[Error]') if is_err else ('✅', C_RESULT, '[Result]')
+    icon, color, title = ('❌', C_ERR, '[错误]') if is_err else ('✅', C_RESULT, '[结果]')
     p(f"{color}    {icon} {title}{C_RESET}")
     content = block.get('content')
     if content is None:
@@ -84,15 +90,15 @@ def process(obj):
     t = obj.get('type', '')
 
     if t == 'system' and obj.get('subtype') == 'init':
-        p(f"\n{C_INFO}🚀 [Init] model={obj.get('model') or ''} "
-          f"version={obj.get('qwen_code_version') or ''} cwd={obj.get('cwd') or ''}{C_RESET}")
+        p(f"\n{C_INFO}🚀 [初始化] 模型={obj.get('model') or ''} "
+          f"版本={obj.get('qwen_code_version') or ''} 工作目录={obj.get('cwd') or ''}{C_RESET}")
         return
 
     if t == 'error':
         err = obj.get('error', '')
         if isinstance(err, dict):
             err = err.get('message', str(err))
-        p(f"\n{C_ERR}🚨 [System Error] {err}{C_RESET}")
+        p(f"\n{C_ERR}🚨 [系统错误] {err}{C_RESET}")
         return
 
     if t == 'user':
@@ -108,7 +114,7 @@ def process(obj):
         )
         if text.strip():
             first = text.strip().split('\n', 1)[0]
-            p(f"\n{C_INFO}👤 [User Prompt] {trunc(first, W_PROMPT)}{C_RESET}")
+            p(f"\n{C_INFO}👤 [用户提示词] {trunc(first, W_PROMPT)}{C_RESET}")
         # qwen 0.23.x 的工具结果在 user 事件的 tool_result 内容块里,
         # 顶层没有 tool_use_result 字段
         for b in content:
@@ -132,9 +138,9 @@ def process(obj):
                 if not isinstance(text, str) or not text.strip():
                     continue
                 if len(text) > TEXT_LIMIT:
-                    text = text[:TEXT_LIMIT] + ' ... (truncated)'
+                    text = text[:TEXT_LIMIT] + ' ... (已截断)'
                 if not has_thought:
-                    p(f"\n{C_THOUGHT}🧠 [Thought]{C_RESET}")
+                    p(f"\n{C_THOUGHT}🧠 [思考]{C_RESET}")
                     has_thought = True
                 for ln in text.splitlines():
                     if ln.strip():
@@ -148,11 +154,12 @@ def process(obj):
                 elif name == 'Read':
                     rng = ''
                     if inp.get('offset') is not None:
-                        rng = f" L{inp.get('offset')}"
+                        rng = f" 第{inp.get('offset')}行起"
                         if inp.get('limit') is not None:
-                            rng += f"+{inp.get('limit')}"
+                            rng += f", 共{inp.get('limit')}行"
                     fp = str(inp.get('file_path') or '')
-                    p(f"    {C_ACTION}📄 [{name}]{C_RESET} {trunc(fp, W_CMD)}{rng}")
+                    # 行号范围也占宽度, 从路径预算中扣除
+                    p(f"    {C_ACTION}📄 [{name}]{C_RESET} {trunc(fp, max(20, W_CMD - disp_width(rng)))}{rng}")
                 else:
                     p(f"    {C_ACTION}🛠️  [{name}]{C_RESET} {trunc(str(inp), W_CMD)}")
         return
@@ -162,14 +169,14 @@ def process(obj):
         # 展示轮次/耗时/子类型, 以及最终结果或错误信息
         is_err = bool(obj.get('is_error'))
         c, icon = (C_ERR, '❌') if is_err else (C_INFO, '🏁')
-        info = [f"turns={obj.get('num_turns', 0)}"]
+        info = [f"轮次={obj.get('num_turns', 0)}"]
         dur = obj.get('duration_ms')
         if isinstance(dur, (int, float)):
-            info.append(f"{dur / 1000:.1f}s")
+            info.append(f"耗时={dur / 1000:.1f}秒")
         subtype = obj.get('subtype')
         if subtype and subtype != 'success':
-            info.append(subtype)
-        p(f"\n{c}{icon} [结束 DONE] {' '.join(info)}{C_RESET}")
+            info.append(f"({SUBTYPE_CN.get(subtype, subtype)})")
+        p(f"\n{c}{icon} [结束] {' '.join(info)}{C_RESET}")
         if is_err:
             err = obj.get('error')
             msg = err.get('message') if isinstance(err, dict) else err
