@@ -59,7 +59,8 @@ COPY gitea-runner-windows/run.sh C:/opt/run.sh
 COPY gitea-runner-windows/config.template.yaml C:/opt/config.template.yaml
 
 # qwen 流式输出格式化脚本（供 job 内 qwen 的 stream-json 输出使用）
-COPY gitea-runner-windows/fmt_stream.py C:/opt/bin/fmt_stream.py
+# 与 Ubuntu 版 Runner 共用仓库内同一份脚本
+COPY common/fmt_stream.py C:/opt/bin/fmt_stream.py
 
 # Git Bash 执行 run.sh
 CMD ["bash", "/c/opt/run.sh"]

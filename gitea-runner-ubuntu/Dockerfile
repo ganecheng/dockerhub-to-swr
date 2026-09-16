@@ -105,7 +105,8 @@ COPY gitea-runner-ubuntu/run.sh /opt/
 COPY gitea-runner-ubuntu/config.template.yaml /opt/
 
 # 复制 qwen 流式输出格式化脚本（供 job 内 qwen 的 stream-json 输出使用）
-COPY gitea-runner-ubuntu/fmt_stream.py /opt/fmt_stream.py
+# 与 Windows 版 Runner 共用仓库内同一份脚本
+COPY common/fmt_stream.py /opt/fmt_stream.py
 
 # Docker 数据卷（镜像、容器层存储）
 VOLUME /var/lib/docker
