@@ -95,7 +95,7 @@ Runner 以 **ephemeral 模式**运行：完成一个任务后自动退出，容�
 ## 内置 Qwen Code CLI
 
 基础镜像通过 npm 全局安装 Qwen Code CLI（当前 `0.23.4`，可用 `QWEN_CODE_VERSION` 覆盖版本），
-并内置流式输出格式化脚本 `C:\opt\bin\fmt_stream.py`（与 Linux 版同源、内容一致）。
+并内置流式输出格式化脚本 `C:\opt\bin\fmt_stream.py`（与 Linux 版内容一致）。
 Python 3 通过 Chocolatey 安装，且把 `python.exe` 复制为 `python3.exe`，
 因此 Linux 侧的 `python3 -u .../fmt_stream.py` 调用方式可直接复用。
 

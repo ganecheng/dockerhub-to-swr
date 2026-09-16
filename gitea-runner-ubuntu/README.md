@@ -122,7 +122,7 @@ Runner 以 **ephemeral 模式**运行：完成一个任务后自动退出，容�
 
 基础镜像通过 npm 全局安装 Qwen Code CLI（当前 `0.23.4`，可用构建参数
 `QWEN_CODE_VERSION` 覆盖版本），并内置流式输出格式化脚本 `/opt/fmt_stream.py`
-（取自 `gsc-docker-base-image` 的 qwen-code 组件，与 `run.sh`、配置模板同在 `/opt/` 下）。
+（与 `run.sh`、配置模板同在 `/opt/` 下）。
 
 qwen 以 `--output-format stream-json` 运行时，每行输出一个 JSON 事件，直接查看可读性差。
 `fmt_stream.py` 会将 JSON 流渲染为带颜色、按终端宽度截断的日志（思考过程、工具调用、执行结果）：
