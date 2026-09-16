@@ -12,6 +12,7 @@
 | 镜像站配置 | APT + PIP + NPM | 仅 NPM |
 | 自定义初始化 | `INIT_SH_FILE` | `INIT_SH_FILE` |
 | 配置模板渲染 | bash `eval` | bash `eval` (与 Linux 版同实现) |
+| qwen 日志格式化 | `python3` + `/opt/fmt_stream.py` | `python3`/`python` + `C:\opt\bin\fmt_stream.py` |
 | Runner 标签 | `ubuntu-latest,ubuntu-26.04` | `windows-latest,windows-2022` |
 
 ## 镜像结构
@@ -23,6 +24,7 @@ gitea-runner-windows/               ← 基础镜像
 ├── Dockerfile                      # 基础镜像 Dockerfile
 ├── run.sh                         # 容器入口脚本（Git Bash，Runner 注册、守护进程）
 ├── config.template.yaml            # Runner 配置文件模板（环境变量占位符）
+├── fmt_stream.py                   # qwen stream-json 输出格式化脚本（镜像内 C:\opt\bin\）
 ├── modules/                        # 模块化安装脚本
 │   ├── common.sh                   # 共享函数库 (Web 下载封装、Node.js/Qwen Code CLI/Gitea Runner/Flutter 安装)
 │   ├── setup.sh                    # 基础镜像安装脚本 (Node.js + Qwen Code + Gitea Runner)
@@ -35,7 +37,7 @@ gitea-runner-windows/               ← 基础镜像
 
 | 镜像名称 | Dockerfile | 包含组件 | Runner 标签 |
 |---------|-----------|---------|------------|
-| `gitea-runner-windows` | `Dockerfile` | windows 全部组件 + Node.js 24.21.0 + Qwen Code 0.23.4 + Gitea Runner 3.5.0 | `windows-latest,windows-2022` |
+| `gitea-runner-windows` | `Dockerfile` | windows 全部组件 + Node.js 24.21.0 + Qwen Code 0.23.4 + Python 3 (Chocolatey) + Gitea Runner 3.5.0 | `windows-latest,windows-2022` |
 | `gitea-runner-windows-flutter` | `Dockerfile.flutter` | + Flutter 3.44.9 (仅 Windows 桌面) | `windows-latest,windows-2022,windows-flutter` |
 
 > windows 已包含：Windows Server Core ltsc2022 + VS Build Tools (MSVC v143, Windows 10 SDK 19041, CMake) + 完整版 Git for Windows 2.54.0 (含 Git Bash) + NuGet
@@ -89,6 +91,26 @@ Runner 以 **ephemeral 模式**运行：完成一个任务后自动退出，容�
 ### 自定义初始化脚本
 
 设置 `INIT_SH_FILE` 环境变量指向容器内的 .sh 脚本路径，启动时会通过 `source` 方式执行该脚本，与 Linux 版的 `INIT_SH_FILE` 行为一致。
+
+## 内置 Qwen Code CLI
+
+基础镜像通过 npm 全局安装 Qwen Code CLI（当前 `0.23.4`，可用 `QWEN_CODE_VERSION` 覆盖版本），
+并内置流式输出格式化脚本 `C:\opt\bin\fmt_stream.py`（与 Linux 版同源、内容一致）。
+Python 3 通过 Chocolatey 安装，且把 `python.exe` 复制为 `python3.exe`，
+因此 Linux 侧的 `python3 -u .../fmt_stream.py` 调用方式可直接复用。
+
+qwen 以 `--output-format stream-json` 运行时，每行输出一个 JSON 事件，直接查看可读性差。
+`fmt_stream.py` 会将其渲染为带颜色、按终端宽度截断的日志（思考过程、工具调用、执行结果）：
+
+```bash
+# 在 Git Bash 步骤中执行（workflow 里 shell: bash）
+timeout 3600 \
+  qwen --debug --output-format stream-json --yolo -p "任务描述" \
+  2>&1 | tee result.txt | python3 -u "C:/opt/bin/fmt_stream.py" | tee pretty.txt
+```
+
+> 脚本仅依赖 Python 3 标准库（`sys` / `json` / `shutil`）；需通过 `python3 -u`（或 `python -u`）
+> 调用以关闭输出缓冲，保证日志实时刷新。
 
 ## 扩展新场景
 

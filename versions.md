@@ -88,6 +88,7 @@
 | PowerShell (Chocolatey) | latest                | -                     | -                     | -                     | `windows/Dockerfile`              | 通过 Chocolatey 安装 `powershell-core` |
 | NuGet                   | latest                | -                     | -                     | -                     | `windows/Dockerfile`              | .NET 包管理器                          |
 | Chocolatey              | latest                | -                     | -                     | -                     | `windows/Dockerfile`              | Windows 包管理器                       |
+| Python 3 (Chocolatey)   | latest                | -                     | -                     | -                     | `gitea-runner-windows/Dockerfile` | 供 fmt_stream.py 使用                  |
 | VS Build Tools 2022     | 17 release            | 17 release (已是最新) | 17 release (已是最新) | 17 release (已是最新) | `windows/Dockerfile`              | Visual Studio Build Tools              |
 | MSVC v143               | latest (VS 2022)      | -                     | -                     | -                     | `windows/Dockerfile`              | C/C++ 编译器工具链                     |
 | Windows SDK             | latest (VS 2022 安装) | -                     | -                     | -                     | `windows/Dockerfile`              | 通过 VS Build Tools 安装               |

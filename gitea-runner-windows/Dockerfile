@@ -15,6 +15,25 @@ ENV NODE_HOME="C:\Program Files\nodejs" `
 # 追加 Node.js、npm 全局目录和 Gitea Runner 到系统 PATH
 RUN [Environment]::SetEnvironmentVariable('PATH', \"${env:PATH};${env:NODE_HOME};${env:NPM_GLOBAL_HOME};${env:GITEA_RUNNER_HOME}\", 'Machine')
 
+# 安装 Python 3（Chocolatey），供 job 内的 fmt_stream.py 使用
+# choco/官方安装器的落地目录随版本变化，按候选路径定位 python.exe 并确保其目录在 PATH 上；
+# 同时把 python.exe 复制为 python3.exe，以便直接复用 Linux 侧的 `python3 -u ...` 调用方式
+RUN choco install python3 -y --no-progress; `
+    $env:PATH = [Environment]::GetEnvironmentVariable('PATH', 'Machine'); `
+    $python = Get-Command python -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty Source; `
+    if (-not $python) { `
+      $python = Get-ChildItem (Join-Path 'C:\' 'Python*\python.exe'), (Join-Path 'C:\Program Files' 'Python*\python.exe'), (Join-Path $env:LOCALAPPDATA 'Programs\Python\Python*\python.exe') -ErrorAction SilentlyContinue | Select-Object -First 1 -ExpandProperty FullName `
+    }; `
+    if (-not $python) { throw 'python.exe not found after choco install' }; `
+    $pythonDir = Split-Path $python -Parent; `
+    Copy-Item (Join-Path $pythonDir 'python.exe') (Join-Path $pythonDir 'python3.exe') -Force; `
+    $machinePath = [Environment]::GetEnvironmentVariable('PATH', 'Machine'); `
+    if ($machinePath -notlike ('*' + $pythonDir + '*')) { [Environment]::SetEnvironmentVariable('PATH', $machinePath + ';' + $pythonDir + ';' + (Join-Path $pythonDir 'Scripts'), 'Machine') }; `
+    $env:PATH = [Environment]::GetEnvironmentVariable('PATH', 'Machine'); `
+    python --version; `
+    python3 --version; `
+    python -c 'import json, shutil, sys; print(sys.version_info[:3])'
+
 # 模块化安装脚本（Git Bash 版）
 COPY gitea-runner-windows/modules/common.sh gitea-runner-windows/modules/setup.sh C:/tmp/
 
@@ -38,6 +57,9 @@ ENV `
 # 入口脚本与配置模板
 COPY gitea-runner-windows/run.sh C:/opt/run.sh
 COPY gitea-runner-windows/config.template.yaml C:/opt/config.template.yaml
+
+# qwen 流式输出格式化脚本（供 job 内 qwen 的 stream-json 输出使用）
+COPY gitea-runner-windows/fmt_stream.py C:/opt/bin/fmt_stream.py
 
 # Git Bash 执行 run.sh
 CMD ["bash", "/c/opt/run.sh"]

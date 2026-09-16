@@ -9,6 +9,7 @@ gitea-runner-ubuntu/                ← 基础镜像 (Dockerfile)
 ├── Dockerfile                      # 基础镜像
 ├── run.sh                          # 容器入口脚本（Docker 启动、Runner 注册、守护进程）
 ├── config.template.yaml            # Runner 配置文件模板（环境变量占位符）
+├── fmt_stream.py                   # qwen stream-json 输出格式化脚本（镜像内 /opt/）
 ├── modules/                        # 模块化安装脚本
 │   ├── common.sh                   # 共享函数库 (curl 封装、架构检测、JDK/Maven/JMeter 安装)
 │   ├── settings.xml                # Maven 阿里云镜像配置
@@ -116,6 +117,25 @@ Runner 以 **ephemeral 模式**运行：完成一个任务后自动退出，容�
 ### 自定义初始化脚本
 
 设置 `INIT_SH_FILE` 环境变量指向容器内脚本路径，启动时会 `source` 执行该脚本。
+
+## 内置 Qwen Code CLI
+
+基础镜像通过 npm 全局安装 Qwen Code CLI（当前 `0.23.4`，可用构建参数
+`QWEN_CODE_VERSION` 覆盖版本），并内置流式输出格式化脚本 `/opt/fmt_stream.py`
+（取自 `gsc-docker-base-image` 的 qwen-code 组件，与 `run.sh`、配置模板同在 `/opt/` 下）。
+
+qwen 以 `--output-format stream-json` 运行时，每行输出一个 JSON 事件，直接查看可读性差。
+`fmt_stream.py` 会将 JSON 流渲染为带颜色、按终端宽度截断的日志（思考过程、工具调用、执行结果）：
+
+```bash
+timeout 3600 \
+  qwen --debug --output-format stream-json --yolo -p "任务描述" \
+  2>&1 | tee result.txt | python3 -u /opt/fmt_stream.py | tee pretty.txt
+```
+
+> 脚本仅依赖 Python 3 标准库（`sys` / `json` / `shutil`），镜像已自带 `python3`；
+> 需通过 `python3 -u` 调用以关闭输出缓冲，保证日志实时刷新。
+> Windows 版镜像的等价脚本位于 `C:\opt\bin\fmt_stream.py`（见 [gitea-runner-windows](../gitea-runner-windows/README.md)）。
 
 ## 扩展新场景
 
