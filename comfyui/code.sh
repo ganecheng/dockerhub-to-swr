@@ -9,7 +9,7 @@ cd /default_comfyui_bundle/ComfyUI
 
 # 下载代码
 git clone --filter=blob:none --no-checkout https://github.com/Comfy-Org/ComfyUI.git .
-git checkout v0.35.0
+git checkout v0.36.0
 rm -rf .git
 
 # 安装依赖
