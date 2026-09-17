@@ -124,7 +124,8 @@ Runner 以 **ephemeral 模式**运行：完成一个任务后自动退出，容�
 （两个 Runner 镜像共用同一份），镜像内为 `/opt/fmt_stream.py`。
 
 qwen 以 `--output-format stream-json` 运行时，每行输出一个 JSON 事件，直接查看可读性差。
-`fmt_stream.py` 会将 JSON 流渲染为带颜色、按终端宽度截断的日志（思考过程、工具调用、执行结果）：
+`fmt_stream.py` 会将 JSON 流渲染为带颜色的日志（思考、回复、工具调用、执行结果）：
+思考与回复正文按终端宽度折行，工具结果按终端宽度截断。
 
 ```bash
 timeout 3600 \
@@ -134,7 +135,8 @@ timeout 3600 \
 
 > 脚本仅依赖 Python 3 标准库，镜像已自带 `python3`；需通过 `python3 -u` 调用
 > 以关闭输出缓冲，保证日志实时刷新。默认不输出颜色（CI/落盘场景无法渲染），
-> 设置 `FORCE_COLOR` 环境变量可开启颜色。
+> 设置 `FORCE_COLOR` 环境变量可开启颜色；设置 `FMT_DEBUG=1` 会额外打印未识别的
+> 事件类型与混入的非 JSON 行，便于 qwen 升级后排查事件格式漂移。
 > Windows 版镜像的等价脚本位于 `C:\opt\bin\fmt_stream.py`（见 [gitea-runner-windows](../gitea-runner-windows/README.md)）。
 
 ## 扩展新场景
