@@ -39,6 +39,10 @@ if os.environ.get('FORCE_COLOR', '') in ('', '0'):
 # 打印未识别的事件类型与非 JSON 行, 便于 qwen 升级后排查 stream-json 格式漂移
 FMT_DEBUG = os.environ.get('FMT_DEBUG', '') not in ('', '0')
 
+# 最终结果 (result.result) 是交付物: 开启后原样输出, 不加前缀/不折行/不截断,
+# 便于直接落盘或管道给下游当 Markdown 用; 需要日志观感时保持关闭
+RAW_RESULT = os.environ.get('FMT_RAW_RESULT', '') not in ('', '0')
+
 # Windows 管道下 Python 默认用 ANSI 代码页 (如 cp936) 收发字节,
 # 会把 qwen 输出的 UTF-8 中文读成乱码、emoji 解码失败甚至崩溃,
 # 因此强制 stdin/stdout 走 UTF-8, 不可解码字节替换为 U+FFFD;
@@ -56,6 +60,7 @@ INDENT      = '    '         # 思考/回复正文的缩进
 CONT_INDENT = '  '           # 折行续行的额外缩进, 用来与原文换行区分
 RESULT_PFX  = '      │ '     # 工具结果每行的前缀
 HDR_PROMPT  = '👤 [用户提示词] '
+HDR_ERROR   = '🚨 [系统错误] '
 
 # 工具/模型输出里可能混入 ANSI 颜色与制表符: 制表符按 1 列测量与实际显示 (跳到
 # 制表位) 不符, 内嵌的 \x1b[0m 还会关掉本脚本给该行设的颜色, 因此统一先归一化
@@ -67,8 +72,16 @@ def plain(s, tab=4):
     return ANSI_RE.sub('', s).expandtabs(tab)
 
 
-def char_width(c):
-    """单个字符的显示宽度: 组合符与变体选择符 0 列, CJK/emoji 2 列, 其余 1 列"""
+# 0x2600-0x27BF 里 ✅ ❌ ⚡ 这类默认就按 emoji 渲染 (2 列), 但同区段的 ✓ ★ ➜ ♪
+# 默认是文本呈现 (1 列, 只有带上 FE0F 才变 emoji), 按区段一刀切会把后者多算 1 列
+TEXT_PRESENT_SYMBOLS = frozenset('✓✔✗✘★☆♪♫➜➔➤')
+
+
+def char_width(c, next_c=''):
+    """单个字符的显示宽度: 组合符与变体选择符 0 列, CJK/emoji 2 列, 其余 1 列
+
+    next_c 是紧随其后的字符, 用来识别变体选择符 FE0F (文本呈现符号带上它才占 2 列)
+    """
     code = ord(c)
     if code in (0xFE0E, 0xFE0F) or code == 0x200D or unicodedata.combining(c):
         return 0
@@ -76,13 +89,16 @@ def char_width(c):
         return 2
     # emoji 的呈现宽度不在 east_asian_width 里: 🛠 (U+1F6E0) 记作 N(1 列),
     # 终端实际按 2 列渲染, 这里按 Unicode 区段兜底
-    if 0x1F000 <= code <= 0x1FAFF or 0x2600 <= code <= 0x27BF:
+    if 0x1F000 <= code <= 0x1FAFF:
         return 2
+    if 0x2600 <= code <= 0x27BF:
+        return 1 if c in TEXT_PRESENT_SYMBOLS and next_c != '\uFE0F' else 2
     return 1
 
 
 def disp_width(s):
-    return sum(char_width(c) for c in s)
+    """整行显示宽度, 逐字符带上后一个字符以便识别变体选择符"""
+    return sum(char_width(c, s[i + 1:i + 2]) for i, c in enumerate(s))
 
 
 def trunc(s, width):
@@ -91,8 +107,8 @@ def trunc(s, width):
     if disp_width(s) <= width:
         return s
     out, w = [], 3
-    for c in s:
-        cw = char_width(c)
+    for i, c in enumerate(s):
+        cw = char_width(c, s[i + 1:i + 2])
         if w + cw > width:
             break
         out.append(c)
@@ -111,8 +127,8 @@ def wrap(s, width):
     out = []
     for raw in s.splitlines() or ['']:
         cur, cur_w, budget, indent = '', 0, width, ''
-        for c in raw:
-            cw = char_width(c)
+        for i, c in enumerate(raw):
+            cw = char_width(c, raw[i + 1:i + 2])
             if cur and cur_w + cw > budget:
                 sp = cur.rfind(' ')
                 if sp > 0:
@@ -149,12 +165,19 @@ TERM_WIDTH = env_int('FMT_WIDTH', shutil.get_terminal_size((200, 24)).columns, 2
 
 
 def line_budget(prefix, minimum=40):
-    """整行给到 TERM_WIDTH 时, 前缀之后还能容纳的显示宽度"""
-    return max(minimum, TERM_WIDTH - disp_width(prefix))
+    """整行给到 TERM_WIDTH 时, 前缀之后还能容纳的显示宽度
+
+    minimum 是内容宽度的下限, 只在剩余空间确实够时才生效: 若前缀已占去大半行,
+    宁可把内容压成 "...", 也不能让整行越过 TERM_WIDTH; 只有前缀自己就宽到
+    放不下 "..." 时 (TERM_WIDTH 小于 前缀宽+4) 才退化为最小 4 列
+    """
+    room = TERM_WIDTH - disp_width(prefix)
+    return room if room > minimum else max(4, room)
 
 
 W_PROMPT = line_budget(HDR_PROMPT)
 W_LINE   = line_budget(RESULT_PFX)
+W_ERR    = line_budget(HDR_ERROR)
 W_DEBUG  = line_budget('❔ [未识别事件] ')
 
 
@@ -178,7 +201,8 @@ def emit_lines(lines, color):
     """输出工具结果: 保留缩进, 按显示宽度截断, 行数超限折叠"""
     limit = CONTENT_LINES or len(lines)
     for ln in lines[:limit]:
-        p(f"{color}{RESULT_PFX}{trunc(plain(ln).rstrip(), W_LINE)}{C_RESET}")
+        # 空行也要去掉前缀尾部的空格, 避免日志里出现行尾空白
+        p(f"{color}{(RESULT_PFX + trunc(plain(ln).rstrip(), W_LINE)).rstrip()}{C_RESET}")
     if len(lines) > limit:
         p(f"{color}{RESULT_PFX}... (还有 {len(lines) - limit} 行){C_RESET}")
 
@@ -224,7 +248,8 @@ def describe_tool(name, inp):
         return '🛠️', text, '', text
     if name in ('run_shell_command', 'monitor'):
         cmd = str(inp.get('command') or '').replace('\r\n', '; ').replace('\n', '; ')
-        desc = str(inp.get('description') or '')
+        # 描述只是附加说明, 压成单行以免工具行被换行冲散
+        desc = ' '.join(str(inp.get('description') or '').split())
         return '⚡', f"$ {cmd}" + (f"   # {desc}" if desc else ''), '', f"$ {cmd}"
     if name in ('read_file', 'write_file', 'edit', 'notebook_edit'):
         icon = {'read_file': '📄', 'write_file': '📝',
@@ -234,9 +259,20 @@ def describe_tool(name, inp):
             tail = f" 第{inp.get('offset')}行起"
             if inp.get('limit') is not None:
                 tail += f", 共{inp.get('limit')}行"
+        elif name == 'edit':
+            old = str(inp.get('old_string') or '')
+            new = str(inp.get('new_string') or '')
+            # 编辑规模(增删行数)比 old_string 原文更有信息量, 空串记 0 行
+            n_del = old.count('\n') + 1 if old else 0
+            n_add = new.count('\n') + 1 if new else 0
+            if n_del or n_add:
+                tail = f"  -{n_del}行/+{n_add}行"
         fp = str(inp.get('file_path') or inp.get('notebook_path') or '')
         if name == 'notebook_edit' and inp.get('cell_id'):
             fp += f" cell={inp.get('cell_id')}"
+        if not fp:
+            # 路径缺失时退回 k=v 摘要, 免得打出一条只有图标和工具名的空行
+            fp = compact(inp)
         return icon, fp, tail, fp
     if name in ('grep_search', 'glob'):
         pat = str(inp.get('pattern') or inp.get('query') or '')
@@ -245,7 +281,9 @@ def describe_tool(name, inp):
         return '🔍', main, '', main
     if name == 'web_fetch':
         url = str(inp.get('url') or '')
-        return '🌐', url, '', url
+        # 同一 URL 可能配不同 prompt (缓存命中的重复抓取), 带上 prompt 才区分得开
+        prompt = ' '.join(str(inp.get('prompt') or '').split())
+        return '🌐', url + (f"   # {prompt}" if prompt else ''), '', url
     if name == 'read_mcp_resource':
         main = f"{inp.get('server_name') or ''}:{inp.get('uri') or ''}"
         return '🔌', main, '', main
@@ -323,7 +361,12 @@ def process(obj):
         err = obj.get('error', '')
         if isinstance(err, dict):
             err = err.get('message', str(err))
-        p(f"\n{C_ERR}🚨 [系统错误] {err}{C_RESET}")
+        lines = str(err).splitlines() or ['']
+        # 首行与头部同行, 其余行按结果行渲染: 直接原样打印会让多行或超长的
+        # 错误信息冲出版式 (续行丢失前缀, 单行可达几百列)
+        p(f"\n{C_ERR}{HDR_ERROR}{trunc(plain(lines[0]).rstrip(), W_ERR)}{C_RESET}")
+        if len(lines) > 1:
+            emit_lines(lines[1:], C_ERR)
         return
 
     if t == 'user':
@@ -338,8 +381,11 @@ def process(obj):
             if isinstance(b, dict) and b.get('type') == 'text' and isinstance(b.get('text'), str)
         )
         if text.strip():
-            first = plain(text.strip().split('\n', 1)[0])
-            p(f"\n{C_INFO}{HDR_PROMPT}{trunc(first, W_PROMPT)}{C_RESET}")
+            lines = text.strip().splitlines()
+            # 只打首行会把多行提示词的其余内容悄悄丢掉, 因此补上总行数
+            more = f" (共 {len(lines)} 行)" if len(lines) > 1 else ''
+            p(f"\n{C_INFO}{HDR_PROMPT}"
+              f"{trunc(plain(lines[0]), max(4, W_PROMPT - disp_width(more)))}{more}{C_RESET}")
         # qwen 0.23.x 的工具结果在 user 事件的 tool_result 内容块里,
         # 顶层没有 tool_use_result 字段
         for b in content:
@@ -354,6 +400,8 @@ def process(obj):
             return
         # 当前小节: 'thought' / 'reply' / None (工具行不切换小节)
         section = None
+        # 工具行与正文同缩进, 首条工具行前空一行才不会看成正文的下一句
+        first_tool = True
         for block in content:
             if not isinstance(block, dict):
                 continue
@@ -387,11 +435,18 @@ def process(obj):
             elif bt == 'tool_use':
                 name = block.get('name', '')
                 inp = block.get('input') or {}
+                if first_tool:
+                    p('')
+                    first_tool = False
                 icon, main, tail, key = describe_tool(name, inp)
                 # 命令/路径里可能混入制表符或颜色序列, 先归一化再参与宽度计算与输出
                 main, tail, key = plain(main), plain(tail), plain(key)
-                # 前缀含缩进/图标/工具名, 主文本按剩余宽度截断, 后缀(如行号范围)不截断
+                # 前缀含缩进/图标/工具名, 主文本按剩余宽度截断, 后缀(如行号范围)不截断;
+                # 但后缀自己也可能把整行占满, 这时先压缩后缀, 保证整行不超 TERM_WIDTH
                 pfx = f"{INDENT}{icon} [{name}] "
+                room = TERM_WIDTH - disp_width(pfx)
+                if disp_width(tail) > max(0, room - 8):
+                    tail = trunc(tail, max(4, room - 8))
                 budget = line_budget(pfx + tail)
                 p(f"{INDENT}{C_ACTION}{icon} [{name}]{C_RESET} {trunc(main, budget)}{tail}")
                 TOOL_CALLS[block.get('id')] = {
@@ -399,6 +454,10 @@ def process(obj):
                     'command': str(inp.get('command') or '') if isinstance(inp, dict) else '',
                     'shown_full': disp_width(key) <= budget,
                 }
+        stop = msg.get('stop_reason')
+        if stop and stop not in ('end_turn', 'tool_use', 'stop_sequence'):
+            # 异常结束(如 max_tokens)意味着上方内容其实被截断了, 必须显式提示
+            p(f"\n{INDENT}{C_ERR}⚠️  回复因 {stop} 中断, 内容可能不完整{C_RESET}")
         return
 
     if t == 'result':
@@ -422,7 +481,8 @@ def process(obj):
         subtype = obj.get('subtype')
         if subtype and subtype != 'success':
             info.append(f"({SUBTYPE_CN.get(subtype, subtype)})")
-        p(f"\n{c}{icon} [结束] {' '.join(info)}{C_RESET}")
+        head = f"{icon} [结束] " + ' '.join(info)
+        p(f"\n{c}{trunc(head, TERM_WIDTH)}{C_RESET}")
         denials = obj.get('permission_denials')
         if isinstance(denials, list) and denials:
             names = []
@@ -442,7 +502,10 @@ def process(obj):
                 emit_lines(str(msg).splitlines(), C_ERR)
         else:
             res = obj.get('result')
-            if res:
+            if res and RAW_RESULT:
+                # 交付物按原文送出: 不折行不加前缀, 便于落盘或管道给下游
+                p(str(res))
+            elif res:
                 text = str(res)
                 # 与上方回复相同的内容只打一次: 已完整显示过就省略,
                 # 回复曾被截断则接着截断处把剩余部分补完
@@ -474,6 +537,11 @@ for raw in sys.stdin:
         # --debug 经 2>&1 混入的非 JSON 行 (如 "Debug mode enabled")
         if FMT_DEBUG:
             p(f"\n{C_DIM}❔ [非 JSON 行] {trunc(raw, W_DEBUG)}{C_RESET}")
+        continue
+    if not isinstance(obj, dict):
+        # stream-json 事件都是对象; 标量/数组说明这行不是事件, 不能当事件渲染
+        if FMT_DEBUG:
+            p(f"\n{C_DIM}❔ [非对象 JSON] {trunc(raw, W_DEBUG)}{C_RESET}")
         continue
     try:
         process(obj)
