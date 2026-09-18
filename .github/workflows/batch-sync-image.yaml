@@ -27,7 +27,7 @@ jobs:
           pwd; id; uname -a; docker info; docker images; df -h
 
       - name: 登录 SWR
-        run: docker login -u cn-southwest-2@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.cn-southwest-2.myhuaweicloud.com
+        run: docker login -u ap-southeast-1@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.ap-southeast-1.myhuaweicloud.com
 
       - name: 从 DockerHub 同步到 SWR
         run: |

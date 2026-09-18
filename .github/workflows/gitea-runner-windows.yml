@@ -57,7 +57,7 @@ jobs:
 
       - name: 登录 SWR
         shell: bash
-        run: docker login -u "cn-southwest-2@${HUAWEICLOUD_IAM_AK}" -p "${HUAWEICLOUD_IAM_SK}" swr.cn-southwest-2.myhuaweicloud.com
+        run: docker login -u "ap-southeast-1@${HUAWEICLOUD_IAM_AK}" -p "${HUAWEICLOUD_IAM_SK}" swr.ap-southeast-1.myhuaweicloud.com
 
       - name: 构建并推送基础镜像
         shell: bash
@@ -65,7 +65,7 @@ jobs:
           set -euo pipefail
 
           base_tag="gitea-runner-windows:${current_datetime}-x86_64"
-          swr_base="swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/${base_tag}"
+          swr_base="swr.ap-southeast-1.myhuaweicloud.com/gsc-hub/${base_tag}"
           ghcr_base="ghcr.io/${current_user}/${base_tag}"
 
           docker build -f gitea-runner-windows/Dockerfile --no-cache -t "${swr_base}" -t "${ghcr_base}" .
@@ -115,7 +115,7 @@ jobs:
 
       - name: 登录 SWR
         shell: bash
-        run: docker login -u "cn-southwest-2@${HUAWEICLOUD_IAM_AK}" -p "${HUAWEICLOUD_IAM_SK}" swr.cn-southwest-2.myhuaweicloud.com
+        run: docker login -u "ap-southeast-1@${HUAWEICLOUD_IAM_AK}" -p "${HUAWEICLOUD_IAM_SK}" swr.ap-southeast-1.myhuaweicloud.com
 
       - name: 构建并推送扩展镜像
         shell: bash
@@ -129,7 +129,7 @@ jobs:
           docker pull "ghcr.io/${current_user}/${base_tag}"
 
           ext_tag="gitea-runner-windows-${ext}:${current_datetime}-x86_64"
-          swr_ext="swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/${ext_tag}"
+          swr_ext="swr.ap-southeast-1.myhuaweicloud.com/gsc-hub/${ext_tag}"
           ghcr_ext="ghcr.io/${current_user}/${ext_tag}"
 
           echo ">>> Building gitea-runner-windows-${ext}..."

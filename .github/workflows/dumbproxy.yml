@@ -54,13 +54,13 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 登录 SWR
-        run: docker login -u cn-southwest-2@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.cn-southwest-2.myhuaweicloud.com
+        run: docker login -u ap-southeast-1@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.ap-southeast-1.myhuaweicloud.com
 
       - name: 构建容器镜像
         run: |
           set -exuo pipefail
 
-          swr_image_url=swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/dumbproxy:${current_datetime}-x86_64
+          swr_image_url=swr.ap-southeast-1.myhuaweicloud.com/gsc-hub/dumbproxy:${current_datetime}-x86_64
           ghcr_image_url=ghcr.io/${current_user}/dumbproxy:${current_datetime}-x86_64
 
           docker build -f dumbproxy/Dockerfile --no-cache --output type=docker -t ${swr_image_url} .

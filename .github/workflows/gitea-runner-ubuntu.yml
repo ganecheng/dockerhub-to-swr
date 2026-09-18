@@ -62,7 +62,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 登录 SWR
-        run: docker login -u cn-southwest-2@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.cn-southwest-2.myhuaweicloud.com
+        run: docker login -u ap-southeast-1@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.ap-southeast-1.myhuaweicloud.com
 
       - name: 构建并推送基础镜像
         run: |
@@ -70,7 +70,7 @@ jobs:
 
           arch=${{ matrix.arch }}
           base_tag=gitea-runner-ubuntu:${current_datetime}-${arch}
-          swr_base=swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/${base_tag}
+          swr_base=swr.ap-southeast-1.myhuaweicloud.com/gsc-hub/${base_tag}
           ghcr_base=ghcr.io/${current_user}/${base_tag}
 
           # aarch64 构建的 Runner 默认标签带 -aarch64 后缀
@@ -133,7 +133,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 登录 SWR
-        run: docker login -u cn-southwest-2@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.cn-southwest-2.myhuaweicloud.com
+        run: docker login -u ap-southeast-1@$HUAWEICLOUD_IAM_AK -p $HUAWEICLOUD_IAM_SK swr.ap-southeast-1.myhuaweicloud.com
 
       - name: 构建并推送扩展镜像
         run: |
@@ -147,7 +147,7 @@ jobs:
           docker pull ghcr.io/${current_user}/${base_tag}
 
           ext_tag=gitea-runner-ubuntu-${ext}:${current_datetime}-${arch}
-          swr_ext=swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/${ext_tag}
+          swr_ext=swr.ap-southeast-1.myhuaweicloud.com/gsc-hub/${ext_tag}
           ghcr_ext=ghcr.io/${current_user}/${ext_tag}
 
           # aarch64 构建的 Runner 默认标签带 -aarch64 后缀

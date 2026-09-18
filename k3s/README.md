@@ -15,7 +15,7 @@
 docker run --privileged --name k3s \
   -v k3s-docker:/var/lib/docker \
   -v k3s-rancher:/var/lib/rancher/k3s \
-  swr.cn-southwest-2.myhuaweicloud.com/gsc-hub/k3s:tag
+  swr.ap-southeast-1.myhuaweicloud.com/gsc-hub/k3s:tag
 ```
 
 启动后可以在容器内使用 Docker 和 kubectl：

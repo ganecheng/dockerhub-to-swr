@@ -2,7 +2,7 @@
 
 set -ex
 
-target_registry="swr.cn-southwest-2.myhuaweicloud.com"
+target_registry="swr.ap-southeast-1.myhuaweicloud.com"
 target_repo="gsc-hub"
 
 list="batch_sync_image/batch_sync_image_list.txt"
