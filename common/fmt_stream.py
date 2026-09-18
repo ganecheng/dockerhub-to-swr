@@ -187,6 +187,46 @@ SUBTYPE_CN = {
     'error_during_execution': '执行出错',
 }
 
+# 工具名的中文标签 (未收录的原样输出): 日志主要给中文用户看, 工具名也统一成中文
+TOOL_CN = {
+    'read_file': '读取文件', 'write_file': '写入文件',
+    'edit': '编辑文件', 'notebook_edit': '编辑笔记',
+    'run_shell_command': '执行命令', 'monitor': '监控命令',
+    'grep_search': '搜索内容', 'glob': '查找文件', 'list_directory': '列出目录',
+    'web_fetch': '抓取网页', 'read_mcp_resource': '读取资源',
+    'agent': '子智能体', 'skill': '调用技能',
+    'record_artifact': '记录产物', 'send_message': '发送消息',
+    'report_findings': '上报发现', 'zoom_image': '放大图片',
+    'list_agents': '列出智能体', 'task_stop': '停止任务',
+    'cron_create': '创建定时任务', 'cron_list': '查看定时任务',
+    'cron_delete': '删除定时任务', 'loop_wakeup': '循环唤醒',
+    'get_goal': '读取目标', 'update_goal': '更新目标',
+    'enter_worktree': '进入工作树', 'exit_worktree': '退出工作树',
+    'todo_write': '记录待办',
+}
+
+# Claude Code 风格的工具名归一成 qwen 侧的名字, 让两种事件源共用同一套渲染与标签
+TOOL_ALIAS = {
+    'Read': 'read_file', 'Write': 'write_file', 'Edit': 'edit', 'MultiEdit': 'edit',
+    'NotebookRead': 'read_file', 'NotebookEdit': 'notebook_edit',
+    'Bash': 'run_shell_command', 'Grep': 'grep_search', 'Glob': 'glob',
+    'LS': 'list_directory', 'WebFetch': 'web_fetch', 'Task': 'agent',
+    'TodoWrite': 'todo_write',
+}
+
+# 未收录工具的输入压成 k=v 摘要时, 常见参数名一并译成中文 (未收录的原样输出)
+PARAM_CN = {
+    'file_path': '文件', 'path': '路径', 'directory': '目录', 'url': '网址',
+    'pattern': '模式', 'query': '关键词', 'offset': '起始行', 'limit': '行数',
+    'name': '名称', 'id': '编号', 'status': '状态', 'reason': '原因',
+    'level': '级别', 'findings': '清单', 'action': '动作', 'view': '视图',
+    'cron': '周期', 'recurring': '重复', 'prompt': '提示词',
+    'delaySeconds': '延迟秒', 'task_id': '任务',
+    'evidenceRefs': '证据引用', 'blockerKind': '阻塞类型',
+    'workspacePath': '产物路径', 'cell_id': '单元格',
+    'x1': '左边界', 'y1': '上边界', 'x2': '右边界', 'y2': '下边界',
+}
+
 # tool_use_id -> 该次调用的工具名/命令/是否已完整显示, 供 tool_result 标注与去重
 TOOL_CALLS = {}
 # 最后一条回复的全文, 以及其中已被完整显示的字符数 (供 result 事件去重)
@@ -228,9 +268,9 @@ def brief(value, width=60):
 
 
 def compact(inp):
-    """把未收录工具的输入压成 k=v 一行摘要"""
+    """把未收录工具的输入压成 k=v 一行摘要 (常见参数名一并译成中文)"""
     return ' '.join(
-        f"{k}={brief(v)}" for k, v in inp.items()
+        f"{PARAM_CN.get(k, k)}={brief(v)}" for k, v in inp.items()
         if v not in (None, '', [], {})
     )
 
@@ -240,12 +280,14 @@ def describe_tool(name, inp):
 
     返回 (图标, 主文本, 不参与截断的后缀, 判断「已完整显示」的关键文本):
     主文本按剩余宽度截断, 后缀 (如 read_file 的行号范围) 永不截断;
-    关键文本用于判断命令行是否完整可见 (命令后的描述被截掉不影响该判断)
+    关键文本用于判断命令行是否完整可见 (命令后的描述被截掉不影响该判断);
+    Claude Code 风格的别名 (Read/Bash/Edit...) 先归一成 qwen 侧的名字再分发
     """
     if not isinstance(inp, dict):
         # 输入形态异常时不能因属性缺失丢掉整条事件
         text = brief(inp)
         return '🛠️', text, '', text
+    name = TOOL_ALIAS.get(name, name)
     if name in ('run_shell_command', 'monitor'):
         cmd = str(inp.get('command') or '').replace('\r\n', '; ').replace('\n', '; ')
         # 描述只是附加说明, 压成单行以免工具行被换行冲散
@@ -269,7 +311,7 @@ def describe_tool(name, inp):
                 tail = f"  -{n_del}行/+{n_add}行"
         fp = str(inp.get('file_path') or inp.get('notebook_path') or '')
         if name == 'notebook_edit' and inp.get('cell_id'):
-            fp += f" cell={inp.get('cell_id')}"
+            fp += f" 单元格={inp.get('cell_id')}"
         if not fp:
             # 路径缺失时退回 k=v 摘要, 免得打出一条只有图标和工具名的空行
             fp = compact(inp)
@@ -336,7 +378,8 @@ def render_tool_result(block):
     name = call.get('name')
     is_err = bool(block.get('is_error'))
     icon, color, title = ('❌', C_ERR, '[错误]') if is_err else ('✅', C_RESULT, '[结果]')
-    p(f"{INDENT}{color}{icon} {title}{f' {name}' if name else ''}{C_RESET}")
+    label = TOOL_CN.get(name, name) if name else ''
+    p(f"{INDENT}{color}{icon} {title}{f' {label}' if label else ''}{C_RESET}")
     content = block.get('content')
     if content is None:
         return
@@ -433,7 +476,7 @@ def process(obj):
                     text = f"{text[:TEXT_LIMIT]} ... (已截断, 原文 {len(text)} 字符)"
                 emit_text(text, color)
             elif bt == 'tool_use':
-                name = block.get('name', '')
+                name = TOOL_ALIAS.get(block.get('name') or '', block.get('name') or '')
                 inp = block.get('input') or {}
                 if first_tool:
                     p('')
@@ -443,12 +486,13 @@ def process(obj):
                 main, tail, key = plain(main), plain(tail), plain(key)
                 # 前缀含缩进/图标/工具名, 主文本按剩余宽度截断, 后缀(如行号范围)不截断;
                 # 但后缀自己也可能把整行占满, 这时先压缩后缀, 保证整行不超 TERM_WIDTH
-                pfx = f"{INDENT}{icon} [{name}] "
+                label = TOOL_CN.get(name, name)
+                pfx = f"{INDENT}{icon} [{label}] "
                 room = TERM_WIDTH - disp_width(pfx)
                 if disp_width(tail) > max(0, room - 8):
                     tail = trunc(tail, max(4, room - 8))
                 budget = line_budget(pfx + tail)
-                p(f"{INDENT}{C_ACTION}{icon} [{name}]{C_RESET} {trunc(main, budget)}{tail}")
+                p(f"{INDENT}{C_ACTION}{icon} [{label}]{C_RESET} {trunc(main, budget)}{tail}")
                 TOOL_CALLS[block.get('id')] = {
                     'name': name,
                     'command': str(inp.get('command') or '') if isinstance(inp, dict) else '',
