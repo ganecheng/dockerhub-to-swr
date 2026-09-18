@@ -18,7 +18,7 @@ def env_int(name, default, minimum=0):
 
 
 # 阈值均可用环境变量覆盖: CI/落盘场景想要完整日志时调大, 或置 0 表示不限制
-TEXT_LIMIT    = env_int('FMT_TEXT_LIMIT', 3000, 0)    # 单条思考/回复文本的最大字符数
+TEXT_LIMIT    = env_int('FMT_TEXT_LIMIT', 10000, 0)   # 单条思考/回复文本的最大字符数
 CONTENT_LINES = env_int('FMT_CONTENT_LINES', 100, 0)  # 工具结果/最终结果最多显示的行数
 
 # Colors for terminal output
