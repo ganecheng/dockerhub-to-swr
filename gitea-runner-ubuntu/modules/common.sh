@@ -7,6 +7,23 @@ function curl() {
   command curl -sSfL --connect-timeout 10 --max-time 300 --retry 3 --retry-all-errors "$@"
 }
 
+# 按优先级依次尝试多个下载源，任一成功即返回
+# 参数: $1 - 输出文件路径; 其余 - 候选 URL
+function download_first_available() {
+  local out=${1:?}
+  shift
+  local url
+  for url in "$@"; do
+    echo ">>> Downloading ${url}"
+    if curl "$url" -o "$out"; then
+      return 0
+    fi
+    echo ">>> WARNING: download failed, trying next source..." >&2
+  done
+  echo "ERROR: all sources failed" >&2
+  return 1
+}
+
 # 架构检测：将 uname -m 映射为 JDK 下载所需的架构标识
 function detect_jdk_arch() {
   local arch
@@ -63,11 +80,16 @@ function install_graalvm_jdk() {
 # 安装 Apache Maven
 # 参数: $1 - Maven 版本号 (如 3.9.16)
 # 安装路径: /opt/maven
+# 下载源: Maven 发行包同时发布到 Maven Central（内容不可变、历史版本永久保留），故优先取中央仓库；
+#         官方 dlcdn 由 Fastly CDN 承载、速度最快，但只保留当前版本；archive.apache.org 作为完整归档兜底。
 function install_maven() {
   local version=${1:-3.9.16}
 
   echo ">>> Installing Apache Maven ${version}..."
-  curl "https://archive.apache.org/dist/maven/maven-3/${version}/binaries/apache-maven-${version}-bin.tar.gz" -o /tmp/maven.tar.gz
+  download_first_available /tmp/maven.tar.gz \
+    "https://repo.maven.apache.org/maven2/org/apache/maven/apache-maven/${version}/apache-maven-${version}-bin.tar.gz" \
+    "https://dlcdn.apache.org/maven/maven-3/${version}/binaries/apache-maven-${version}-bin.tar.gz" \
+    "https://archive.apache.org/dist/maven/maven-3/${version}/binaries/apache-maven-${version}-bin.tar.gz"
   mkdir -p /opt/maven
   tar -xzf /tmp/maven.tar.gz --strip-components=1 -C /opt/maven
   rm -f /tmp/maven.tar.gz
@@ -84,11 +106,15 @@ function install_maven() {
 # 安装 Apache JMeter
 # 参数: $1 - JMeter 版本号 (如 5.6.3)
 # 安装路径: /opt/jmeter
+# 下载源: JMeter 发行包未发布到 Maven Central，只能走 Apache 分发镜像；
+#         官方 dlcdn 由 Fastly CDN 承载、速度最快但只保留当前版本，archive.apache.org 作为完整归档兜底。
 function install_jmeter() {
   local version=${1:-5.6.3}
 
   echo ">>> Installing Apache JMeter ${version}..."
-  curl "https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-${version}.tgz" -o /tmp/jmeter.tgz
+  download_first_available /tmp/jmeter.tgz \
+    "https://dlcdn.apache.org/jmeter/binaries/apache-jmeter-${version}.tgz" \
+    "https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-${version}.tgz"
   mkdir -p /opt/jmeter
   tar -xzf /tmp/jmeter.tgz --strip-components=1 -C /opt/jmeter
   rm -f /tmp/jmeter.tgz
