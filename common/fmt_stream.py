@@ -58,13 +58,37 @@ except (AttributeError, ValueError, OSError):
 
 INDENT      = '    '         # 思考/回复正文的缩进
 CONT_INDENT = '  '           # 折行续行的额外缩进, 用来与原文换行区分
-RESULT_PFX  = '      │ '     # 工具结果每行的前缀
+# 工具结果每行的前缀: │ 与工具行/结果行里 "[" 同一列 (图标占 2 列 + 1 空格 = 第 4+3 列起)
+RESULT_PFX  = '       │ '
 HDR_PROMPT  = '👤 [用户提示词] '
 HDR_ERROR   = '🚨 [系统错误] '
+HDR_GOAL    = '🎯 [目标] '
+
+# 子智能体 (agent/Task) 的消息带父 tool_use id, 属于另一个执行上下文:
+# 整体多缩进一层, 标题行再加箭头, 免得主/子智能体的思考与回复在日志里混作一段
+NEST_INDENT = '  '           # 子智能体事件每行的额外缩进
+SUB_MARK    = '↳ '           # 子智能体事件标题行的箭头标记
+
+
+def sub_hdr(nest):
+    """子智能体事件标题行的前缀 (缩进+箭头); 主智能体事件返回空串"""
+    return nest + SUB_MARK if nest else ''
+
+
+def tool_ind(nest):
+    """工具行与结果行标题的缩进: 子智能体的箭头列与其它标题对齐, 图标再进一层
+
+    主智能体是 4 列 (INDENT); 子智能体是 2(缩进)+2(箭头)+2 = 6 列, 正好落在
+    子智能体正文那一列, 与主智能体「工具行与正文同列」的关系保持一致
+    """
+    return sub_hdr(nest) + CONT_INDENT if nest else INDENT
+
 
 # 工具/模型输出里可能混入 ANSI 颜色与制表符: 制表符按 1 列测量与实际显示 (跳到
 # 制表位) 不符, 内嵌的 \x1b[0m 还会关掉本脚本给该行设的颜色, 因此统一先归一化
 ANSI_RE = re.compile(r'\x1b\[[0-9;?]*[ -/]*[@-~]|\x1b[@-Z\\-_]')
+# Markdown 表格行 (| ... |): 折行会把它拆成两行, 复制出去不再是合法表格
+TABLE_RE = re.compile(r'^\s*\|.*\|\s*$')
 
 
 def plain(s, tab=4):
@@ -175,10 +199,8 @@ def line_budget(prefix, minimum=40):
     return room if room > minimum else max(4, room)
 
 
-W_PROMPT = line_budget(HDR_PROMPT)
-W_LINE   = line_budget(RESULT_PFX)
-W_ERR    = line_budget(HDR_ERROR)
-W_DEBUG  = line_budget('❔ [未识别事件] ')
+W_ERR   = line_budget(HDR_ERROR)
+W_DEBUG = line_budget('❔ [未识别事件] ')
 
 
 # result 事件子类型的中文说明 (未收录的原样输出)
@@ -221,7 +243,9 @@ PARAM_CN = {
     'name': '名称', 'id': '编号', 'status': '状态', 'reason': '原因',
     'level': '级别', 'findings': '清单', 'action': '动作', 'view': '视图',
     'cron': '周期', 'recurring': '重复', 'prompt': '提示词',
-    'delaySeconds': '延迟秒', 'task_id': '任务',
+    'delaySeconds': '延迟秒', 'task_id': '任务', 'timeout': '超时',
+    'content': '内容', 'description': '说明', 'message': '消息',
+    'summary': '摘要', 'subagent_type': '子智能体类型',
     'evidenceRefs': '证据引用', 'blockerKind': '阻塞类型',
     'workspacePath': '产物路径', 'cell_id': '单元格',
     'x1': '左边界', 'y1': '上边界', 'x2': '右边界', 'y2': '下边界',
@@ -231,31 +255,42 @@ PARAM_CN = {
 TOOL_CALLS = {}
 # 最后一条回复的全文, 以及其中已被完整显示的字符数 (供 result 事件去重)
 LAST_REPLY = {'text': '', 'shown': 0}
+# 上一次的 goal_state 摘要: 状态每次变化都会上报一次, 去重后只打变化的那一次
+LAST_GOAL = {'state': None}
 
 
 def p(s, end='\n'):
     print(s, end=end, flush=True)
 
 
-def emit_lines(lines, color):
+def emit_lines(lines, color, nest=''):
     """输出工具结果: 保留缩进, 按显示宽度截断, 行数超限折叠"""
     limit = CONTENT_LINES or len(lines)
+    pfx = nest + RESULT_PFX
+    width = line_budget(pfx)
     for ln in lines[:limit]:
         # 空行也要去掉前缀尾部的空格, 避免日志里出现行尾空白
-        p(f"{color}{(RESULT_PFX + trunc(plain(ln).rstrip(), W_LINE)).rstrip()}{C_RESET}")
+        p(f"{color}{(pfx + trunc(plain(ln).rstrip(), width)).rstrip()}{C_RESET}")
     if len(lines) > limit:
-        p(f"{color}{RESULT_PFX}... (还有 {len(lines) - limit} 行){C_RESET}")
+        p(f"{color}{pfx}... (还有 {len(lines) - limit} 行){C_RESET}")
 
 
-def emit_text(text, color, prefix=INDENT, limit=0):
-    """输出思考/回复/最终结果正文: 折叠连续空行, 长行折行 (不丢字符)"""
+def emit_text(text, color, prefix=INDENT, limit=0, nest=''):
+    """输出思考/回复/最终结果正文: 折叠连续空行, 长行折行 (不丢字符)
+
+    Markdown 表格行不折行: 交付物里最常见的就是表格, 折行会让它复制出去后不再是
+    合法表格; 超宽交给终端软换行, 阅读观感与折行一致而复制结果完好
+    """
     lines = collapse_blanks(text)
     limit = limit or len(lines)
     for ln in lines[:limit]:
-        for seg in wrap(ln, line_budget(prefix)):
-            p(f"{color}{prefix}{seg}".rstrip() + C_RESET)
+        if TABLE_RE.match(ln):
+            p(f"{color}{nest}{prefix}{ln}".rstrip() + C_RESET)
+            continue
+        for seg in wrap(ln, line_budget(nest + prefix)):
+            p(f"{color}{nest}{prefix}{seg}".rstrip() + C_RESET)
     if len(lines) > limit:
-        p(f"{color}{prefix}... (还有 {len(lines) - limit} 行){C_RESET}")
+        p(f"{color}{nest}{prefix}... (还有 {len(lines) - limit} 行){C_RESET}")
 
 
 def brief(value, width=60):
@@ -265,6 +300,17 @@ def brief(value, width=60):
     if isinstance(value, (list, tuple)):
         return f"[{len(value)} 项]"
     return trunc(' '.join(str(value).split()), width)
+
+
+def goal_brief(goal):
+    """目标对象的单行摘要: 优先取描述字段, 结构不认识时退回单行 JSON"""
+    if isinstance(goal, dict):
+        for k in ('objective', 'prompt', 'title', 'name', 'summary'):
+            v = goal.get(k)
+            if isinstance(v, str) and v.strip():
+                return ' '.join(v.split())
+        return json.dumps(goal, ensure_ascii=False)
+    return ' '.join(str(goal).split())
 
 
 def compact(inp):
@@ -361,44 +407,130 @@ def strip_shell_echo(lines, call):
     return lines
 
 
+def block_text(block):
+    """把 tool_result 的一个内容块归一成文本
+
+    text 块取原文; 图片块只报格式与大小 (base64 原文没有阅读价值, 还会顶掉整行);
+    其余结构压成单行 JSON, 避免漏出带单引号的 Python repr
+    """
+    if isinstance(block, str):
+        return block
+    if not isinstance(block, dict):
+        return brief(block)
+    text = block.get('text')
+    if isinstance(text, str):
+        return text
+    if block.get('type') == 'image':
+        src = block.get('source') if isinstance(block.get('source'), dict) else {}
+        data = src.get('data') if isinstance(src.get('data'), str) else ''
+        # base64 长度与原始字节数约为 4:3, 只做量级估计
+        kind = str(src.get('media_type') or '图片').rpartition('/')[2]
+        return f"[图片 {kind}{f', 约 {len(data) * 3 // 4} 字节' if data else ''}]"
+    return json.dumps(block, ensure_ascii=False)
+
+
 def content_text(content):
-    """把 tool_result 的 content 归一成文本: 字符串原样, 内容块列表取 text 块拼接"""
+    """把 tool_result 的 content 归一成文本
+
+    字符串原样; 内容块列表逐块取文本; 字典按 JSON 缩进展示 (结构化结果多一层
+    缩进比压成一行更好读), 其余类型退化为 str
+    """
     if isinstance(content, str):
         return content
     if isinstance(content, list):
-        parts = [b.get('text', '') for b in content
-                 if isinstance(b, dict) and isinstance(b.get('text'), str)]
-        if parts:
-            return '\n'.join(parts)
+        return '\n'.join(block_text(b) for b in content)
+    if isinstance(content, dict):
+        return json.dumps(content, ensure_ascii=False, indent=2)
     return str(content)
 
 
-def render_tool_result(block):
+def render_tool_result(block, nest=''):
     call = TOOL_CALLS.get(block.get('tool_use_id')) or {}
     name = call.get('name')
     is_err = bool(block.get('is_error'))
     icon, color, title = ('❌', C_ERR, '[错误]') if is_err else ('✅', C_RESULT, '[结果]')
     label = TOOL_CN.get(name, name) if name else ''
-    p(f"{INDENT}{color}{icon} {title}{f' {label}' if label else ''}{C_RESET}")
+    p(f"{tool_ind(nest)}{color}{icon} {title}{f' {label}' if label else ''}{C_RESET}")
     content = block.get('content')
     if content is None:
         return
     lines = content_text(content).rstrip().splitlines()
     if not is_err and name == 'run_shell_command':
         lines = strip_shell_echo(lines, call)
-    emit_lines(lines, C_ERR if is_err else C_DIM)
+    emit_lines(lines, C_ERR if is_err else C_DIM, nest)
+
+
+def first_of(obj, *keys):
+    """按顺序取第一个非空值: qwen 与 Claude Code 的同义字段名不同, 两套都认"""
+    for k in keys:
+        v = obj.get(k)
+        if v not in (None, ''):
+            return v
+    return ''
+
+
+def render_mcp_servers(servers):
+    """MCP 服务器清单: 连不上是常见排障点, 只在非空时补一行"""
+    if not isinstance(servers, list) or not servers:
+        return
+    items = []
+    for s in servers:
+        if isinstance(s, dict):
+            name = str(s.get('name') or '')
+            status = str(s.get('status') or '')
+            items.append(f"{name}({status})" if status else name)
+        elif s:
+            items.append(str(s))
+    items = [i for i in items if i]
+    if items:
+        pfx = f"{INDENT}🔌 MCP 服务器 {len(items)} 个: "
+        p(f"{C_INFO}{pfx}{trunc('、'.join(items), line_budget(pfx))}{C_RESET}")
+
+
+def render_goal_state(gs):
+    """目标状态: 只在变化且值得一看时打一行
+
+    无目标且空闲没有信息量 (多数任务不使用目标), 此时只记录状态用于去重;
+    之后每次真实变化 (含回到空闲) 都会打一行
+    """
+    activity = str(gs.get('activity') or '')
+    goal = gs.get('goal')
+    state = f"{activity}|{goal_brief(goal) if goal not in (None, '', {}, []) else ''}"
+    if state == LAST_GOAL['state']:
+        return
+    LAST_GOAL['state'] = state
+    if not goal and activity in ('', 'idle'):
+        return
+    line = f"{HDR_GOAL}活动={activity or '-'}"
+    if goal not in (None, '', {}, []):
+        line += f" 目标={trunc(goal_brief(goal), 80)}"
+    p(f"\n{C_INFO}{trunc(line, TERM_WIDTH)}{C_RESET}")
 
 
 def process(obj):
     t = obj.get('type', '')
+    # 子智能体 (agent/Task) 的消息带父 tool_use id: 渲染时整体缩进一层并加箭头
+    nest = NEST_INDENT if obj.get('parent_tool_use_id') else ''
 
     if t == 'system' and obj.get('subtype') == 'init':
+        sess = f" 会话={str(obj.get('session_id') or '')[:8]}" if obj.get('session_id') else ''
         head = (f"🚀 [初始化] 模型={obj.get('model') or ''} "
-                f"版本={obj.get('qwen_code_version') or ''} "
-                f"权限模式={obj.get('permission_mode') or ''} 工作目录=")
+                f"版本={first_of(obj, 'qwen_code_version', 'claude_code_version', 'version')} "
+                f"权限模式={first_of(obj, 'permission_mode', 'permissionMode')}{sess} "
+                f"工作目录=")
         # 字段多且长短不一, 整体按渲染宽度截断 (截掉的是尾部的工作目录)
         p(f"\n{C_INFO}{trunc(head + str(obj.get('cwd') or ''), TERM_WIDTH)}{C_RESET}")
+        render_mcp_servers(obj.get('mcp_servers'))
         return
+
+    if t == 'stream_event':
+        ev = obj.get('event')
+        gs = ev.get('goal_state') if isinstance(ev, dict) else None
+        # 其余 stream_event (content_block_delta 等) 是 assistant 事件的增量,
+        # 内容已由 assistant 事件完整覆盖, 不能重复渲染
+        if isinstance(gs, dict):
+            render_goal_state(gs)
+            return
 
     if t == 'error':
         err = obj.get('error', '')
@@ -425,15 +557,17 @@ def process(obj):
         )
         if text.strip():
             lines = text.strip().splitlines()
+            hdr = sub_hdr(nest) + HDR_PROMPT
             # 只打首行会把多行提示词的其余内容悄悄丢掉, 因此补上总行数
             more = f" (共 {len(lines)} 行)" if len(lines) > 1 else ''
-            p(f"\n{C_INFO}{HDR_PROMPT}"
-              f"{trunc(plain(lines[0]), max(4, W_PROMPT - disp_width(more)))}{more}{C_RESET}")
+            budget = line_budget(hdr)
+            p(f"\n{C_INFO}{hdr}"
+              f"{trunc(plain(lines[0]), max(4, budget - disp_width(more)))}{more}{C_RESET}")
         # qwen 0.23.x 的工具结果在 user 事件的 tool_result 内容块里,
         # 顶层没有 tool_use_result 字段
         for b in content:
             if isinstance(b, dict) and b.get('type') == 'tool_result':
-                render_tool_result(b)
+                render_tool_result(b, nest)
         return
 
     if t == 'assistant':
@@ -459,10 +593,10 @@ def process(obj):
                 want = 'thought' if bt == 'thinking' else 'reply'
                 if want != section:
                     if want == 'thought':
-                        p(f"\n{C_THOUGHT}🧠 [思考]{C_RESET}")
+                        p(f"\n{sub_hdr(nest)}{C_THOUGHT}🧠 [思考]{C_RESET}")
                         color = C_THOUGHT
                     else:
-                        p(f"\n{C_REPLY}💬 [回复]{C_RESET}")
+                        p(f"\n{sub_hdr(nest)}{C_REPLY}💬 [回复]{C_RESET}")
                         color = C_REPLY
                     section = want
                 else:
@@ -474,7 +608,7 @@ def process(obj):
                                            else len(text))
                 if TEXT_LIMIT and len(text) > TEXT_LIMIT:
                     text = f"{text[:TEXT_LIMIT]} ... (已截断, 原文 {len(text)} 字符)"
-                emit_text(text, color)
+                emit_text(text, color, INDENT, 0, nest)
             elif bt == 'tool_use':
                 name = TOOL_ALIAS.get(block.get('name') or '', block.get('name') or '')
                 inp = block.get('input') or {}
@@ -487,12 +621,13 @@ def process(obj):
                 # 前缀含缩进/图标/工具名, 主文本按剩余宽度截断, 后缀(如行号范围)不截断;
                 # 但后缀自己也可能把整行占满, 这时先压缩后缀, 保证整行不超 TERM_WIDTH
                 label = TOOL_CN.get(name, name)
-                pfx = f"{INDENT}{icon} [{label}] "
+                pfx = f"{tool_ind(nest)}{icon} [{label}] "
                 room = TERM_WIDTH - disp_width(pfx)
                 if disp_width(tail) > max(0, room - 8):
                     tail = trunc(tail, max(4, room - 8))
                 budget = line_budget(pfx + tail)
-                p(f"{INDENT}{C_ACTION}{icon} [{label}]{C_RESET} {trunc(main, budget)}{tail}")
+                p(f"{tool_ind(nest)}{C_ACTION}{icon} [{label}]{C_RESET} "
+                  f"{trunc(main, budget)}{tail}")
                 TOOL_CALLS[block.get('id')] = {
                     'name': name,
                     'command': str(inp.get('command') or '') if isinstance(inp, dict) else '',
@@ -501,7 +636,7 @@ def process(obj):
         stop = msg.get('stop_reason')
         if stop and stop not in ('end_turn', 'tool_use', 'stop_sequence'):
             # 异常结束(如 max_tokens)意味着上方内容其实被截断了, 必须显式提示
-            p(f"\n{INDENT}{C_ERR}⚠️  回复因 {stop} 中断, 内容可能不完整{C_RESET}")
+            p(f"\n{tool_ind(nest)}{C_ERR}⚠️  回复因 {stop} 中断, 内容可能不完整{C_RESET}")
         return
 
     if t == 'result':
