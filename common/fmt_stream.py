@@ -153,7 +153,9 @@ def wrap(s, width):
         cur, cur_w, budget, indent = '', 0, width, ''
         for i, c in enumerate(raw):
             cw = char_width(c, raw[i + 1:i + 2])
-            if cur and cur_w + cw > budget:
+            # 用 while 而不是 if: 断行后剩余部分会落到更窄的续行预算上, 可能仍容不下 c,
+            # 必须再断一次, 否则续行会超出 TERM_WIDTH (原实现只断一次, 会越界 1-2 列)
+            while cur and cur_w + cw > budget:
                 sp = cur.rfind(' ')
                 if sp > 0:
                     out.append(indent + cur[:sp].rstrip())
