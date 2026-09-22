@@ -36,7 +36,7 @@ gitea-runner-windows/               ← 基础镜像
 
 | 镜像名称 | Dockerfile | 包含组件 | Runner 标签 |
 |---------|-----------|---------|------------|
-| `gitea-runner-windows` | `Dockerfile` | windows 全部组件 + Node.js 24.21.0 + Qwen Code 0.23.4 + Python 3 (Chocolatey) + Gitea Runner 3.5.0 | `windows-latest,windows-2022` |
+| `gitea-runner-windows` | `Dockerfile` | windows 全部组件 + Node.js 24.21.0 + Qwen Code 0.24.3 + Python 3 (Chocolatey) + Gitea Runner 3.5.0 | `windows-latest,windows-2022` |
 | `gitea-runner-windows-flutter` | `Dockerfile.flutter` | + Flutter 3.44.9 (仅 Windows 桌面) | `windows-latest,windows-2022,windows-flutter` |
 
 > windows 已包含：Windows Server Core ltsc2022 + VS Build Tools (MSVC v143, Windows 10 SDK 19041, CMake) + 完整版 Git for Windows 2.54.0 (含 Git Bash) + NuGet
@@ -93,7 +93,7 @@ Runner 以 **ephemeral 模式**运行：完成一个任务后自动退出，容�
 
 ## 内置 Qwen Code CLI
 
-基础镜像通过 npm 全局安装 Qwen Code CLI（当前 `0.23.4`，可用 `QWEN_CODE_VERSION` 覆盖版本），
+基础镜像通过 npm 全局安装 Qwen Code CLI（当前 `0.24.3`，可用 `QWEN_CODE_VERSION` 覆盖版本），
 并内置流式输出格式化脚本：仓库内 `common/fmt_stream.py`（与 Ubuntu 版共用同一份），
 镜像内为 `C:\opt\bin\fmt_stream.py`。
 Python 3 通过 Chocolatey 安装，且把 `python.exe` 复制为 `python3.exe`，

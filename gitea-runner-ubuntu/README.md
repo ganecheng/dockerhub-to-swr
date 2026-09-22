@@ -29,7 +29,7 @@ gitea-runner-ubuntu/                ← 基础镜像 (Dockerfile)
 
 | 镜像名称                            | Dockerfile                 | 包含组件                                                                                                     | Runner 标签 (x86_64)                               | Runner 标签 (aarch64)                                                      |
 |-------------------------------------|----------------------------|--------------------------------------------------------------------------------------------------------------|----------------------------------------------------|----------------------------------------------------------------------------|
-| `gitea-runner-ubuntu`               | `Dockerfile`               | Ubuntu 26.04 + Docker 28.5.2 + Gitea Runner 3.5.0 + Node.js 24.21.0 + Qwen Code 0.23.4 + Python 3 + 常用工具 | `ubuntu-latest,ubuntu-26.04`                       | `ubuntu-aarch64-latest,ubuntu-aarch64-26.04`                               |
+| `gitea-runner-ubuntu`               | `Dockerfile`               | Ubuntu 26.04 + Docker 28.5.2 + Gitea Runner 3.5.0 + Node.js 24.21.0 + Qwen Code 0.24.3 + Python 3 + 常用工具 | `ubuntu-latest,ubuntu-26.04`                       | `ubuntu-aarch64-latest,ubuntu-aarch64-26.04`                               |
 | `gitea-runner-ubuntu-jdk21`         | `Dockerfile.jdk21`         | + Temurin JDK 21 + Maven 3.9.16                                                                              | `ubuntu-latest,ubuntu-26.04,ubuntu-jdk-21`         | `ubuntu-aarch64-latest,ubuntu-aarch64-26.04,ubuntu-aarch64-jdk-21`         |
 | `gitea-runner-ubuntu-jdk25`         | `Dockerfile.jdk25`         | + Temurin JDK 25 + Maven 3.9.16                                                                              | `ubuntu-latest,ubuntu-26.04,ubuntu-jdk-25`         | `ubuntu-aarch64-latest,ubuntu-aarch64-26.04,ubuntu-aarch64-jdk-25`         |
 | `gitea-runner-ubuntu-graalvm-jdk21` | `Dockerfile.graalvm-jdk21` | + GraalVM JDK 21 + Maven 3.9.16 + gcc/g++/zlib1g-dev (native-image)                                          | `ubuntu-latest,ubuntu-26.04,ubuntu-graalvm-jdk-21` | `ubuntu-aarch64-latest,ubuntu-aarch64-26.04,ubuntu-aarch64-graalvm-jdk-21` |
@@ -119,7 +119,7 @@ Runner 以 **ephemeral 模式**运行：完成一个任务后自动退出，容�
 
 ## 内置 Qwen Code CLI
 
-基础镜像通过 npm 全局安装 Qwen Code CLI（当前 `0.23.4`，可用构建参数
+基础镜像通过 npm 全局安装 Qwen Code CLI（当前 `0.24.3`，可用构建参数
 `QWEN_CODE_VERSION` 覆盖版本），并内置流式输出格式化脚本：仓库内 `common/fmt_stream.py`
 （两个 Runner 镜像共用同一份），镜像内为 `/opt/fmt_stream.py`。
 

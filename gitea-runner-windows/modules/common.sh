@@ -106,7 +106,7 @@ function install_node() {
 }
 
 # 安装 Qwen Code CLI（npm 全局安装）
-# 参数: $1 - Qwen Code 版本号 (如 0.23.4)
+# 参数: $1 - Qwen Code 版本号 (如 0.24.3)
 # 全局安装目录: 通过 NPM_GLOBAL_HOME 环境变量指定 (默认 C:/opt/npm)
 function install_qwen_code() {
   local version=${1:?}
