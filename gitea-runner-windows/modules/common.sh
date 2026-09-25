@@ -40,10 +40,10 @@ function install_ca_certificates() {
 }
 
 # 安装 Flutter SDK（仅启用 Windows 桌面构建）
-# 参数: $1 - Flutter 版本号 (如 3.44.2)
-# 需要预先通过 Dockerfile ENV 设置 FLUTTER_ROOT 和 PATH
+# 参数: $1 - Flutter 版本号（必传，由 flutter.sh 从 ENV FLUTTER_VERSION 传入）
+# 需要预先通过 Dockerfile ENV 设置 FLUTTER_VERSION、FLUTTER_ROOT 和 PATH
 function install_flutter() {
-  local version=${1:-3.44.2}
+  local version=${1:?}
   # Docker ENV 设置的是进程级环境变量，优先读取
   local flutter_root=${FLUTTER_ROOT:-C:/flutter}
 
