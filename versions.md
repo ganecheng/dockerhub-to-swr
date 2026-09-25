@@ -2,7 +2,7 @@
 
 > 本文件统计本仓库中所有 Dockerfile、GitHub Actions workflow 和 shell 脚本引用的开源组件版本号。
 >
-> 最后更新：2026-09-22
+> 最后更新：2026-09-25
 
 ---
 
@@ -33,7 +33,7 @@
 | dumbproxy       | `1.52.1`        | `1.52.1` (已是最新) | `1.52.1` (已是最新)        | `1.52.1` (已是最新)        | `dumbproxy/Dockerfile`                                                                                                 | 轻量 HTTP 代理                         |
 | MirrorProxy     | `1.4.2`         | `1.4.2` (已是最新)  | `1.4.2` (已是最新)         | `1.4.2` (已是最新)         | `mirrorproxy/Dockerfile`                                                                                               | 自部署镜像代理平台      |
 | ttyd            | `1.7.7`         | `1.7.7` (已是最新)  | `1.7.7` (已是最新)         | `1.7.7` (已是最新)         | `ttyd/Dockerfile`                                                                                                      | Web 终端共享工具                       |
-| audio.cpp       | `v0.8.1`        | `v0.8.1` (已是最新) | `v0.8.1` (已是最新)        | `v0.8.1` (已是最新)        | `audio-cpp/Dockerfile`                                                                                                 | 语音 AI 推理服务 (Vulkan 预编译二进制) |
+| audio.cpp       | `v0.8.1`        | `v0.8.2`            | `v0.8.2`                   | `v0.8.2`                   | `audio-cpp/Dockerfile`                                                                                                 | 语音 AI 推理服务 (Vulkan 预编译二进制) |
 | unbound         | apt 默认最新    | -                   | -                          | -                          | `unbound/Dockerfile`                                                                                                   | 验证性递归缓存 DNS 解析器              |
 | dind 辅助脚本   | `master`        | -                   | -                          | -                          | `k3s/Dockerfile`, `gitea-runner-ubuntu/Dockerfile`                                                                     | 来自 `moby/moby` 的嵌套 Docker 配置    |
 
@@ -41,13 +41,13 @@
 
 ## 3. Gitea Runner & CI/CD 工具
 
-| 组件         | 版本      | MAJOR 最新版本      | MINOR 最新版本       | PATCH 最新版本       | 引用文件                                                            | 说明                  |
-|--------------|-----------|---------------------|----------------------|----------------------|---------------------------------------------------------------------|-----------------------|
-| Gitea Runner | `3.5.0`   | `3.5.0` (已是最新)  | `3.5.0` (已是最新)   | `3.5.0` (已是最新)   | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | CI/CD Runner          |
-| Node.js      | `24.21.0` | `26.9.0`            | `24.21.0` (已是最新) | `24.21.0` (已是最新) | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | JavaScript 运行时     |
-| Qwen Code    | `0.24.3`  | `0.24.3` (已是最新) | `0.24.3` (已是最新)  | `0.24.3` (已是最新)  | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | 终端 AI 编码助手      |
-| kubectl      | `1.37.0`  | `1.37.0` (已是最新) | `1.37.0` (已是最新)  | `1.37.0` (已是最新)  | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 命令行工具 |
-| Helm         | `4.3.0`   | `4.3.0` (已是最新)  | `4.3.0` (已是最新)   | `4.3.0` (已是最新)   | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 包管理器   |
+| 组件         | 版本      | MAJOR 最新版本     | MINOR 最新版本       | PATCH 最新版本       | 引用文件                                                            | 说明                  |
+|--------------|-----------|--------------------|----------------------|----------------------|---------------------------------------------------------------------|-----------------------|
+| Gitea Runner | `3.5.0`   | `4.0.0`            | `3.5.0` (已是最新)   | `3.5.0` (已是最新)   | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | CI/CD Runner          |
+| Node.js      | `24.21.0` | `26.10.0`          | `24.21.0` (已是最新) | `24.21.0` (已是最新) | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | JavaScript 运行时     |
+| Qwen Code    | `0.24.3`  | `0.24.5`           | `0.24.5`             | `0.24.5`             | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | 终端 AI 编码助手      |
+| kubectl      | `1.37.0`  | `1.37.1`           | `1.37.1`             | `1.37.1`             | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 命令行工具 |
+| Helm         | `4.3.0`   | `4.3.0` (已是最新) | `4.3.0` (已是最新)   | `4.3.0` (已是最新)   | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 包管理器   |
 
 ---
 
@@ -59,7 +59,7 @@
 | OpenJDK 25 (Temurin) | latest GA | -                    | -                   | -                   | `gitea-runner-ubuntu/modules/jdk25.sh`, `gitea-runner-ubuntu/modules/jmeter.sh`                                  | Eclipse Temurin JDK 25 |
 | GraalVM JDK 21       | latest    | -                    | -                   | -                   | `gitea-runner-ubuntu/modules/graalvm-jdk21.sh`                                                                   | Oracle GraalVM JDK 21  |
 | GraalVM JDK 25       | latest    | -                    | -                   | -                   | `gitea-runner-ubuntu/modules/graalvm-jdk25.sh`                                                                   | Oracle GraalVM JDK 25  |
-| Apache Maven         | `3.9.16`  | `4.0.0-rc-6` (非 GA) | `3.9.16` (已是最新) | `3.9.16` (已是最新) | `gitea-runner-ubuntu/modules/common.sh` (默认值), `graalvm-jdk21.sh`, `graalvm-jdk25.sh`, `jdk21.sh`, `jdk25.sh` | 项目构建工具           | (另有 3.10.0-rc-1) |
+| Apache Maven         | `3.9.16`  | `4.0.0-rc-7` (非 GA) | `3.9.16` (已是最新) | `3.9.16` (已是最新) | `gitea-runner-ubuntu/modules/common.sh` (默认值), `graalvm-jdk21.sh`, `graalvm-jdk25.sh`, `jdk21.sh`, `jdk25.sh` | 项目构建工具           | (另有 3.10.0-rc-1) |
 | Apache JMeter        | `5.6.3`   | `5.6.3` (已是最新)   | `5.6.3` (已是最新)  | `5.6.3` (已是最新)  | `gitea-runner-ubuntu/modules/jmeter.sh`, `gitea-runner-ubuntu/modules/common.sh` (默认值)                        | 性能测试工具           |
 
 ---
@@ -69,7 +69,7 @@
 | 组件                       | 版本            | MAJOR 最新版本        | MINOR 最新版本             | PATCH 最新版本             | 引用文件                                                                            | 说明                   |
 |----------------------------|-----------------|-----------------------|----------------------------|----------------------------|-------------------------------------------------------------------------------------|------------------------|
 | Flutter SDK                | `3.44.9`        | `3.47.5`              | `3.47.5`                   | `3.44.9` (已是最新)        | `gitea-runner-ubuntu/Dockerfile.flutter`, `gitea-runner-windows/Dockerfile.flutter` | Flutter 跨平台框架     |
-| Android Command-line Tools | `14742923`      | `15859902` (v23.0)    | `14742923` (已是最新)      | `14742923` (已是最新)      | `gitea-runner-ubuntu/Dockerfile.flutter`                                            | Android SDK 命令行工具 |
+| Android Command-line Tools | `14742923`      | `16111833` (v23.0)    | `14742923` (已是最新)      | `14742923` (已是最新)      | `gitea-runner-ubuntu/Dockerfile.flutter`                                            | Android SDK 命令行工具 |
 | Android Platform Tools     | latest          | -                     | -                          | -                          | `gitea-runner-ubuntu/Dockerfile.flutter`                                            | ADB 等平台工具         |
 | Android SDK Platform 36    | API 36          | API 37.2              | API 36.1                   | API 36 (已是最新)          | `gitea-runner-ubuntu/Dockerfile.flutter`                                            | Android 36 编译平台    |
 | Android SDK Platform 35    | API 35          | API 37.2              | API 35 (已是最新)          | API 35 (已是最新)          | `gitea-runner-ubuntu/Dockerfile.flutter`                                            | Android 35 编译平台    |
