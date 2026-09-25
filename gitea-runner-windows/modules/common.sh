@@ -72,7 +72,7 @@ function install_flutter() {
 }
 
 # 安装 Node.js（GitHub Actions 运行时依赖）
-# 参数: $1 - Node.js 版本号 (如 24.18.0)
+# 参数: $1 - Node.js 版本号（必传，由 setup.sh 从 ENV NODE_VERSION 传入）
 # 安装路径: 通过 NODE_HOME 环境变量指定 (默认 C:/Program Files/nodejs)
 function install_node() {
   local version=${1:?}
@@ -106,7 +106,7 @@ function install_node() {
 }
 
 # 安装 Qwen Code CLI（npm 全局安装）
-# 参数: $1 - Qwen Code 版本号 (如 0.24.3)
+# 参数: $1 - Qwen Code 版本号（必传，由 setup.sh 从 ENV QWEN_CODE_VERSION 传入）
 # 全局安装目录: 通过 NPM_GLOBAL_HOME 环境变量指定 (默认 C:/opt/npm)
 function install_qwen_code() {
   local version=${1:?}
@@ -123,7 +123,7 @@ function install_qwen_code() {
 }
 
 # 安装 Gitea Runner
-# 参数: $1 - Gitea Runner 版本号 (如 1.0.8)
+# 参数: $1 - Gitea Runner 版本号（必传，由 setup.sh 从 ENV GITEA_RUNNER_VERSION 传入）
 # 安装路径: 通过 GITEA_RUNNER_HOME 环境变量指定 (默认 C:/opt/bin)
 function install_gitea_runner() {
   local version=${1:?}
