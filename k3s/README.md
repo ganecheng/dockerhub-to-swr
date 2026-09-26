@@ -9,14 +9,18 @@
 
 ## 运行要求
 
-容器需要以特权模式运行，并建议挂载独立数据卷保存 Docker 和 k3s 状态：
+容器需要以特权模式运行，并挂载独立数据卷保存集群状态。
+
+镜像已将 Docker 的 `data-root` 指向 `/var/lib/rancher/k3s/docker`，因此 k3s 集群状态与 Docker 的镜像、容器、卷数据都位于 `/var/lib/rancher/k3s` 之下，持久化该目录即可保留全部数据；重建容器（例如增删端口映射或挂载）时挂回同一个卷，已有数据不受影响：
 
 ```bash
 docker run --privileged --name k3s \
-  -v k3s-docker:/var/lib/docker \
+  -p 6443:6443 -p 80:80 -p 443:443 \
   -v k3s-rancher:/var/lib/rancher/k3s \
   swr.ap-southeast-1.myhuaweicloud.com/gsc-hub/k3s:tag
 ```
+
+`-p` 按需增删；不要使用 `docker rm -v`、`docker run --rm` 或删除该数据卷，否则数据会丢失。
 
 启动后可以在容器内使用 Docker 和 kubectl：
 
