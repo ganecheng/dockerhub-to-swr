@@ -5,13 +5,13 @@ ARG BASE_ARCH=x86_64
 FROM ghcr.io/ganecheng/ubuntu:20260925_203152-${BASE_ARCH}
 
 # 构建参数：Gitea Runner 版本号
-ARG GITEA_RUNNER_VERSION=4.0.0
+ARG GITEA_RUNNER_VERSION=4.1.0
 # 构建参数：Docker 引擎版本号（静态二进制）
 ARG DOCKER_VERSION=28.5.2
 # 构建参数：Node.js 版本号
 ARG NODE_VERSION=24.21.0
 # 构建参数：Qwen Code 版本号
-ARG QWEN_CODE_VERSION=0.24.5
+ARG QWEN_CODE_VERSION=0.24.7
 # 构建参数：kubectl 版本号
 ARG KUBECTL_VERSION=1.37.1
 # 构建参数：Helm 版本号
