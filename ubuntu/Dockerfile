@@ -33,7 +33,7 @@ RUN <<EOF
     zip unzip zstd xz-utils bzip2 gzip dos2unix \
     vim tree jq yq \
     sudo openssl iptables \
-    python3 python3-pip python3-venv skopeo
+    python3 python3-pip python3-venv skopeo aria2
 
   # 验证 Python 安装
   python3 --version
