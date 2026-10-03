@@ -2,7 +2,7 @@
 
 > 本文件统计本仓库中所有 Dockerfile、GitHub Actions workflow 和 shell 脚本引用的开源组件版本号。
 >
-> 最后更新：2026-10-02
+> 最后更新：2026-10-03
 
 ---
 
@@ -13,9 +13,9 @@
 | Ubuntu (resolute)              | `resolute-20260927`              | `resolute-20260927` (已是最新) | `resolute-20260927` (已是最新) | `resolute-20260927` (已是最新) | `ubuntu/Dockerfile`                                                                                                                                                                               | Ubuntu 26.04 基础镜像                                                          |
 | pytorch/pytorch                | `2.14.1-cuda13.2-cudnn9-runtime` | `2.14.1` (已是最新)            | `2.14.1` (已是最新)            | `2.14.1` (已是最新)            | `pytorch/Dockerfile`                                                                                                                                                                              | PyTorch 官方运行时基础镜像 (Ubuntu 24.04 + Python 3.12 + torch/CUDA 13.2 预装) |
 | Windows Server Core (ltsc2025) | `ltsc2025`                       | `ltsc2025` (已是最新)          | `ltsc2025` (已是最新)          | `ltsc2025` (已是最新)          | `windows/Dockerfile` (via `amitie10g/visualstudio2022-workload-vctools`)                                                                                                                          | Windows 构建基础镜像                                                           |
-| 自建 Ubuntu 镜像               | `20260925_203152`                | -                              | -                              | -                              | `k3s/Dockerfile`, `dumbproxy/Dockerfile`, `mirrorproxy/Dockerfile`, `download_file/Dockerfile`, `gitea-runner-ubuntu/Dockerfile`, `ttyd/Dockerfile`, `audio-cpp/Dockerfile`, `unbound/Dockerfile` | 基于 `ubuntu/Dockerfile` 构建的内部镜像 (x86_64 / aarch64 双架构)              |
-| 自建 Windows 镜像              | `20260925_202621`                | -                              | -                              | -                              | `gitea-runner-windows/Dockerfile`, `gitea-runner-windows/Dockerfile.flutter`                                                                                                                      | 基于 `windows/Dockerfile` 构建的内部镜像                                       |
-| 自建 PyTorch 镜像              | `20260925_203321`                | -                              | -                              | -                              | `comfyui/Dockerfile`                                                                                                                                                                              | 基于 `pytorch/Dockerfile` 构建的内部镜像                                       |
+| 自建 Ubuntu 镜像               | `20261002_213140`                | -                              | -                              | -                              | `k3s/Dockerfile`, `dumbproxy/Dockerfile`, `mirrorproxy/Dockerfile`, `download_file/Dockerfile`, `gitea-runner-ubuntu/Dockerfile`, `ttyd/Dockerfile`, `audio-cpp/Dockerfile`, `unbound/Dockerfile` | 基于 `ubuntu/Dockerfile` 构建的内部镜像 (x86_64 / aarch64 双架构)              |
+| 自建 Windows 镜像              | `20261002_212241`                | -                              | -                              | -                              | `gitea-runner-windows/Dockerfile`, `gitea-runner-windows/Dockerfile.flutter`                                                                                                                      | 基于 `windows/Dockerfile` 构建的内部镜像                                       |
+| 自建 PyTorch 镜像              | `20261002_213329`                | -                              | -                              | -                              | `comfyui/Dockerfile`                                                                                                                                                                              | 基于 `pytorch/Dockerfile` 构建的内部镜像                                       |
 
 ---
 
@@ -33,7 +33,7 @@
 | dumbproxy       | `1.52.1`        | `1.52.1` (已是最新) | `1.52.1` (已是最新)        | `1.52.1` (已是最新)        | `dumbproxy/Dockerfile`                                                                                                 | 轻量 HTTP 代理                         |
 | MirrorProxy     | `1.4.3`         | `1.4.3` (已是最新)  | `1.4.3` (已是最新)         | `1.4.3` (已是最新)         | `mirrorproxy/Dockerfile`                                                                                               | 自部署镜像代理平台                     |
 | ttyd            | `1.7.7`         | `1.7.7` (已是最新)  | `1.7.7` (已是最新)         | `1.7.7` (已是最新)         | `ttyd/Dockerfile`                                                                                                      | Web 终端共享工具                       |
-| audio.cpp       | `v0.8.2`        | `v0.8.2` (已是最新) | `v0.8.2` (已是最新)        | `v0.8.2` (已是最新)        | `audio-cpp/Dockerfile`                                                                                                 | 语音 AI 推理服务 (Vulkan 预编译二进制) |
+| audio.cpp       | `v0.8.2`        | `v0.9.0`            | `v0.8.2` (已是最新)        | `v0.8.2` (已是最新)        | `audio-cpp/Dockerfile`                                                                                                 | 语音 AI 推理服务 (Vulkan 预编译二进制) |
 | unbound         | apt 默认最新    | -                   | -                          | -                          | `unbound/Dockerfile`                                                                                                   | 验证性递归缓存 DNS 解析器              |
 | dind 辅助脚本   | `master`        | -                   | -                          | -                          | `k3s/Dockerfile`, `gitea-runner-ubuntu/Dockerfile`                                                                     | 来自 `moby/moby` 的嵌套 Docker 配置    |
 
@@ -139,7 +139,7 @@
 `ca-certificates` `curl` `dos2unix` `iptables` `tini` `git` `tzdata` `locales` `libfreetype6` `net-tools` `findutils`
 `util-linux` `binutils` `zip` `unzip` `bc` `file` `fontconfig` `sudo` `jq` `openssl` `iproute2` `iputils-ping` `telnet`
 `bind9-dnsutils` `wget` `zstd` `xz-utils` `bzip2` `gzip` `vim` `tree` `python3` `python3-pip` `python3-venv` `git-lfs`
-`skopeo` `yq`
+`skopeo` `aria2` `yq`
 
 ### 下游镜像追加的系统包
 
@@ -156,7 +156,7 @@
 
 ## 11. 镜像构建依赖与触发顺序 (Phase)
 
-> 下游 Dockerfile 通过 timestamp tag 硬编码引用上游镜像（如 `20260925_203152`）。
+> 下游 Dockerfile 通过 timestamp tag 硬编码引用上游镜像（如 `20261002_213140`）。
 > Phase 1 构建成功后会自动创建 PR 更新下游 Dockerfile 的 FROM tag（分支 `auto/update-*-base`）。
 > 合并 PR 后即可手动触发 Phase 2 工作流，或等待周六 03:00 北京时间 定时触发。
 
