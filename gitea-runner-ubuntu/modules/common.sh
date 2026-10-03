@@ -78,12 +78,12 @@ function install_graalvm_jdk() {
 }
 
 # 安装 Apache Maven
-# 参数: $1 - Maven 版本号 (如 3.9.16)
+# 参数: $1 - Maven 版本号 (必填，由调用方脚本指定)
 # 安装路径: /opt/maven
 # 下载源: Maven 发行包同时发布到 Maven Central（内容不可变、历史版本永久保留），故优先取中央仓库；
 #         官方 dlcdn 由 Fastly CDN 承载、速度最快，但只保留当前版本；archive.apache.org 作为完整归档兜底。
 function install_maven() {
-  local version=${1:-3.9.16}
+  local version=${1:?}
 
   echo ">>> Installing Apache Maven ${version}..."
   download_first_available /tmp/maven.tar.gz \
@@ -104,12 +104,12 @@ function install_maven() {
 }
 
 # 安装 Apache JMeter
-# 参数: $1 - JMeter 版本号 (如 5.6.3)
+# 参数: $1 - JMeter 版本号 (必填，由调用方脚本指定)
 # 安装路径: /opt/jmeter
 # 下载源: JMeter 发行包未发布到 Maven Central，只能走 Apache 分发镜像；
 #         官方 dlcdn 由 Fastly CDN 承载、速度最快但只保留当前版本，archive.apache.org 作为完整归档兜底。
 function install_jmeter() {
-  local version=${1:-5.6.3}
+  local version=${1:?}
 
   echo ">>> Installing Apache JMeter ${version}..."
   download_first_available /tmp/jmeter.tgz \
