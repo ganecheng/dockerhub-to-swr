@@ -33,7 +33,7 @@
 | dumbproxy       | `1.52.1`        | `1.52.1` (已是最新) | `1.52.1` (已是最新)        | `1.52.1` (已是最新)        | `dumbproxy/Dockerfile`                                                                                                 | 轻量 HTTP 代理                         |
 | MirrorProxy     | `1.4.3`         | `1.4.3` (已是最新)  | `1.4.3` (已是最新)         | `1.4.3` (已是最新)         | `mirrorproxy/Dockerfile`                                                                                               | 自部署镜像代理平台                     |
 | ttyd            | `1.7.7`         | `1.7.7` (已是最新)  | `1.7.7` (已是最新)         | `1.7.7` (已是最新)         | `ttyd/Dockerfile`                                                                                                      | Web 终端共享工具                       |
-| audio.cpp       | `v0.8.2`        | `v0.9.0`            | `v0.8.2` (已是最新)        | `v0.8.2` (已是最新)        | `audio-cpp/Dockerfile`                                                                                                 | 语音 AI 推理服务 (Vulkan 预编译二进制) |
+| audio.cpp       | `v0.9.0`        | `v0.9.0` (已是最新) | `v0.9.0` (已是最新)        | `v0.9.0` (已是最新)        | `audio-cpp/Dockerfile`                                                                                                 | 语音 AI 推理服务 (Vulkan 预编译二进制) |
 | unbound         | apt 默认最新    | -                   | -                          | -                          | `unbound/Dockerfile`                                                                                                   | 验证性递归缓存 DNS 解析器              |
 | dind 辅助脚本   | `master`        | -                   | -                          | -                          | `k3s/Dockerfile`, `gitea-runner-ubuntu/Dockerfile`                                                                     | 来自 `moby/moby` 的嵌套 Docker 配置    |
 
@@ -53,14 +53,14 @@
 
 ## 4. Java 开发环境
 
-| 组件                 | 版本      | MAJOR 最新版本       | MINOR 最新版本     | PATCH 最新版本      | 引用文件                                                                                                         | 说明                   |
-|----------------------|-----------|----------------------|--------------------|---------------------|------------------------------------------------------------------------------------------------------------------|------------------------|
-| OpenJDK 21 (Temurin) | latest GA | -                    | -                  | -                   | `gitea-runner-ubuntu/modules/jdk21.sh`, `gitea-runner-ubuntu/Dockerfile.flutter`                                 | Eclipse Temurin JDK 21 |
-| OpenJDK 25 (Temurin) | latest GA | -                    | -                  | -                   | `gitea-runner-ubuntu/modules/jdk25.sh`, `gitea-runner-ubuntu/modules/jmeter.sh`                                  | Eclipse Temurin JDK 25 |
-| GraalVM JDK 21       | latest    | -                    | -                  | -                   | `gitea-runner-ubuntu/modules/graalvm-jdk21.sh`                                                                   | Oracle GraalVM JDK 21  |
-| GraalVM JDK 25       | latest    | -                    | -                  | -                   | `gitea-runner-ubuntu/modules/graalvm-jdk25.sh`                                                                   | Oracle GraalVM JDK 25  |
-| Apache Maven         | `3.9.16`  | `4.0.0-rc-7` (非 GA) | `3.10.0`           | `3.9.16` (已是最新) | `gitea-runner-ubuntu/modules/common.sh` (默认值), `graalvm-jdk21.sh`, `graalvm-jdk25.sh`, `jdk21.sh`, `jdk25.sh` | 项目构建工具           |
-| Apache JMeter        | `5.6.3`   | `5.6.3` (已是最新)   | `5.6.3` (已是最新) | `5.6.3` (已是最新)  | `gitea-runner-ubuntu/modules/jmeter.sh`, `gitea-runner-ubuntu/modules/common.sh` (默认值)                        | 性能测试工具           |
+| 组件                 | 版本      | MAJOR 最新版本       | MINOR 最新版本      | PATCH 最新版本      | 引用文件                                                                                                          | 说明                   |
+|----------------------|-----------|----------------------|---------------------|---------------------|-------------------------------------------------------------------------------------------------------------------|------------------------|
+| OpenJDK 21 (Temurin) | latest GA | -                    | -                   | -                   | `gitea-runner-ubuntu/modules/jdk21.sh`, `gitea-runner-ubuntu/Dockerfile.flutter`                                  | Eclipse Temurin JDK 21 |
+| OpenJDK 25 (Temurin) | latest GA | -                    | -                   | -                   | `gitea-runner-ubuntu/modules/jdk25.sh`, `gitea-runner-ubuntu/modules/jmeter.sh`                                   | Eclipse Temurin JDK 25 |
+| GraalVM JDK 21       | latest    | -                    | -                   | -                   | `gitea-runner-ubuntu/modules/graalvm-jdk21.sh`                                                                    | Oracle GraalVM JDK 21  |
+| GraalVM JDK 25       | latest    | -                    | -                   | -                   | `gitea-runner-ubuntu/modules/graalvm-jdk25.sh`                                                                    | Oracle GraalVM JDK 25  |
+| Apache Maven         | `3.10.0`  | `4.0.0-rc-7` (非 GA) | `3.10.0` (已是最新) | `3.10.0` (已是最新) | `gitea-runner-ubuntu/modules/graalvm-jdk21.sh`, `graalvm-jdk25.sh`, `jdk21.sh`, `jdk25.sh` (`common.sh` 提供函数) | 项目构建工具           |
+| Apache JMeter        | `5.6.3`   | `5.6.3` (已是最新)   | `5.6.3` (已是最新)  | `5.6.3` (已是最新)  | `gitea-runner-ubuntu/modules/jmeter.sh` (`common.sh` 提供函数)                                                    | 性能测试工具           |
 
 ---
 
@@ -104,7 +104,7 @@
 | Python 3        | apt 默认最新            | -                   | -                   | -                   | `ubuntu/Dockerfile`, `pytorch/os_init.sh`    | Python 运行时                       |
 | PyTorch         | `2.14.1` (基础镜像内置) | `2.14.1` (已是最新) | `2.14.1` (已是最新) | `2.14.1` (已是最新) | `pytorch/Dockerfile`                         | 深度学习框架 (pytorch 官方镜像预装) |
 | torchvision     | `0.29.*` (基础镜像内置) | `0.29.1` (已是最新) | `0.29.1` (已是最新) | `0.29.1` (已是最新) | `pytorch/Dockerfile`                         | 计算机视觉库 (pytorch 官方镜像预装) |
-| torchcodec      | `0.16.*`                | `0.17.0`            | `0.16.0` (已是最新) | `0.16.0` (已是最新) | `pytorch/install_pytorch.sh`                 | 视频编解码库 (cu132 wheel)          |
+| torchcodec      | `0.17.*`                | `0.17.0` (已是最新) | `0.17.0` (已是最新) | `0.17.0` (已是最新) | `pytorch/install_pytorch.sh`                 | 视频编解码库 (cu132 wheel)          |
 | torchaudio      | `2.11.*`                | `2.11.0` (已是最新) | `2.11.0` (已是最新) | `2.11.0` (已是最新) | `pytorch/install_pytorch.sh`                 | 音频处理库 (cu130 wheel)            |
 | uv              | latest (`-U`)           | -                   | -                   | -                   | `pytorch/os_init.sh`                         | Python 包管理器                     |
 | huggingface-hub | latest (`[cli,hf_xet]`) | -                   | -                   | -                   | `pytorch/os_init.sh`                         | HuggingFace 模型下载工具            |
