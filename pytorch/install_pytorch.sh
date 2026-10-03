@@ -7,7 +7,7 @@ set -ex
 python3 -c "import torch, torchvision; print(torch.__version__, torchvision.__version__)"
 
 pip install --no-cache-dir \
-    torchcodec==0.16.* \
+    torchcodec==0.17.* \
     --index-url https://download.pytorch.org/whl/cu132
 
 pip install --no-cache-dir --no-deps \
