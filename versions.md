@@ -2,7 +2,7 @@
 
 > 本文件统计本仓库中所有 Dockerfile、GitHub Actions workflow 和 shell 脚本引用的开源组件版本号。
 >
-> 最后更新：2026-10-04
+> 最后更新：2026-10-05
 
 ---
 
@@ -13,7 +13,7 @@
 | Ubuntu (resolute)              | `resolute-20260927`              | `resolute-20260927` (已是最新) | `resolute-20260927` (已是最新) | `resolute-20260927` (已是最新) | `ubuntu/Dockerfile`                                                                                                                                                                               | Ubuntu 26.04 基础镜像                                                          |
 | pytorch/pytorch                | `2.14.1-cuda13.2-cudnn9-runtime` | `2.14.1` (已是最新)            | `2.14.1` (已是最新)            | `2.14.1` (已是最新)            | `pytorch/Dockerfile`                                                                                                                                                                              | PyTorch 官方运行时基础镜像 (Ubuntu 24.04 + Python 3.12 + torch/CUDA 13.2 预装) |
 | Windows Server Core (ltsc2025) | `ltsc2025`                       | `ltsc2025` (已是最新)          | `ltsc2025` (已是最新)          | `ltsc2025` (已是最新)          | `windows/Dockerfile` (via `amitie10g/visualstudio2022-workload-vctools`)                                                                                                                          | Windows 构建基础镜像                                                           |
-| 自建 Ubuntu 镜像               | `20261002_213140`                | -                              | -                              | -                              | `k3s/Dockerfile`, `dumbproxy/Dockerfile`, `mirrorproxy/Dockerfile`, `download_file/Dockerfile`, `gitea-runner-ubuntu/Dockerfile`, `ttyd/Dockerfile`, `audio-cpp/Dockerfile`, `unbound/Dockerfile` | 基于 `ubuntu/Dockerfile` 构建的内部镜像 (x86_64 / aarch64 双架构)              |
+| 自建 Ubuntu 镜像               | `20261004_202321`                | -                              | -                              | -                              | `k3s/Dockerfile`, `dumbproxy/Dockerfile`, `mirrorproxy/Dockerfile`, `download_file/Dockerfile`, `gitea-runner-ubuntu/Dockerfile`, `ttyd/Dockerfile`, `audio-cpp/Dockerfile`, `unbound/Dockerfile` | 基于 `ubuntu/Dockerfile` 构建的内部镜像 (x86_64 / aarch64 双架构)              |
 | 自建 Windows 镜像              | `20261002_212241`                | -                              | -                              | -                              | `gitea-runner-windows/Dockerfile`, `gitea-runner-windows/Dockerfile.flutter`                                                                                                                      | 基于 `windows/Dockerfile` 构建的内部镜像                                       |
 | 自建 PyTorch 镜像              | `20261003_214728`                | -                              | -                              | -                              | `comfyui/Dockerfile`                                                                                                                                                                              | 基于 `pytorch/Dockerfile` 构建的内部镜像                                       |
 
@@ -156,7 +156,7 @@
 
 ## 11. 镜像构建依赖与触发顺序 (Phase)
 
-> 下游 Dockerfile 通过 timestamp tag 硬编码引用上游镜像（如 `20261002_213140`）。
+> 下游 Dockerfile 通过 timestamp tag 硬编码引用上游镜像（如 `20261004_202321`）。
 > Phase 1 构建成功后会自动创建 PR 更新下游 Dockerfile 的 FROM tag（分支 `auto/update-*-base`）。
 > 合并 PR 后即可手动触发 Phase 2 工作流，或等待周六 03:00 北京时间 定时触发。
 
