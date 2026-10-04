@@ -139,7 +139,7 @@
 `ca-certificates` `curl` `dos2unix` `iptables` `tini` `git` `tzdata` `locales` `libfreetype6` `net-tools` `findutils`
 `util-linux` `binutils` `zip` `unzip` `bc` `file` `fontconfig` `sudo` `jq` `openssl` `iproute2` `iputils-ping` `telnet`
 `bind9-dnsutils` `wget` `zstd` `xz-utils` `bzip2` `gzip` `vim` `tree` `python3` `python3-pip` `python3-venv` `git-lfs`
-`skopeo` `aria2` `yq`
+`skopeo` `aria2` `yq` `rsync` `debmirror`
 
 ### 下游镜像追加的系统包
 

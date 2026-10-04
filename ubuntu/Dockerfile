@@ -30,6 +30,7 @@ RUN <<EOF
     locales fontconfig libfreetype6 \
     findutils util-linux binutils bc file \
     net-tools iproute2 iputils-ping telnet bind9-dnsutils \
+    rsync debmirror \
     zip unzip zstd xz-utils bzip2 gzip dos2unix \
     vim tree jq yq \
     sudo openssl iptables \
@@ -38,6 +39,10 @@ RUN <<EOF
   # 验证 Python 安装
   python3 --version
   pip3 --version
+
+  # 验证镜像同步工具安装
+  rsync --version
+  debmirror --version
 
   # 设置中文环境
   locale-gen zh_CN.UTF-8 en_US.UTF-8
