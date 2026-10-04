@@ -1,5 +1,5 @@
 # 基础镜像：Ubuntu 26.04 (resolute)
-FROM ghcr.io/ganecheng/ubuntu:20261002_213140-x86_64
+FROM ghcr.io/ganecheng/ubuntu:20261004_202321-x86_64
 
 # 构建参数：ttyd 版本号
 ARG TTYD_VERSION=1.7.7
