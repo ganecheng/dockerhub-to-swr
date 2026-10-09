@@ -2,7 +2,7 @@
 ARG BASE_ARCH=x86_64
 
 # 基础镜像：Ubuntu 26.04 (resolute)
-FROM ghcr.io/ganecheng/ubuntu:20261004_202321-${BASE_ARCH}
+FROM ghcr.io/ganecheng/ubuntu:20261009_220528-${BASE_ARCH}
 
 # 构建参数：Gitea Runner 版本号
 ARG GITEA_RUNNER_VERSION=5.0.0
