@@ -33,7 +33,7 @@
 | dumbproxy       | `1.52.1`        | `1.52.1` (已是最新) | `1.52.1` (已是最新)        | `1.52.1` (已是最新)        | `dumbproxy/Dockerfile`                                                                                                 | 轻量 HTTP 代理                         |
 | MirrorProxy     | `1.4.3`         | `1.4.3` (已是最新)  | `1.4.3` (已是最新)         | `1.4.3` (已是最新)         | `mirrorproxy/Dockerfile`                                                                                               | 自部署镜像代理平台                     |
 | ttyd            | `1.7.7`         | `1.7.7` (已是最新)  | `1.7.7` (已是最新)         | `1.7.7` (已是最新)         | `ttyd/Dockerfile`                                                                                                      | Web 终端共享工具                       |
-| audio.cpp       | `v0.9.0`        | `v0.9.1`            | `v0.9.1`                   | `v0.9.1`                   | `audio-cpp/Dockerfile`                                                                                                 | 语音 AI 推理服务 (Vulkan 预编译二进制) |
+| audio.cpp       | `v0.9.1`        | `v0.9.1` (已是最新) | `v0.9.1` (已是最新)        | `v0.9.1` (已是最新)        | `audio-cpp/Dockerfile`                                                                                                 | 语音 AI 推理服务 (Vulkan 预编译二进制) |
 | unbound         | apt 默认最新    | -                   | -                          | -                          | `unbound/Dockerfile`                                                                                                   | 验证性递归缓存 DNS 解析器              |
 | dind 辅助脚本   | `master`        | -                   | -                          | -                          | `k3s/Dockerfile`, `gitea-runner-ubuntu/Dockerfile`                                                                     | 来自 `moby/moby` 的嵌套 Docker 配置    |
 
@@ -43,7 +43,7 @@
 
 | 组件         | 版本      | MAJOR 最新版本      | MINOR 最新版本       | PATCH 最新版本       | 引用文件                                                            | 说明                  |
 |--------------|-----------|---------------------|----------------------|----------------------|---------------------------------------------------------------------|-----------------------|
-| Gitea Runner | `4.1.0`   | `5.0.0`             | `4.1.0` (已是最新)   | `4.1.0` (已是最新)   | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | CI/CD Runner          |
+| Gitea Runner | `5.0.0`   | `5.0.0` (已是最新) | `5.0.0` (已是最新)  | `5.0.0` (已是最新)  | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | CI/CD Runner          |
 | Node.js      | `24.21.0` | `26.11.1`           | `24.21.0` (已是最新) | `24.21.0` (已是最新) | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | JavaScript 运行时     |
 | Qwen Code    | `0.25.0`  | `0.25.0` (已是最新) | `0.25.0` (已是最新)  | `0.25.0` (已是最新)  | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | 终端 AI 编码助手      |
 | kubectl      | `1.37.1`  | `1.37.1` (已是最新) | `1.37.1` (已是最新)  | `1.37.1` (已是最新)  | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 命令行工具 |
