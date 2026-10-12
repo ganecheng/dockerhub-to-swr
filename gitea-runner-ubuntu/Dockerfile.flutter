@@ -16,7 +16,7 @@ ENV ANDROID_HOME=/opt/android-sdk
 RUN mkdir -p ${ANDROID_SDK_ROOT}/cmdline-tools
 
 # https://developer.android.com/studio#command-line-tools-only
-ARG CMDLINE_TOOLS_URL=https://dl.google.com/android/repository/commandlinetools-linux-14742923_latest.zip
+ARG CMDLINE_TOOLS_URL=https://dl.google.com/android/repository/commandlinetools-linux-16111833_latest.zip
 RUN curl -fsSL ${CMDLINE_TOOLS_URL} -o /tmp/cmdline-tools.zip \
     && unzip -q /tmp/cmdline-tools.zip -d /tmp/cmdline-tools \
     && mkdir -p ${ANDROID_SDK_ROOT}/cmdline-tools/latest \
@@ -25,23 +25,24 @@ RUN curl -fsSL ${CMDLINE_TOOLS_URL} -o /tmp/cmdline-tools.zip \
 
 ENV PATH="${JAVA_HOME}/bin:${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin:${ANDROID_SDK_ROOT}/platform-tools:${PATH}"
 
-# Android SDK 组件 (compileSdk 36, NDK 29, build-tools 36)
+# Android SDK 组件 (compileSdk 37.2, NDK 30, build-tools 37)
 # 额外预装传递依赖需要的版本，避免 Gradle 构建时实时下载
+# API 37 系列平台包名全部带 minor 号（37.0/37.1/37.2），无裸 android-37 包
 RUN yes | sdkmanager --licenses || true
 
 RUN sdkmanager "platform-tools" \
     && rm -rf ${ANDROID_SDK_ROOT}/.temp ${ANDROID_SDK_ROOT}/.knownPackages
 
-RUN sdkmanager "platforms;android-36" \
+RUN sdkmanager "platforms;android-37.2" \
     && rm -rf ${ANDROID_SDK_ROOT}/.temp ${ANDROID_SDK_ROOT}/.knownPackages
 
-RUN sdkmanager "platforms;android-35" \
+RUN sdkmanager "platforms;android-36.1" \
     && rm -rf ${ANDROID_SDK_ROOT}/.temp ${ANDROID_SDK_ROOT}/.knownPackages
 
-RUN sdkmanager "build-tools;36.0.0" \
+RUN sdkmanager "build-tools;37.0.0" \
     && rm -rf ${ANDROID_SDK_ROOT}/.temp ${ANDROID_SDK_ROOT}/.knownPackages
 
-RUN sdkmanager "ndk;29.0.14206865" \
+RUN sdkmanager "ndk;30.0.16248370" \
     && rm -rf ${ANDROID_SDK_ROOT}/.temp ${ANDROID_SDK_ROOT}/.knownPackages
 
 RUN sdkmanager "ndk;28.2.13676358" \
@@ -50,8 +51,8 @@ RUN sdkmanager "ndk;28.2.13676358" \
 RUN sdkmanager "cmake;3.22.1" \
     && rm -rf ${ANDROID_SDK_ROOT}/.temp ${ANDROID_SDK_ROOT}/.knownPackages
 
-# Flutter SDK 3.44.9 (Dart >=3.10.0)
-ARG FLUTTER_VERSION=3.44.9
+# Flutter SDK 3.47.7 (Dart >=3.13.0)
+ARG FLUTTER_VERSION=3.47.7
 ENV FLUTTER_HOME=/opt/flutter
 ENV PATH="${FLUTTER_HOME}/bin:${PATH}"
 

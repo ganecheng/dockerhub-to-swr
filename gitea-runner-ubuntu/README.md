@@ -35,7 +35,7 @@ gitea-runner-ubuntu/                ← 基础镜像 (Dockerfile)
 | `gitea-runner-ubuntu-graalvm-jdk21` | `Dockerfile.graalvm-jdk21` | + GraalVM JDK 21 + Maven 3.10.0 + gcc/g++/zlib1g-dev (native-image)                                          | `ubuntu-latest,ubuntu-26.04,ubuntu-graalvm-jdk-21` | `ubuntu-aarch64-latest,ubuntu-aarch64-26.04,ubuntu-aarch64-graalvm-jdk-21` |
 | `gitea-runner-ubuntu-graalvm-jdk25` | `Dockerfile.graalvm-jdk25` | + GraalVM JDK 25 + Maven 3.10.0 + gcc/g++/zlib1g-dev (native-image)                                          | `ubuntu-latest,ubuntu-26.04,ubuntu-graalvm-jdk-25` | `ubuntu-aarch64-latest,ubuntu-aarch64-26.04,ubuntu-aarch64-graalvm-jdk-25` |
 | `gitea-runner-ubuntu-jmeter`        | `Dockerfile.jmeter`        | + Temurin JDK 25 + JMeter 5.6.3                                                                              | `ubuntu-latest,ubuntu-26.04,ubuntu-jmeter`         | `ubuntu-aarch64-latest,ubuntu-aarch64-26.04,ubuntu-aarch64-jmeter`         |
-| `gitea-runner-ubuntu-flutter`       | `Dockerfile.flutter`       | + Flutter 3.44.9 + Android SDK (compileSdk 36, NDK 29, build-tools 36) + OpenJDK 21                          | `ubuntu-latest,ubuntu-26.04,ubuntu-flutter`        | 仅 x86_64                                                                  |
+| `gitea-runner-ubuntu-flutter`       | `Dockerfile.flutter`       | + Flutter 3.47.7 + Android SDK (compileSdk 37.2, NDK 30, build-tools 37) + OpenJDK 21                        | `ubuntu-latest,ubuntu-26.04,ubuntu-flutter`        | 仅 x86_64                                                                  |
 
 > 扩展镜像在基础标签之上追加各自的功能标签，无需重复声明基础标签。
 > Runner 标签为 `GITEA_RUNNER_LABELS_DEFAULT` 的默认值，已按架构分列；flutter 扩展仅提供 x86_64 版本。
