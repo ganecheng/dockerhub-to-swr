@@ -2,22 +2,23 @@
 
 ## 与 Linux 版的差异
 
-| 维度 | Linux 版 (gitea-runner-ubuntu) | Windows 版 (gitea-runner-windows) |
-|------|------------------------|----------------------------------|
-| 基础镜像 | Ubuntu 26.04 | windows (Windows Server Core + VS Build Tools) |
-| Shell | bash | Git Bash (随完整版 Git for Windows 提供) |
-| 启动脚本 | `run.sh` | `run.sh` |
-| 模块脚本 | `modules/*.sh` | `modules/*.sh` |
-| CA 证书导入 | `update-ca-certificates` | `certutil -addstore` |
-| 镜像站配置 | APT + PIP + NPM | 仅 NPM |
-| 自定义初始化 | `INIT_SH_FILE` | `INIT_SH_FILE` |
-| 配置模板渲染 | bash `eval` | bash `eval` (与 Linux 版同实现) |
+| 维度            | Linux 版 (gitea-runner-ubuntu)   | Windows 版 (gitea-runner-windows)               |
+|-----------------|----------------------------------|-------------------------------------------------|
+| 基础镜像        | Ubuntu 26.04                     | windows (Windows Server Core + VS Build Tools)  |
+| Shell           | bash                             | Git Bash (随完整版 Git for Windows 提供)        |
+| 启动脚本        | `run.sh`                         | `run.sh`                                        |
+| 模块脚本        | `modules/*.sh`                   | `modules/*.sh`                                  |
+| CA 证书导入     | `update-ca-certificates`         | `certutil -addstore`                            |
+| 镜像站配置      | APT + PIP + NPM                  | 仅 NPM                                          |
+| 自定义初始化    | `INIT_SH_FILE`                   | `INIT_SH_FILE`                                  |
+| 配置模板渲染    | bash `eval`                      | bash `eval` (与 Linux 版同实现)                 |
 | qwen 日志格式化 | `python3` + `/opt/fmt_stream.py` | `python3`/`python` + `C:\opt\bin\fmt_stream.py` |
-| Runner 标签 | `ubuntu-latest,ubuntu-26.04` | `windows-latest,windows-2022` |
+| Runner 标签     | `ubuntu-latest,ubuntu-26.04`     | `windows-latest,windows-2022`                   |
 
 ## 镜像结构
 
-采用模块化设计，基础镜像（`gitea-runner-windows`）在 [windows](../windows/Dockerfile) 之上补充 Gitea Runner 运行时，各扩展镜像在此之上叠加特定场景的构建工具。
+采用模块化设计，基础镜像（`gitea-runner-windows`）在 [windows](../windows/Dockerfile) 之上补充 Gitea Runner
+运行时，各扩展镜像在此之上叠加特定场景的构建工具。
 
 ```
 gitea-runner-windows/               ← 基础镜像
@@ -34,12 +35,13 @@ gitea-runner-windows/               ← 基础镜像
 
 ## 镜像列表
 
-| 镜像名称 | Dockerfile | 包含组件 | Runner 标签 |
-|---------|-----------|---------|------------|
-| `gitea-runner-windows` | `Dockerfile` | windows 全部组件 + Node.js 24.21.0 + Qwen Code 0.25.1 + Python 3 (Chocolatey) + Gitea Runner 5.0.0 | `windows-latest,windows-2022` |
-| `gitea-runner-windows-flutter` | `Dockerfile.flutter` | + Flutter 3.47.7 (仅 Windows 桌面) | `windows-latest,windows-2022,windows-flutter` |
+| 镜像名称                       | Dockerfile           | 包含组件                                                                                           | Runner 标签                                   |
+|--------------------------------|----------------------|----------------------------------------------------------------------------------------------------|-----------------------------------------------|
+| `gitea-runner-windows`         | `Dockerfile`         | windows 全部组件 + Node.js 24.22.0 + Qwen Code 0.25.2 + Python 3 (Chocolatey) + Gitea Runner 5.1.0 | `windows-latest,windows-2022`                 |
+| `gitea-runner-windows-flutter` | `Dockerfile.flutter` | + Flutter 3.47.7 (仅 Windows 桌面)                                                                 | `windows-latest,windows-2022,windows-flutter` |
 
-> windows 已包含：Windows Server Core ltsc2025 + VS Build Tools 2022 (MSVC v143, Windows SDK, CMake) + Git for Windows（Chocolatey 最新版，含 Git Bash）+ NuGet + PowerShell 7
+> windows 已包含：Windows Server Core ltsc2025 + VS Build Tools 2022 (MSVC v143, Windows SDK, CMake) + Git for
+> Windows（Chocolatey 最新版，含 Git Bash）+ NuGet + PowerShell 7
 
 > 扩展镜像在基础标签之上追加各自的功能标签，无需重复声明基础标签。
 
@@ -55,7 +57,8 @@ docker build -f gitea-runner-windows/Dockerfile.flutter --build-arg BASE_IMAGE=g
 
 ## 工作原理
 
-基础镜像在 windows 之上补充 Node.js、Qwen Code CLI 和 Gitea Runner 二进制，扩展镜像在此基础上安装特定工具（Flutter SDK 等）。构建时通过 `ARG BASE_IMAGE` 引用基础镜像，无需手动处理任何依赖关系。
+基础镜像在 windows 之上补充 Node.js、Qwen Code CLI 和 Gitea Runner 二进制，扩展镜像在此基础上安装特定工具（Flutter SDK
+等）。构建时通过 `ARG BASE_IMAGE` 引用基础镜像，无需手动处理任何依赖关系。
 
 ### 启动流程（`run.sh`）
 
@@ -73,7 +76,8 @@ docker build -f gitea-runner-windows/Dockerfile.flutter --build-arg BASE_IMAGE=g
 
 Runner 以 **ephemeral 模式**运行：完成一个任务后自动退出，容器随之销毁。
 
-容器空闲超时由 `GITEA_RUNNER_TIMEOUT_MINUTES`（默认 `60`）控制。启动时计算 deadline，任务被接收后 deadline 刷新，确保任务有充足执行时间。超时后容器自动退出。
+容器空闲超时由 `GITEA_RUNNER_TIMEOUT_MINUTES`（默认 `60`）控制。启动时计算 deadline，任务被接收后 deadline
+刷新，确保任务有充足执行时间。超时后容器自动退出。
 
 ### 配置模板（`config.template.yaml`）
 
@@ -89,11 +93,12 @@ Runner 以 **ephemeral 模式**运行：完成一个任务后自动退出，容�
 
 ### 自定义初始化脚本
 
-设置 `INIT_SH_FILE` 环境变量指向容器内的 .sh 脚本路径，启动时会通过 `source` 方式执行该脚本，与 Linux 版的 `INIT_SH_FILE` 行为一致。
+设置 `INIT_SH_FILE` 环境变量指向容器内的 .sh 脚本路径，启动时会通过 `source` 方式执行该脚本，与 Linux 版的 `INIT_SH_FILE`
+行为一致。
 
 ## 内置 Qwen Code CLI
 
-基础镜像通过 npm 全局安装 Qwen Code CLI（当前 `0.25.1`，可用 `QWEN_CODE_VERSION` 覆盖版本），
+基础镜像通过 npm 全局安装 Qwen Code CLI（当前 `0.25.2`，可用 `QWEN_CODE_VERSION` 覆盖版本），
 并内置流式输出格式化脚本：仓库内 `common/fmt_stream.py`（与 Ubuntu 版共用同一份），
 镜像内为 `C:\opt\bin\fmt_stream.py`。
 Python 3 通过 Chocolatey 安装，且把 `python.exe` 复制为 `python3.exe`，
@@ -134,8 +139,10 @@ timeout 3600 \
 
 添加新场景只需两步：
 
-1. 在 `modules/` 下创建安装脚本（可复用 `common.sh` 中的函数，由于 Git Bash 与 Linux bash 行为接近，扩展时几乎可照搬 Linux 版实现）
-2. 创建对应的 `Dockerfile.{name}`，复制脚本并设置环境变量（`PATH`、`GITEA_RUNNER_LABELS_DEFAULT` 等），构建时通过 `C:\Program Files\Git\bin\bash.exe` 执行 .sh 脚本
+1. 在 `modules/` 下创建安装脚本（可复用 `common.sh` 中的函数，由于 Git Bash 与 Linux bash 行为接近，扩展时几乎可照搬 Linux
+   版实现）
+2. 创建对应的 `Dockerfile.{name}`，复制脚本并设置环境变量（`PATH`、`GITEA_RUNNER_LABELS_DEFAULT` 等），构建时通过
+   `C:\Program Files\Git\bin\bash.exe` 执行 .sh 脚本
 
 ## 自定义 CA 证书
 
@@ -155,17 +162,17 @@ docker run -e CA_CERT_DIR=C:\my-certs -v C:\path\to\my-certs:C:\my-certs:ro ...
 
 ## 主要环境变量
 
-| 环境变量 | 默认值 | 说明 |
-|---------|-------|------|
-| `GITEA_INSTANCE_URL` | - | Gitea 实例地址（必填） |
-| `GITEA_RUNNER_REGISTRATION_TOKEN` | - | 注册令牌（与 `GITEA_RUNNER_REGISTRATION_TOKEN_FILE` 二选一，直接提供时优先） |
-| `GITEA_RUNNER_REGISTRATION_TOKEN_FILE` | - | 注册令牌文件路径（当 `GITEA_RUNNER_REGISTRATION_TOKEN` 为空时从此文件读取） |
-| `GITEA_RUNNER_NAME` | - | Runner 名称 |
-| `GITEA_RUNNER_LABELS` | `GITEA_RUNNER_LABELS_DEFAULT` | Runner 标签（逗号分隔） |
-| `GITEA_RUNNER_TIMEOUT_MINUTES` | `60` | 容器空闲超时（分钟） |
-| `GITEA_RUNNER_REGISTRATION_TIMEOUT` | `30` | 注册超时（秒） |
-| `GITEA_RUNNER_REGISTRATION_RETRY_INTERVAL` | `3` | 注册重试间隔（秒） |
-| `INIT_SH_FILE` | - | 自定义初始化脚本路径（容器内，由 Git Bash `source` 执行） |
-| `CA_CERT_DIR` | `C:\certs` | 自定义 CA 证书挂载目录 |
-| `NPM_REGISTRY` | `https://mirrors.huaweicloud.com/repository/npm/` | NPM 镜像站 |
-| `GITEA_RUNNER_CONFIG_TEMPLATE_FILE` | `C:\opt\config.template.yaml` | Runner 配置模板文件路径 |
+| 环境变量                                   | 默认值                                            | 说明                                                                         |
+|--------------------------------------------|---------------------------------------------------|------------------------------------------------------------------------------|
+| `GITEA_INSTANCE_URL`                       | -                                                 | Gitea 实例地址（必填）                                                       |
+| `GITEA_RUNNER_REGISTRATION_TOKEN`          | -                                                 | 注册令牌（与 `GITEA_RUNNER_REGISTRATION_TOKEN_FILE` 二选一，直接提供时优先） |
+| `GITEA_RUNNER_REGISTRATION_TOKEN_FILE`     | -                                                 | 注册令牌文件路径（当 `GITEA_RUNNER_REGISTRATION_TOKEN` 为空时从此文件读取）  |
+| `GITEA_RUNNER_NAME`                        | -                                                 | Runner 名称                                                                  |
+| `GITEA_RUNNER_LABELS`                      | `GITEA_RUNNER_LABELS_DEFAULT`                     | Runner 标签（逗号分隔）                                                      |
+| `GITEA_RUNNER_TIMEOUT_MINUTES`             | `60`                                              | 容器空闲超时（分钟）                                                         |
+| `GITEA_RUNNER_REGISTRATION_TIMEOUT`        | `30`                                              | 注册超时（秒）                                                               |
+| `GITEA_RUNNER_REGISTRATION_RETRY_INTERVAL` | `3`                                               | 注册重试间隔（秒）                                                           |
+| `INIT_SH_FILE`                             | -                                                 | 自定义初始化脚本路径（容器内，由 Git Bash `source` 执行）                    |
+| `CA_CERT_DIR`                              | `C:\certs`                                        | 自定义 CA 证书挂载目录                                                       |
+| `NPM_REGISTRY`                             | `https://mirrors.huaweicloud.com/repository/npm/` | NPM 镜像站                                                                   |
+| `GITEA_RUNNER_CONFIG_TEMPLATE_FILE`        | `C:\opt\config.template.yaml`                     | Runner 配置模板文件路径                                                      |
