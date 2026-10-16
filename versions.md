@@ -161,29 +161,33 @@
 
 > 下游 Dockerfile 通过 timestamp tag 硬编码引用上游镜像（如 `20261009_220528`）。
 > Phase 1 构建成功后会自动创建 PR 更新下游 Dockerfile 的 FROM tag（分支 `auto/update-*-base`）。
-> 合并 PR 后即可手动触发 Phase 2 工作流，或等待周六 03:00 北京时间 定时触发。
+> 两个 Phase 的 GitHub `schedule` 已移除（定时队列拥堵导致触发不准时），
+> 改由 gsc-config 仓库的 Gitea 工作流
+> `trigger-github-repo-image-build.yml` 调 GitHub API 触发，时间不变：
+> Phase 1 周五 15:00、Phase 2 周六 03:00 北京时间。合并 PR 后也可手动触发
+> Phase 2，或在 Gitea 上手动触发该工作流。
 
 ### Phase 1 — 基础镜像（无依赖，可并行触发）
 
 | Workflow      | 镜像                                 | FROM                            | 定时触发               | 自动 PR 分支               |
 |---------------|--------------------------------------|---------------------------------|------------------------|----------------------------|
-| `ubuntu.yml`  | `gsc-hub/ubuntu:<ts>-x86_64/aarch64` | 官方 Ubuntu 26.04               | ✅ 周五 15:00 北京时间 | `auto/update-ubuntu-base`  |
-| `windows.yml` | `gsc-hub/windows:<ts>-x86_64`        | Windows Server Core (ltsc2025)  | ✅ 周五 15:00 北京时间 | `auto/update-windows-base` |
-| `pytorch.yml` | `gsc-hub/pytorch:<ts>-x86_64`        | pytorch/pytorch 2.14.1-cuda13.2 | ✅ 周五 15:00 北京时间 | `auto/update-pytorch-base` |
+| `ubuntu.yml`  | `gsc-hub/ubuntu:<ts>-x86_64/aarch64` | 官方 Ubuntu 26.04               | Gitea 触发 周五 15:00  | `auto/update-ubuntu-base`  |
+| `windows.yml` | `gsc-hub/windows:<ts>-x86_64`        | Windows Server Core (ltsc2025)  | Gitea 触发 周五 15:00  | `auto/update-windows-base` |
+| `pytorch.yml` | `gsc-hub/pytorch:<ts>-x86_64`        | pytorch/pytorch 2.14.1-cuda13.2 | Gitea 触发 周五 15:00  | `auto/update-pytorch-base` |
 
 ### Phase 2 - 依赖 Phase 1（合并 Phase 1 自动创建的 PR 后触发）
 
 | Workflow                   | 镜像                                                                                              | 依赖 (Phase 1) | 定时触发               | 引用文件                          |
 |----------------------------|---------------------------------------------------------------------------------------------------|----------------|------------------------|-----------------------------------|
-| `gitea-runner-ubuntu.yml`  | `gitea-runner-ubuntu` + 6 扩展 (jdk21 / jdk25 / graalvm-jdk21 / graalvm-jdk25 / jmeter / flutter) | ubuntu 双架构  | ✅ 周六 03:00 北京时间 | `gitea-runner-ubuntu/Dockerfile`  |
-| `gitea-runner-windows.yml` | `gitea-runner-windows` + flutter 扩展                                                             | windows        | ✅ 周六 03:00 北京时间 | `gitea-runner-windows/Dockerfile` |
-| `k3s.yml`                  | `gsc-hub/k3s:<ts>-x86_64`                                                                         | ubuntu         | ✅ 周六 03:00 北京时间 | `k3s/Dockerfile`                  |
-| `dumbproxy.yml`            | `gsc-hub/dumbproxy:<ts>-x86_64`                                                                   | ubuntu         | ✅ 周六 03:00 北京时间 | `dumbproxy/Dockerfile`            |
-| `mirrorproxy.yml`          | `gsc-hub/mirrorproxy:<ts>-x86_64`                                                                 | ubuntu         | ✅ 周六 03:00 北京时间 | `mirrorproxy/Dockerfile`          |
-| `ttyd.yml`                 | `gsc-hub/ttyd:<ts>-x86_64`                                                                        | ubuntu         | ✅ 周六 03:00 北京时间 | `ttyd/Dockerfile`                 |
-| `audio-cpp.yml`            | `gsc-hub/audio-cpp:<ts>-x86_64`                                                                   | ubuntu         | ✅ 周六 03:00 北京时间 | `audio-cpp/Dockerfile`            |
-| `unbound.yml`              | `gsc-hub/unbound:<ts>-x86_64`                                                                     | ubuntu         | ✅ 周六 03:00 北京时间 | `unbound/Dockerfile`              |
-| `comfyui.yml`              | `gsc-hub/comfyui:<ts>-x86_64`                                                                     | pytorch        | ✅ 周六 03:00 北京时间 | `comfyui/Dockerfile`              |
+| `gitea-runner-ubuntu.yml`  | `gitea-runner-ubuntu` + 6 扩展 (jdk21 / jdk25 / graalvm-jdk21 / graalvm-jdk25 / jmeter / flutter) | ubuntu 双架构  | Gitea 触发 周六 03:00  | `gitea-runner-ubuntu/Dockerfile`  |
+| `gitea-runner-windows.yml` | `gitea-runner-windows` + flutter 扩展                                                             | windows        | Gitea 触发 周六 03:00  | `gitea-runner-windows/Dockerfile` |
+| `k3s.yml`                  | `gsc-hub/k3s:<ts>-x86_64`                                                                         | ubuntu         | Gitea 触发 周六 03:00  | `k3s/Dockerfile`                  |
+| `dumbproxy.yml`            | `gsc-hub/dumbproxy:<ts>-x86_64`                                                                   | ubuntu         | Gitea 触发 周六 03:00  | `dumbproxy/Dockerfile`            |
+| `mirrorproxy.yml`          | `gsc-hub/mirrorproxy:<ts>-x86_64`                                                                 | ubuntu         | Gitea 触发 周六 03:00  | `mirrorproxy/Dockerfile`          |
+| `ttyd.yml`                 | `gsc-hub/ttyd:<ts>-x86_64`                                                                        | ubuntu         | Gitea 触发 周六 03:00  | `ttyd/Dockerfile`                 |
+| `audio-cpp.yml`            | `gsc-hub/audio-cpp:<ts>-x86_64`                                                                   | ubuntu         | Gitea 触发 周六 03:00  | `audio-cpp/Dockerfile`            |
+| `unbound.yml`              | `gsc-hub/unbound:<ts>-x86_64`                                                                     | ubuntu         | Gitea 触发 周六 03:00  | `unbound/Dockerfile`              |
+| `comfyui.yml`              | `gsc-hub/comfyui:<ts>-x86_64`                                                                     | pytorch        | Gitea 触发 周六 03:00  | `comfyui/Dockerfile`              |
 
 > `gitea-runner-ubuntu.yml` 和 `gitea-runner-windows.yml` 内部已通过 `needs:` 保证 base 先于扩展构建。
 > `ubuntu.yml` 与 `gitea-runner-ubuntu.yml` 构建 x86_64 与 aarch64 双架构镜像，flutter 扩展仅 x86_64。
