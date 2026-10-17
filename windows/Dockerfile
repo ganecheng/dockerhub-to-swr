@@ -60,16 +60,26 @@ RUN choco install nuget.commandline -y --no-progress; `
     nuget help | Select-Object -First 1
 
 # 安装 ATL 组件（flutter_local_notifications_windows 等原生插件的 plugin.cpp 需要 atlbase.h）
+# 两个坑：① vs_installer.exe 是 GUI 子系统程序，PowerShell 的调用运算符不会等它结束（$LASTEXITCODE 保持为空，
+# 会误判为失败），必须用 Start-Process -Wait 阻塞到安装完成才能拿到真实退出码；
+# ② --wait 不是 modify 子命令的合法参数，传了会以 87（ERROR_INVALID_PARAMETER）直接退出
 RUN $vswhere = \"${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe\"; `
     $installPath = (& $vswhere -products * -all -property installationPath | Select-Object -First 1).Trim(); `
     if (-not $installPath) { throw '未找到 Visual Studio 安装路径' }; `
     Write-Host \"VS installPath: $installPath\"; `
     $installer = \"${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vs_installer.exe\"; `
     if (-not (Test-Path $installer)) { throw \"未找到 vs_installer.exe: $installer\" }; `
-    & $installer modify --installPath \"$installPath\" --add Microsoft.VisualStudio.Component.VC.ATL --quiet --norestart --wait; `
-    if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne 3010) { throw \"ATL 组件安装失败, 退出码 $LASTEXITCODE\" }; `
-    $atl = Get-ChildItem \"$installPath\VC\Tools\MSVC\*\atlmfc\include\atlbase.h\" -ErrorAction SilentlyContinue; `
-    if (-not $atl) { $atl = Get-ChildItem $installPath -Recurse -Filter atlbase.h -ErrorAction SilentlyContinue | Select-Object -First 1 }; `
+    $installArgs = 'modify --installPath \"{0}\" --add Microsoft.VisualStudio.Component.VC.ATL --quiet --norestart' -f $installPath; `
+    $proc = Start-Process -FilePath $installer -ArgumentList $installArgs -Wait -PassThru; `
+    Write-Host \"vs_installer 退出码: $($proc.ExitCode)\"; `
+    if ($proc.ExitCode -ne 0 -and $proc.ExitCode -ne 3010) { `
+      Get-ChildItem $env:TEMP -Filter 'dd_*.log' -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 1 | ForEach-Object { Write-Host \"--- $($_.Name)\"; Get-Content $_.FullName -Tail 30 -ErrorAction SilentlyContinue }; `
+      throw \"ATL 组件安装失败, 退出码 $($proc.ExitCode)\" }; `
+    $atl = $null; `
+    for ($i = 0; $i -lt 12 -and -not $atl; $i++) { `
+      $atl = Get-ChildItem \"$installPath\VC\Tools\MSVC\*\atlmfc\include\atlbase.h\" -ErrorAction SilentlyContinue; `
+      if (-not $atl) { Start-Sleep -Seconds 5 } `
+    }; `
     if (-not $atl) { throw 'ATL 安装后仍未找到 atlbase.h' } else { \"ATL: $($atl.FullName)\" }
 
 # 打印 VS Build Tools 相关组件版本，确认安装成功
