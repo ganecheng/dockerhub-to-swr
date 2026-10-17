@@ -59,6 +59,19 @@ RUN $env:GIT_CONFIG_NOSYSTEM=1; git config --system --unset-all include.path; $L
 RUN choco install nuget.commandline -y --no-progress; `
     nuget help | Select-Object -First 1
 
+# 安装 ATL 组件（flutter_local_notifications_windows 等原生插件的 plugin.cpp 需要 atlbase.h）
+RUN $vswhere = \"${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe\"; `
+    $installPath = (& $vswhere -products * -all -property installationPath | Select-Object -First 1).Trim(); `
+    if (-not $installPath) { throw '未找到 Visual Studio 安装路径' }; `
+    Write-Host \"VS installPath: $installPath\"; `
+    $installer = \"${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vs_installer.exe\"; `
+    if (-not (Test-Path $installer)) { throw \"未找到 vs_installer.exe: $installer\" }; `
+    & $installer modify --installPath \"$installPath\" --add Microsoft.VisualStudio.Component.VC.ATL --quiet --norestart --wait; `
+    if ($LASTEXITCODE -ne 0 -and $LASTEXITCODE -ne 3010) { throw \"ATL 组件安装失败, 退出码 $LASTEXITCODE\" }; `
+    $atl = Get-ChildItem \"$installPath\VC\Tools\MSVC\*\atlmfc\include\atlbase.h\" -ErrorAction SilentlyContinue; `
+    if (-not $atl) { $atl = Get-ChildItem $installPath -Recurse -Filter atlbase.h -ErrorAction SilentlyContinue | Select-Object -First 1 }; `
+    if (-not $atl) { throw 'ATL 安装后仍未找到 atlbase.h' } else { \"ATL: $($atl.FullName)\" }
+
 # 打印 VS Build Tools 相关组件版本，确认安装成功
 RUN $vswhere = \"${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe\"; `
     $installs = & $vswhere -products * -all -format json | ConvertFrom-Json; `
