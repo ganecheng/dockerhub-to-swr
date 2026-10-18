@@ -52,6 +52,15 @@ RUN choco install git -y --no-progress; `
     git --version; `
     bash -c 'echo Git Bash OK'
 
+# 启用 Win32 长路径（注册表；构建期写入随镜像层持久化），并让 git 支持长路径
+# 用途：自建 runner 的 workspace（C:\data\cache\actions\<hash>\hostexecutor）路径较深，
+#       上游构建钩子/解压与 git 操作都会受 MAX_PATH 限制
+RUN New-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem' `
+      -Name 'LongPathsEnabled' -Value 1 -PropertyType DWord -Force | Out-Null; `
+    git config --system core.longpaths true; `
+    (Get-ItemProperty -Path 'HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem' -Name 'LongPathsEnabled').LongPathsEnabled; `
+    git config --system --get core.longpaths
+
 # 移除可能导致循环引用的 system include.path；键不存在时 --unset-all 非零退出，需重置 $LASTEXITCODE
 RUN $env:GIT_CONFIG_NOSYSTEM=1; git config --system --unset-all include.path; $LASTEXITCODE = 0
 
