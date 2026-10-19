@@ -5,7 +5,7 @@ ARG BASE_ARCH=x86_64
 FROM ghcr.io/ganecheng/ubuntu:20261016_205652-${BASE_ARCH}
 
 # 构建参数：Gitea Runner 版本号
-ARG GITEA_RUNNER_VERSION=5.1.0
+ARG GITEA_RUNNER_VERSION=5.1.1
 # 构建参数：Docker 引擎版本号（静态二进制）
 ARG DOCKER_VERSION=28.5.2
 # 构建参数：Node.js 版本号
