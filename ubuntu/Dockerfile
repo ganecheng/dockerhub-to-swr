@@ -1,5 +1,5 @@
 # 基础镜像：Ubuntu 26.04 (resolute)
-FROM ubuntu:resolute-20260927
+FROM ubuntu:resolute-20261006
 
 # 环境变量：禁止 apt 交互式提示
 ENV DEBIAN_FRONTEND=noninteractive
