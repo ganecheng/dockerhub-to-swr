@@ -10,7 +10,7 @@
 
 | 组件                           | 版本                             | MAJOR 最新版本                 | MINOR 最新版本                 | PATCH 最新版本                 | 引用文件                                                                                                                                                                                          | 说明                                                                           |
 |--------------------------------|----------------------------------|--------------------------------|--------------------------------|--------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
-| Ubuntu (resolute)              | `resolute-20260927`              | `resolute-20261006`            | `resolute-20261006`            | `resolute-20261006`            | `ubuntu/Dockerfile`                                                                                                                                                                               | Ubuntu 26.04 基础镜像                                                          |
+| Ubuntu (resolute)              | `resolute-20261006`              | `resolute-20261006` (已是最新) | `resolute-20261006` (已是最新) | `resolute-20261006` (已是最新) | `ubuntu/Dockerfile`                                                                                                                                                                               | Ubuntu 26.04 基础镜像                                                          |
 | pytorch/pytorch                | `2.14.1-cuda13.2-cudnn9-runtime` | `2.14.1` (已是最新)            | `2.14.1` (已是最新)            | `2.14.1` (已是最新)            | `pytorch/Dockerfile`                                                                                                                                                                              | PyTorch 官方运行时基础镜像 (Ubuntu 24.04 + Python 3.12 + torch/CUDA 13.2 预装) |
 | Windows Server Core (ltsc2025) | `ltsc2025`                       | `ltsc2025` (已是最新)          | `ltsc2025` (已是最新)          | `ltsc2025` (已是最新)          | `windows/Dockerfile` (via `amitie10g/visualstudio2022-workload-vctools`)                                                                                                                          | Windows 构建基础镜像                                                           |
 | 自建 Ubuntu 镜像               | `20261016_205652`                | -                              | -                              | -                              | `k3s/Dockerfile`, `dumbproxy/Dockerfile`, `mirrorproxy/Dockerfile`, `download_file/Dockerfile`, `gitea-runner-ubuntu/Dockerfile`, `ttyd/Dockerfile`, `audio-cpp/Dockerfile`, `unbound/Dockerfile` | 基于 `ubuntu/Dockerfile` 构建的内部镜像 (x86_64 / aarch64 双架构)              |
@@ -43,7 +43,7 @@
 
 | 组件         | 版本      | MAJOR 最新版本      | MINOR 最新版本       | PATCH 最新版本       | 引用文件                                                            | 说明                  |
 |--------------|-----------|---------------------|----------------------|----------------------|---------------------------------------------------------------------|-----------------------|
-| Gitea Runner | `5.1.0`   | `5.1.1`             | `5.1.1`              | `5.1.1`              | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | CI/CD Runner          |
+| Gitea Runner | `5.1.1`   | `5.1.1` (已是最新)  | `5.1.1` (已是最新)   | `5.1.1` (已是最新)   | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | CI/CD Runner          |
 | Node.js      | `24.22.0` | `26.12.0`           | `24.22.0` (已是最新) | `24.22.0` (已是最新) | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | JavaScript 运行时     |
 | Qwen Code    | `0.25.2`  | `0.25.2` (已是最新) | `0.25.2` (已是最新)  | `0.25.2` (已是最新)  | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | 终端 AI 编码助手      |
 | kubectl      | `1.37.1`  | `1.37.1` (已是最新) | `1.37.1` (已是最新)  | `1.37.1` (已是最新)  | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 命令行工具 |
@@ -120,7 +120,7 @@
 
 | 项目    | 仓库                | Commit    | MAJOR 最新版本       | MINOR 最新版本       | PATCH 最新版本       | 引用文件          | 说明              |
 |---------|---------------------|-----------|----------------------|----------------------|----------------------|-------------------|-------------------|
-| ComfyUI | `Comfy-Org/ComfyUI` | `v0.41.0` | `v0.42.1`            | `v0.42.1`            | `v0.41.0` (已是最新) | `comfyui/code.sh` | AI 图像生成工作流 |
+| ComfyUI | `Comfy-Org/ComfyUI` | `v0.42.1` | `v0.42.1` (已是最新) | `v0.42.1` (已是最新) | `v0.42.1` (已是最新) | `comfyui/code.sh` | AI 图像生成工作流 |
 
 ---
 
