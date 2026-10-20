@@ -2,7 +2,7 @@
 
 > 本文件统计本仓库中所有 Dockerfile、GitHub Actions workflow 和 shell 脚本引用的开源组件版本号。
 >
-> 最后更新：2026-10-19
+> 最后更新：2026-10-21
 
 ---
 
@@ -13,7 +13,7 @@
 | Ubuntu (resolute)              | `resolute-20261006`              | `resolute-20261006` (已是最新) | `resolute-20261006` (已是最新) | `resolute-20261006` (已是最新) | `ubuntu/Dockerfile`                                                                                                                                                                               | Ubuntu 26.04 基础镜像                                                          |
 | pytorch/pytorch                | `2.14.1-cuda13.2-cudnn9-runtime` | `2.14.1` (已是最新)            | `2.14.1` (已是最新)            | `2.14.1` (已是最新)            | `pytorch/Dockerfile`                                                                                                                                                                              | PyTorch 官方运行时基础镜像 (Ubuntu 24.04 + Python 3.12 + torch/CUDA 13.2 预装) |
 | Windows Server Core (ltsc2025) | `ltsc2025`                       | `ltsc2025` (已是最新)          | `ltsc2025` (已是最新)          | `ltsc2025` (已是最新)          | `windows/Dockerfile` (via `amitie10g/visualstudio2022-workload-vctools`)                                                                                                                          | Windows 构建基础镜像                                                           |
-| 自建 Ubuntu 镜像               | `20261016_205652`                | -                              | -                              | -                              | `k3s/Dockerfile`, `dumbproxy/Dockerfile`, `mirrorproxy/Dockerfile`, `download_file/Dockerfile`, `gitea-runner-ubuntu/Dockerfile`, `ttyd/Dockerfile`, `audio-cpp/Dockerfile`, `unbound/Dockerfile` | 基于 `ubuntu/Dockerfile` 构建的内部镜像 (x86_64 / aarch64 双架构)              |
+| 自建 Ubuntu 镜像               | `20261019_145148`                | -                              | -                              | -                              | `k3s/Dockerfile`, `dumbproxy/Dockerfile`, `mirrorproxy/Dockerfile`, `download_file/Dockerfile`, `gitea-runner-ubuntu/Dockerfile`, `ttyd/Dockerfile`, `audio-cpp/Dockerfile`, `unbound/Dockerfile` | 基于 `ubuntu/Dockerfile` 构建的内部镜像 (x86_64 / aarch64 双架构)              |
 | 自建 Windows 镜像              | `20261018_144711`                | -                              | -                              | -                              | `gitea-runner-windows/Dockerfile`, `gitea-runner-windows/Dockerfile.flutter`                                                                                                                      | 基于 `windows/Dockerfile` 构建的内部镜像                                       |
 | 自建 PyTorch 镜像              | `20261016_205705`                | -                              | -                              | -                              | `comfyui/Dockerfile`                                                                                                                                                                              | 基于 `pytorch/Dockerfile` 构建的内部镜像                                       |
 
@@ -31,7 +31,7 @@
 | skopeo          | apt 默认最新    | -                   | -                          | -                          | `ubuntu/Dockerfile`                                                                                                    | 镜像同步工具                           |
 | yq              | apt 默认最新    | -                   | -                          | -                          | `ubuntu/Dockerfile`                                                                                                    | YAML 处理工具                          |
 | dumbproxy       | `1.52.1`        | `1.52.1` (已是最新) | `1.52.1` (已是最新)        | `1.52.1` (已是最新)        | `dumbproxy/Dockerfile`                                                                                                 | 轻量 HTTP 代理                         |
-| MirrorProxy     | `1.4.3`         | `1.4.3` (已是最新)  | `1.4.3` (已是最新)         | `1.4.3` (已是最新)         | `mirrorproxy/Dockerfile`                                                                                               | 自部署镜像代理平台                     |
+| MirrorProxy     | `1.4.3`         | `1.4.4`             | `1.4.4`                    | `1.4.4`                    | `mirrorproxy/Dockerfile`                                                                                               | 自部署镜像代理平台                     |
 | ttyd            | `1.7.7`         | `1.7.7` (已是最新)  | `1.7.7` (已是最新)         | `1.7.7` (已是最新)         | `ttyd/Dockerfile`                                                                                                      | Web 终端共享工具                       |
 | audio.cpp       | `v0.9.2`        | `v0.9.2` (已是最新) | `v0.9.2` (已是最新)        | `v0.9.2` (已是最新)        | `audio-cpp/Dockerfile`                                                                                                 | 语音 AI 推理服务 (Vulkan 预编译二进制) |
 | unbound         | apt 默认最新    | -                   | -                          | -                          | `unbound/Dockerfile`                                                                                                   | 验证性递归缓存 DNS 解析器              |
@@ -45,7 +45,7 @@
 |--------------|-----------|---------------------|----------------------|----------------------|---------------------------------------------------------------------|-----------------------|
 | Gitea Runner | `5.1.1`   | `5.1.1` (已是最新)  | `5.1.1` (已是最新)   | `5.1.1` (已是最新)   | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | CI/CD Runner          |
 | Node.js      | `24.22.0` | `26.12.0`           | `24.22.0` (已是最新) | `24.22.0` (已是最新) | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | JavaScript 运行时     |
-| Qwen Code    | `0.25.2`  | `0.25.2` (已是最新) | `0.25.2` (已是最新)  | `0.25.2` (已是最新)  | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | 终端 AI 编码助手      |
+| Qwen Code    | `0.25.2`  | `0.25.3`            | `0.25.3`             | `0.25.3`             | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | 终端 AI 编码助手      |
 | kubectl      | `1.37.1`  | `1.37.1` (已是最新) | `1.37.1` (已是最新)  | `1.37.1` (已是最新)  | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 命令行工具 |
 | Helm         | `4.3.1`   | `4.3.1` (已是最新)  | `4.3.1` (已是最新)   | `4.3.1` (已是最新)   | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 包管理器   |
 
@@ -90,6 +90,7 @@
 | Chocolatey              | latest                | -                     | -                     | -                     | `windows/Dockerfile`                     | Windows 包管理器                            |
 | Python 3 (Chocolatey)   | latest                | -                     | -                     | -                     | `gitea-runner-windows/Dockerfile`        | 供 fmt_stream.py 使用                       |
 | VS Build Tools 2022     | 17 release            | 17 release (已是最新) | 17 release (已是最新) | 17 release (已是最新) | `windows/Dockerfile`                     | Visual Studio Build Tools                   |
+| ATL (VS 2022 组件)      | latest                | -                     | -                     | -                     | `windows/Dockerfile`                     | 原生插件编译依赖 (atlbase.h)                |
 | MSVC v143               | latest (VS 2022)      | -                     | -                     | -                     | `windows/Dockerfile`                     | C/C++ 编译器工具链                          |
 | Windows SDK             | latest (VS 2022 安装) | -                     | -                     | -                     | `windows/Dockerfile`                     | 通过 VS Build Tools 安装                    |
 | CMake                   | latest (VS 内置)      | -                     | -                     | -                     | `windows/Dockerfile`                     | C/C++ 构建系统                              |
@@ -214,6 +215,9 @@
 - **PATCH 最新版本**：当前使用的次版本线（major.minor）内的最新发布版本。
 - 标注为 "-" 的组件使用 "latest" 或 "apt 默认最新" 策略，无需手动跟踪版本。
 - 标注为 "已是最新" 表示当前版本即为该版本线的最新版本。
+- 「版本」列为代码库当前锁定的值，三个「最新版本」列为上游对应版本线的最新 GA；
+  两者不一致的行（如 MirrorProxy、Qwen Code）需手动修改对应 Dockerfile 的
+  `ARG` / `ENV` 才能升级，版本号不会自动跟进。
 - 标注为 "apt 默认最新" 的组件未锁定具体版本号，随 Ubuntu 仓库更新而变化。
 - `audio.cpp` 上游最新 Release 为模型变体 tag
   `v0.9.2-drama3-base-small`，与应用版本线 `v0.9.2` 同源，故「版本」列
