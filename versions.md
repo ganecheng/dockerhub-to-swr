@@ -2,7 +2,7 @@
 
 > 本文件统计本仓库中所有 Dockerfile、GitHub Actions workflow 和 shell 脚本引用的开源组件版本号。
 >
-> 最后更新：2026-10-21
+> 最后更新：2026-10-23
 
 ---
 
@@ -23,15 +23,15 @@
 
 | 组件            | 版本            | MAJOR 最新版本      | MINOR 最新版本             | PATCH 最新版本             | 引用文件                                                                                                               | 说明                                   |
 |-----------------|-----------------|---------------------|----------------------------|----------------------------|------------------------------------------------------------------------------------------------------------------------|----------------------------------------|
-| Docker CE       | `28.5.2`        | `29.9.1`            | `28.5.2` (已是最新)        | `28.5.2` (已是最新)        | `gitea-runner-ubuntu/Dockerfile` (静态二进制), 各 workflow (`docker/setup-docker-action@v5` with `version: 'v28.5.2'`) | 容器引擎 (28.x 已被 29.x 取代)         |
+| Docker CE       | `28.5.2`        | `29.9.2`            | `28.5.2` (已是最新)        | `28.5.2` (已是最新)        | `gitea-runner-ubuntu/Dockerfile` (静态二进制), 各 workflow (`docker/setup-docker-action@v5` with `version: 'v28.5.2'`) | 容器引擎 (28.x 已被 29.x 取代)         |
 | Docker CE (apt) | apt 默认最新    | -                   | -                          | -                          | `k3s/Dockerfile`                                                                                                       | 通过 Docker 官方 APT 源安装            |
 | containerd.io   | apt 默认最新    | -                   | -                          | -                          | `k3s/Dockerfile`                                                                                                       | Docker CE 运行依赖                     |
 | k3s             | `v1.34.12+k3s1` | `v1.37.1+k3s1`      | `v1.34.12+k3s1` (已是最新) | `v1.34.12+k3s1` (已是最新) | `k3s/Dockerfile`                                                                                                       | 轻量级 Kubernetes 发行版               |
 | tini            | apt 默认最新    | -                   | -                          | -                          | `ubuntu/Dockerfile`                                                                                                    | PID 1 进程管理                         |
 | skopeo          | apt 默认最新    | -                   | -                          | -                          | `ubuntu/Dockerfile`                                                                                                    | 镜像同步工具                           |
 | yq              | apt 默认最新    | -                   | -                          | -                          | `ubuntu/Dockerfile`                                                                                                    | YAML 处理工具                          |
-| dumbproxy       | `1.52.1`        | `1.52.1` (已是最新) | `1.52.1` (已是最新)        | `1.52.1` (已是最新)        | `dumbproxy/Dockerfile`                                                                                                 | 轻量 HTTP 代理                         |
-| MirrorProxy     | `1.4.4`         | `1.4.4` (已是最新)  | `1.4.4` (已是最新)         | `1.4.4` (已是最新)         | `mirrorproxy/Dockerfile`                                                                                               | 自部署镜像代理平台                     |
+| dumbproxy       | `1.52.1`        | `1.52.2`            | `1.52.2`                   | `1.52.2`                   | `dumbproxy/Dockerfile`                                                                                                 | 轻量 HTTP 代理                         |
+| MirrorProxy     | `1.4.4`         | `1.6.0`             | `1.6.0`                    | `1.4.4` (已是最新)         | `mirrorproxy/Dockerfile`                                                                                               | 自部署镜像代理平台                     |
 | ttyd            | `1.7.7`         | `1.7.7` (已是最新)  | `1.7.7` (已是最新)         | `1.7.7` (已是最新)         | `ttyd/Dockerfile`                                                                                                      | Web 终端共享工具                       |
 | audio.cpp       | `v0.9.2`        | `v0.9.2` (已是最新) | `v0.9.2` (已是最新)        | `v0.9.2` (已是最新)        | `audio-cpp/Dockerfile`                                                                                                 | 语音 AI 推理服务 (Vulkan 预编译二进制) |
 | unbound         | apt 默认最新    | -                   | -                          | -                          | `unbound/Dockerfile`                                                                                                   | 验证性递归缓存 DNS 解析器              |
@@ -43,9 +43,9 @@
 
 | 组件         | 版本      | MAJOR 最新版本      | MINOR 最新版本       | PATCH 最新版本       | 引用文件                                                            | 说明                  |
 |--------------|-----------|---------------------|----------------------|----------------------|---------------------------------------------------------------------|-----------------------|
-| Gitea Runner | `5.1.1`   | `5.1.1` (已是最新)  | `5.1.1` (已是最新)   | `5.1.1` (已是最新)   | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | CI/CD Runner          |
-| Node.js      | `24.22.0` | `26.12.0`           | `24.22.0` (已是最新) | `24.22.0` (已是最新) | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | JavaScript 运行时     |
-| Qwen Code    | `0.25.3`  | `0.25.3` (已是最新) | `0.25.3` (已是最新)  | `0.25.3` (已是最新)  | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | 终端 AI 编码助手      |
+| Gitea Runner | `5.1.1`   | `5.2.0`             | `5.2.0`              | `5.1.1` (已是最新)   | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | CI/CD Runner          |
+| Node.js      | `24.22.0` | `26.12.1`           | `24.22.1` (已是最新) | `24.22.1` (已是最新) | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | JavaScript 运行时     |
+| Qwen Code    | `0.25.3`  | `0.26.0`            | `0.26.0`             | `0.25.3` (已是最新)  | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | 终端 AI 编码助手      |
 | kubectl      | `1.37.1`  | `1.37.1` (已是最新) | `1.37.1` (已是最新)  | `1.37.1` (已是最新)  | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 命令行工具 |
 | Helm         | `4.3.1`   | `4.3.1` (已是最新)  | `4.3.1` (已是最新)   | `4.3.1` (已是最新)   | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 包管理器   |
 
@@ -130,7 +130,7 @@
 | Action                       | 版本 | MAJOR 最新版本      | MINOR 最新版本      | PATCH 最新版本      | 引用文件                    | 说明              |
 |------------------------------|------|---------------------|---------------------|---------------------|-----------------------------|-------------------|
 | `actions/checkout`           | `v7` | `v7.0.1` (已是最新) | `v7.0.1` (已是最新) | `v7.0.1` (已是最新) | 全部 workflow               | 代码检出          |
-| `docker/setup-docker-action` | `v5` | `v5.5.0` (已是最新) | `v5.5.0` (已是最新) | `v5.5.0` (已是最新) | 全部 workflow               | Docker 环境初始化 |
+| `docker/setup-docker-action` | `v5` | `v5.6.0` (已是最新) | `v5.6.0` (已是最新) | `v5.6.0` (已是最新) | 全部 workflow               | Docker 环境初始化 |
 | `docker/login-action`        | `v4` | `v4.6.0` (已是最新) | `v4.6.0` (已是最新) | `v4.6.0` (已是最新) | 全部需登录 ghcr 的 workflow | 容器仓库登录      |
 | `actions/upload-artifact`    | `v7` | `v7.0.2` (已是最新) | `v7.0.2` (已是最新) | `v7.0.2` (已是最新) | `issue-sync-image.yml`      | 构建产物上传      |
 
@@ -216,7 +216,7 @@
 - 标注为 "-" 的组件使用 "latest" 或 "apt 默认最新" 策略，无需手动跟踪版本。
 - 标注为 "已是最新" 表示当前版本即为该版本线的最新版本。
 - 「版本」列为代码库当前锁定的值，三个「最新版本」列为上游对应版本线的最新 GA；
-  两者不一致的行（如 MirrorProxy、Qwen Code）需手动修改对应 Dockerfile 的
+  两者不一致的行（如 dumbproxy、MirrorProxy、Qwen Code）需手动修改对应 Dockerfile 的
   `ARG` / `ENV` 才能升级，版本号不会自动跟进。
 - 标注为 "apt 默认最新" 的组件未锁定具体版本号，随 Ubuntu 仓库更新而变化。
 - `audio.cpp` 上游最新 Release 为模型变体 tag
