@@ -85,8 +85,7 @@ RUN git clone --depth 1 --branch ${FLUTTER_VERSION} https://github.com/flutter/f
     && flutter precache --android
 
 # 全局禁用 Gradle Daemon（容器内 daemon fork 会导致构建死锁）
-# 降低 JVM 堆上限避免容器 OOM
 RUN mkdir -p /root/.gradle \
-    && printf 'org.gradle.daemon=false\norg.gradle.jvmargs=-Xmx8096m\n' > /root/.gradle/gradle.properties
+    && printf 'org.gradle.daemon=false\n' > /root/.gradle/gradle.properties
 
 ENV GITEA_RUNNER_LABELS_DEFAULT="ubuntu${ARCH_SUFFIX}-latest,ubuntu${ARCH_SUFFIX}-26.04,ubuntu${ARCH_SUFFIX}-flutter"
