@@ -60,6 +60,9 @@ RUN sdkmanager "build-tools;36.1.0" \
 RUN sdkmanager "ndk;30.0.16248370" \
     && rm -rf ${ANDROID_SDK_ROOT}/.temp ${ANDROID_SDK_ROOT}/.knownPackages
 
+RUN sdkmanager "ndk;28.2.13676358" \
+    && rm -rf ${ANDROID_SDK_ROOT}/.temp ${ANDROID_SDK_ROOT}/.knownPackages
+
 RUN sdkmanager "cmake;3.22.1" \
     && rm -rf ${ANDROID_SDK_ROOT}/.temp ${ANDROID_SDK_ROOT}/.knownPackages
 
