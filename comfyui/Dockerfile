@@ -1,4 +1,4 @@
-FROM ghcr.io/ganecheng/pytorch:20261016_205705-x86_64
+FROM ghcr.io/ganecheng/pytorch:20261023_150132-x86_64
 
 COPY comfyui/os_init.sh /os_init.sh
 COPY comfyui/os_clean.sh /os_clean.sh
