@@ -3,9 +3,9 @@
 # 基于 windows（Windows Server Core + VS Build Tools + Git + NuGet）追加 Node.js + Qwen Code + Gitea Runner
 FROM ghcr.io/ganecheng/windows:20261018_144711-x86_64
 
-ENV GITEA_RUNNER_VERSION=5.1.1 `
-    NODE_VERSION=24.22.0 `
-    QWEN_CODE_VERSION=0.25.3
+ENV GITEA_RUNNER_VERSION=5.2.2 `
+    NODE_VERSION=24.22.1 `
+    QWEN_CODE_VERSION=0.26.0
 
 # 安装目录
 ENV NODE_HOME="C:\Program Files\nodejs" `
