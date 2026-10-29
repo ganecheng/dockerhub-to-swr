@@ -2,20 +2,20 @@
 
 > 本文件统计本仓库中所有 Dockerfile、GitHub Actions workflow 和 shell 脚本引用的开源组件版本号。
 >
-> 最后更新：2026-10-28
+> 最后更新：2026-10-30
 
 ---
 
 ## 1. 基础镜像
 
-| 组件                           | 版本                             | MAJOR 最新版本                 | MINOR 最新版本                 | PATCH 最新版本                 | 查询地址                                                                     | 引用文件                                                                                                                                                                                          | 说明                                                                           |
-|--------------------------------|----------------------------------|--------------------------------|--------------------------------|--------------------------------|------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
-| Ubuntu (resolute)              | `resolute-20261024.1`           | `resolute-20261024.1` (已是最新) | `resolute-20261024.1` (已是最新) | `resolute-20261024.1` (已是最新) | https://github.com/docker-library/official-images/blob/master/library/ubuntu | `ubuntu/Dockerfile`                                                                                                                                                                               | Ubuntu 26.04 基础镜像                                                          |
-| pytorch/pytorch                | `2.14.1-cuda13.2-cudnn9-runtime` | `2.14.1` (已是最新)            | `2.14.1` (已是最新)            | `2.14.1` (已是最新)            | https://github.com/pytorch/pytorch/releases                                  | `pytorch/Dockerfile`                                                                                                                                                                              | PyTorch 官方运行时基础镜像 (Ubuntu 24.04 + Python 3.12 + torch/CUDA 13.2 预装) |
-| Windows Server Core (ltsc2025) | `ltsc2025`                       | `ltsc2025` (已是最新)          | `ltsc2025` (已是最新)          | `ltsc2025` (已是最新)          | https://hub.docker.com/r/amitie10g/visualstudio2022-workload-vctools/tags    | `windows/Dockerfile` (via `amitie10g/visualstudio2022-workload-vctools`)                                                                                                                          | Windows 构建基础镜像                                                           |
-| 自建 Ubuntu 镜像               | `20261023_150110`                | -                              | -                              | -                              | https://github.com/users/ganecheng/packages/container/package/ubuntu         | `k3s/Dockerfile`, `dumbproxy/Dockerfile`, `mirrorproxy/Dockerfile`, `download_file/Dockerfile`, `gitea-runner-ubuntu/Dockerfile`, `ttyd/Dockerfile`, `audio-cpp/Dockerfile`, `unbound/Dockerfile` | 基于 `ubuntu/Dockerfile` 构建的内部镜像 (x86_64 / aarch64 双架构)              |
-| 自建 Windows 镜像              | `20261023_150120`                | -                              | -                              | -                              | https://github.com/users/ganecheng/packages/container/package/windows        | `gitea-runner-windows/Dockerfile`, `gitea-runner-windows/Dockerfile.flutter`                                                                                                                      | 基于 `windows/Dockerfile` 构建的内部镜像                                       |
-| 自建 PyTorch 镜像              | `20261023_150132`                | -                              | -                              | -                              | https://github.com/users/ganecheng/packages/container/package/pytorch        | `comfyui/Dockerfile`                                                                                                                                                                              | 基于 `pytorch/Dockerfile` 构建的内部镜像                                       |
+| 组件                           | 版本                             | MAJOR 最新版本                   | MINOR 最新版本                   | PATCH 最新版本                   | 查询地址                                                                     | 引用文件                                                                                                                                                                                          | 说明                                                                           |
+|--------------------------------|----------------------------------|----------------------------------|----------------------------------|----------------------------------|------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
+| Ubuntu (resolute)              | `resolute-20261024.1`            | `resolute-20261024.1` (已是最新) | `resolute-20261024.1` (已是最新) | `resolute-20261024.1` (已是最新) | https://github.com/docker-library/official-images/blob/master/library/ubuntu | `ubuntu/Dockerfile`                                                                                                                                                                               | Ubuntu 26.04 基础镜像                                                          |
+| pytorch/pytorch                | `2.14.1-cuda13.2-cudnn9-runtime` | `2.15.0`                         | `2.14.1` (已是最新)              | `2.14.1` (已是最新)              | https://github.com/pytorch/pytorch/releases                                  | `pytorch/Dockerfile`                                                                                                                                                                              | PyTorch 官方运行时基础镜像 (Ubuntu 24.04 + Python 3.12 + torch/CUDA 13.2 预装) |
+| Windows Server Core (ltsc2025) | `ltsc2025`                       | `ltsc2025` (已是最新)            | `ltsc2025` (已是最新)            | `ltsc2025` (已是最新)            | https://hub.docker.com/r/amitie10g/visualstudio2022-workload-vctools/tags    | `windows/Dockerfile` (via `amitie10g/visualstudio2022-workload-vctools`)                                                                                                                          | Windows 构建基础镜像                                                           |
+| 自建 Ubuntu 镜像               | `20261028_151145`                | -                                | -                                | -                                | https://github.com/users/ganecheng/packages/container/package/ubuntu         | `k3s/Dockerfile`, `dumbproxy/Dockerfile`, `mirrorproxy/Dockerfile`, `download_file/Dockerfile`, `gitea-runner-ubuntu/Dockerfile`, `ttyd/Dockerfile`, `audio-cpp/Dockerfile`, `unbound/Dockerfile` | 基于 `ubuntu/Dockerfile` 构建的内部镜像 (x86_64 / aarch64 双架构)              |
+| 自建 Windows 镜像              | `20261028_151326`                | -                                | -                                | -                                | https://github.com/users/ganecheng/packages/container/package/windows        | `gitea-runner-windows/Dockerfile` (`Dockerfile.flutter` / `Dockerfile.godot` 经 `BASE_IMAGE` 继承)                                                                                                | 基于 `windows/Dockerfile` 构建的内部镜像                                       |
+| 自建 PyTorch 镜像              | `20261023_150132`                | -                                | -                                | -                                | https://github.com/users/ganecheng/packages/container/package/pytorch        | `comfyui/Dockerfile`                                                                                                                                                                              | 基于 `pytorch/Dockerfile` 构建的内部镜像                                       |
 
 ---
 
@@ -31,7 +31,7 @@
 | skopeo          | apt 默认最新    | -                   | -                          | -                          | -                                                       | `ubuntu/Dockerfile`                                                                                                    | 镜像同步工具                           |
 | yq              | apt 默认最新    | -                   | -                          | -                          | -                                                       | `ubuntu/Dockerfile`                                                                                                    | YAML 处理工具                          |
 | dumbproxy       | `1.52.2`        | `1.52.2` (已是最新) | `1.52.2` (已是最新)        | `1.52.2` (已是最新)        | https://github.com/SenseUnit/dumbproxy/releases         | `dumbproxy/Dockerfile`                                                                                                 | 轻量 HTTP 代理                         |
-| MirrorProxy     | `1.7.0`         | `1.7.0` (已是最新)  | `1.7.0` (已是最新)         | `1.7.0` (已是最新)         | https://github.com/inbjo/MirrorProxy/releases           | `mirrorproxy/Dockerfile`                                                                                               | 自部署镜像代理平台                     |
+| MirrorProxy     | `1.7.0`         | `1.7.1`             | `1.7.1`                    | `1.7.1`                    | https://github.com/inbjo/MirrorProxy/releases           | `mirrorproxy/Dockerfile`                                                                                               | 自部署镜像代理平台                     |
 | ttyd            | `1.7.7`         | `1.7.7` (已是最新)  | `1.7.7` (已是最新)         | `1.7.7` (已是最新)         | https://github.com/tsl0922/ttyd/releases                | `ttyd/Dockerfile`                                                                                                      | Web 终端共享工具                       |
 | audio.cpp       | `v0.9.3`        | `v0.9.3` (已是最新) | `v0.9.3` (已是最新)        | `v0.9.3` (已是最新)        | https://github.com/0xShug0/audio.cpp/releases           | `audio-cpp/Dockerfile`                                                                                                 | 语音 AI 推理服务 (Vulkan 预编译二进制) |
 | unbound         | apt 默认最新    | -                   | -                          | -                          | -                                                       | `unbound/Dockerfile`                                                                                                   | 验证性递归缓存 DNS 解析器              |
@@ -41,13 +41,13 @@
 
 ## 3. Gitea Runner & CI/CD 工具
 
-| 组件         | 版本      | MAJOR 最新版本      | MINOR 最新版本       | PATCH 最新版本       | 查询地址                                        | 引用文件                                                            | 说明                  |
-|--------------|-----------|---------------------|----------------------|----------------------|-------------------------------------------------|---------------------------------------------------------------------|-----------------------|
-| Gitea Runner | `5.2.3`   | `5.2.3` (已是最新)  | `5.2.3` (已是最新)   | `5.2.3` (已是最新)   | https://gitea.com/gitea/runner/releases         | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | CI/CD Runner          |
-| Node.js      | `24.22.1` | `26.12.1`           | `24.22.1` (已是最新) | `24.22.1` (已是最新) | https://nodejs.org/dist/index.json              | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | JavaScript 运行时     |
-| Qwen Code    | `0.26.2`  | `0.26.2` (已是最新) | `0.26.2` (已是最新)  | `0.26.2` (已是最新)  | https://registry.npmjs.org/@qwen-code/qwen-code | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | 终端 AI 编码助手      |
-| kubectl      | `1.37.1`  | `1.37.1` (已是最新) | `1.37.1` (已是最新)  | `1.37.1` (已是最新)  | https://dl.k8s.io/release/stable.txt            | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 命令行工具 |
-| Helm         | `4.3.1`   | `4.3.1` (已是最新)  | `4.3.1` (已是最新)   | `4.3.1` (已是最新)   | https://github.com/helm/helm/releases           | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 包管理器   |
+| 组件         | 版本      | MAJOR 最新版本     | MINOR 最新版本     | PATCH 最新版本     | 查询地址                                        | 引用文件                                                            | 说明                  |
+|--------------|-----------|--------------------|--------------------|--------------------|-------------------------------------------------|---------------------------------------------------------------------|-----------------------|
+| Gitea Runner | `5.2.3`   | `5.2.4`            | `5.2.4`            | `5.2.4`            | https://gitea.com/gitea/runner/releases         | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | CI/CD Runner          |
+| Node.js      | `24.22.1` | `26.13.0`          | `24.22.2`          | `24.22.2`          | https://nodejs.org/dist/index.json              | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | JavaScript 运行时     |
+| Qwen Code    | `0.26.2`  | `0.26.4`           | `0.26.4`           | `0.26.4`           | https://registry.npmjs.org/@qwen-code/qwen-code | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | 终端 AI 编码助手      |
+| kubectl      | `1.37.1`  | `1.37.2`           | `1.37.2`           | `1.37.2`           | https://dl.k8s.io/release/stable.txt            | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 命令行工具 |
+| Helm         | `4.3.1`   | `4.3.1` (已是最新) | `4.3.1` (已是最新) | `4.3.1` (已是最新) | https://github.com/helm/helm/releases           | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 包管理器   |
 
 ---
 
@@ -66,50 +66,60 @@
 
 ## 5. Flutter & Android SDK
 
-| 组件                       | 版本            | MAJOR 最新版本             | MINOR 最新版本             | PATCH 最新版本             | 查询地址                                                                          | 引用文件                                                                                                                       | 说明                   |
-|----------------------------|-----------------|----------------------------|----------------------------|----------------------------|-----------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|------------------------|
-| Flutter SDK                | `3.47.8`        | `3.47.8` (已是最新)        | `3.47.8` (已是最新)        | `3.47.8` (已是最新)        | https://storage.googleapis.com/flutter_infra_release/releases/releases_linux.json | `gitea-runner-ubuntu/Dockerfile.flutter`, `gitea-runner-windows/Dockerfile.flutter`, `gitea-runner-windows/modules/flutter.sh` | Flutter 跨平台框架     |
-| Android Command-line Tools | `16111833`      | `16111833` (已是最新)      | `16111833` (已是最新)      | `16111833` (已是最新)      | https://dl.google.com/android/repository/repository2-3.xml                        | `gitea-runner-ubuntu/Dockerfile.flutter`                                                                                       | Android SDK 命令行工具 |
-| Android Platform Tools     | latest          | -                          | -                          | -                          | https://dl.google.com/android/repository/repository2-3.xml                        | `gitea-runner-ubuntu/Dockerfile.flutter`                                                                                       | ADB 等平台工具         |
-| Android SDK Platform 37    | API 37.2        | API 37.2 (已是最新)        | API 37.2 (已是最新)        | API 37.2 (已是最新)        | https://dl.google.com/android/repository/repository2-3.xml                        | `gitea-runner-ubuntu/Dockerfile.flutter`                                                                                       | Android 37 编译平台    |
-| Android SDK Platform 36    | API 36.1        | API 37.2                   | API 36.1 (已是最新)        | API 36.1 (已是最新)        | https://dl.google.com/android/repository/repository2-3.xml                        | `gitea-runner-ubuntu/Dockerfile.flutter`                                                                                       | Android 36 编译平台    |
-| Android SDK Platform 35    | API 35          | API 37.2                   | API 35 (已是最新)          | API 35 (已是最新)          | https://dl.google.com/android/repository/repository2-3.xml                        | `gitea-runner-ubuntu/Dockerfile.flutter`                                                                                       | Android 35 编译平台    |
-| Android Build Tools 37     | `37.0.0`        | `37.0.0` (已是最新)        | `37.0.0` (已是最新)        | `37.0.0` (已是最新)        | https://dl.google.com/android/repository/repository2-3.xml                        | `gitea-runner-ubuntu/Dockerfile.flutter`                                                                                       | Android 构建工具       |
-| Android Build Tools 36     | `36.1.0`        | `37.0.0`                   | `36.1.0` (已是最新)        | `36.1.0` (已是最新)        | https://dl.google.com/android/repository/repository2-3.xml                        | `gitea-runner-ubuntu/Dockerfile.flutter`                                                                                       | Android 构建工具       |
-| Android Build Tools 35     | `35.0.1`        | `37.0.0`                   | `35.0.1` (已是最新)        | `35.0.1` (已是最新)        | https://dl.google.com/android/repository/repository2-3.xml                        | `gitea-runner-ubuntu/Dockerfile.flutter`                                                                                       | Android 构建工具       |
-| Android NDK 30             | `30.0.16248370` | `30.0.16248370` (已是最新) | `30.0.16248370` (已是最新) | `30.0.16248370` (已是最新) | https://dl.google.com/android/repository/repository2-3.xml                        | `gitea-runner-ubuntu/Dockerfile.flutter`                                                                                       | Android NDK r30        |
-| Android NDK 28             | `28.2.13676358` | `30.0.16248370` (r30)      | `28.2.13676358` (已是最新) | `28.2.13676358` (已是最新) | https://dl.google.com/android/repository/repository2-3.xml                        | `gitea-runner-ubuntu/Dockerfile.flutter`                                                                                       | Android NDK r28        |
-| Android CMake              | `3.22.1`        | `4.1.2`                    | `3.31.6`                   | `3.22.1` (已是最新)        | https://dl.google.com/android/repository/repository2-3.xml                        | `gitea-runner-ubuntu/Dockerfile.flutter`                                                                                       | Android NDK 内置 CMake |
+| 组件                       | 版本                   | MAJOR 最新版本             | MINOR 最新版本             | PATCH 最新版本             | 查询地址                                                                          | 引用文件                                                                                                                       | 说明                                            |
+|----------------------------|------------------------|----------------------------|----------------------------|----------------------------|-----------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------|
+| Flutter SDK                | `3.47.8`               | `3.47.8` (已是最新)        | `3.47.8` (已是最新)        | `3.47.8` (已是最新)        | https://storage.googleapis.com/flutter_infra_release/releases/releases_linux.json | `gitea-runner-ubuntu/Dockerfile.flutter`, `gitea-runner-windows/Dockerfile.flutter`, `gitea-runner-windows/modules/flutter.sh` | Flutter 跨平台框架                              |
+| Android Command-line Tools | `16111833`             | `16111833` (已是最新)      | `16111833` (已是最新)      | `16111833` (已是最新)      | https://dl.google.com/android/repository/repository2-3.xml                        | `gitea-runner-ubuntu/Dockerfile.flutter`                                                                                       | Android SDK 命令行工具 (cmdline-tools 23.0)     |
+| Android Platform Tools     | latest                 | -                          | -                          | -                          | https://dl.google.com/android/repository/repository2-3.xml                        | `gitea-runner-ubuntu/Dockerfile.flutter`                                                                                       | ADB 等平台工具                                  |
+| Android SDK Platform 37    | API 37.0 / 37.1 / 37.2 | API 37.2 (已是最新)        | API 37.2 (已是最新)        | API 37.2 (已是最新)        | https://dl.google.com/android/repository/repository2-3.xml                        | `gitea-runner-ubuntu/Dockerfile.flutter`                                                                                       | Android 37 编译平台 (37.0 / 37.1 / 37.2 各一份) |
+| Android SDK Platform 36    | API 36 / 36.1          | API 37.2                   | API 36.1 (已是最新)        | API 36.1 (已是最新)        | https://dl.google.com/android/repository/repository2-3.xml                        | `gitea-runner-ubuntu/Dockerfile.flutter`                                                                                       | Android 36 编译平台 (36 与 36.1 各一份)         |
+| Android SDK Platform 35    | API 35                 | API 37.2                   | API 35 (已是最新)          | API 35 (已是最新)          | https://dl.google.com/android/repository/repository2-3.xml                        | `gitea-runner-ubuntu/Dockerfile.flutter`                                                                                       | Android 35 编译平台                             |
+| Android Build Tools 37     | `37.0.0`               | `37.0.0` (已是最新)        | `37.0.0` (已是最新)        | `37.0.0` (已是最新)        | https://dl.google.com/android/repository/repository2-3.xml                        | `gitea-runner-ubuntu/Dockerfile.flutter`                                                                                       | Android 构建工具                                |
+| Android Build Tools 36     | `36.0.0` / `36.1.0`    | `37.0.0`                   | `36.1.0` (已是最新)        | `36.1.0` (已是最新)        | https://dl.google.com/android/repository/repository2-3.xml                        | `gitea-runner-ubuntu/Dockerfile.flutter`                                                                                       | Android 构建工具                                |
+| Android Build Tools 35     | `35.0.0` / `35.0.1`    | `37.0.0`                   | `35.0.1` (已是最新)        | `35.0.1` (已是最新)        | https://dl.google.com/android/repository/repository2-3.xml                        | `gitea-runner-ubuntu/Dockerfile.flutter`                                                                                       | Android 构建工具                                |
+| Android NDK 30             | `30.0.16248370`        | `30.0.16248370` (已是最新) | `30.0.16248370` (已是最新) | `30.0.16248370` (已是最新) | https://dl.google.com/android/repository/repository2-3.xml                        | `gitea-runner-ubuntu/Dockerfile.flutter`                                                                                       | Android NDK r30                                 |
+| Android NDK 28             | `28.2.13676358`        | `30.0.16248370` (r30)      | `28.2.13676358` (已是最新) | `28.2.13676358` (已是最新) | https://dl.google.com/android/repository/repository2-3.xml                        | `gitea-runner-ubuntu/Dockerfile.flutter`                                                                                       | Android NDK r28                                 |
+| Android CMake              | `3.22.1`               | `4.1.2`                    | `3.31.6`                   | `3.22.1` (已是最新)        | https://dl.google.com/android/repository/repository2-3.xml                        | `gitea-runner-ubuntu/Dockerfile.flutter`                                                                                       | Android NDK 内置 CMake                          |
 
 ---
 
-## 6. Windows 构建工具
+## 6. Godot 游戏引擎
 
-| 组件                    | 版本                  | MAJOR 最新版本        | MINOR 最新版本        | PATCH 最新版本        | 查询地址                                                               | 引用文件                                 | 说明                                        |
-|-------------------------|-----------------------|-----------------------|-----------------------|-----------------------|------------------------------------------------------------------------|------------------------------------------|---------------------------------------------|
-| Git (Chocolatey)        | latest                | -                     | -                     | -                     | https://community.chocolatey.org/packages/git                          | `windows/Dockerfile`                     | 通过 Chocolatey 安装                        |
-| PowerShell (Chocolatey) | latest                | -                     | -                     | -                     | https://community.chocolatey.org/packages/powershell-core              | `windows/Dockerfile`                     | 通过 Chocolatey 安装 `powershell-core`      |
-| NuGet                   | latest                | -                     | -                     | -                     | https://community.chocolatey.org/packages/nuget.commandline            | `windows/Dockerfile`                     | .NET 包管理器                               |
-| Chocolatey              | latest                | -                     | -                     | -                     | https://community.chocolatey.org/packages/chocolatey                   | `windows/Dockerfile`                     | Windows 包管理器                            |
-| Python 3 (Chocolatey)   | latest                | -                     | -                     | -                     | https://community.chocolatey.org/packages/python3                      | `gitea-runner-windows/Dockerfile`        | 供 fmt_stream.py 使用                       |
-| VS Build Tools 2022     | 17 release            | 17 release (已是最新) | 17 release (已是最新) | 17 release (已是最新) | https://learn.microsoft.com/visualstudio/releases/2022/release-history | `windows/Dockerfile`                     | Visual Studio Build Tools                   |
-| ATL (VS 2022 组件)      | latest                | -                     | -                     | -                     | https://learn.microsoft.com/visualstudio/releases/2022/release-history | `windows/Dockerfile`                     | 原生插件编译依赖 (atlbase.h)                |
-| MSVC v143               | latest (VS 2022)      | -                     | -                     | -                     | https://learn.microsoft.com/visualstudio/releases/2022/release-history | `windows/Dockerfile`                     | C/C++ 编译器工具链                          |
-| Windows SDK             | latest (VS 2022 安装) | -                     | -                     | -                     | https://learn.microsoft.com/visualstudio/releases/2022/release-history | `windows/Dockerfile`                     | 通过 VS Build Tools 安装                    |
-| CMake                   | latest (VS 内置)      | -                     | -                     | -                     | https://learn.microsoft.com/visualstudio/releases/2022/release-history | `windows/Dockerfile`                     | C/C++ 构建系统                              |
-| Mozilla CA 证书包       | latest                | -                     | -                     | -                     | https://curl.se/docs/caextract.html                                    | `gitea-runner-windows/modules/common.sh` | 供 Dart/Flutter TLS 验证使用 (`cacert.pem`) |
+| 组件           | 版本    | MAJOR 最新版本     | MINOR 最新版本     | PATCH 最新版本     | 查询地址                                      | 引用文件                                                                                                                                                         | 说明                                                  |
+|----------------|---------|--------------------|--------------------|--------------------|-----------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------|
+| Godot Engine   | `4.7.2` | `4.7.2` (已是最新) | `4.7.2` (已是最新) | `4.7.2` (已是最新) | https://github.com/godotengine/godot/releases | `gitea-runner-ubuntu/Dockerfile.godot`, `gitea-runner-ubuntu/modules/godot.sh`, `gitea-runner-windows/Dockerfile.godot`, `gitea-runner-windows/modules/godot.sh` | 游戏引擎 (headless 导入/导出，Ubuntu 与 Windows 双端) |
+| Godot 导出模板 | `4.7.2` | `4.7.2` (已是最新) | `4.7.2` (已是最新) | `4.7.2` (已是最新) | https://github.com/godotengine/godot/releases | `gitea-runner-ubuntu/modules/godot.sh`, `gitea-runner-windows/modules/godot.sh`                                                                                  | 仅保留 Web 与 Windows 平台 (裁剪后约 683 MiB)         |
 
 ---
 
-## 7. Python & AI 框架
+## 7. Windows 构建工具
+
+| 组件                    | 版本                  | MAJOR 最新版本        | MINOR 最新版本        | PATCH 最新版本        | 查询地址                                                               | 引用文件                                                       | 说明                                        |
+|-------------------------|-----------------------|-----------------------|-----------------------|-----------------------|------------------------------------------------------------------------|----------------------------------------------------------------|---------------------------------------------|
+| Git (Chocolatey)        | latest                | -                     | -                     | -                     | https://community.chocolatey.org/packages/git                          | `windows/Dockerfile`                                           | 通过 Chocolatey 安装                        |
+| PowerShell (Chocolatey) | latest                | -                     | -                     | -                     | https://community.chocolatey.org/packages/powershell-core              | `windows/Dockerfile`                                           | 通过 Chocolatey 安装 `powershell-core`      |
+| NuGet                   | latest                | -                     | -                     | -                     | https://community.chocolatey.org/packages/nuget.commandline            | `windows/Dockerfile`                                           | .NET 包管理器                               |
+| Chocolatey              | latest                | -                     | -                     | -                     | https://community.chocolatey.org/packages/chocolatey                   | `windows/Dockerfile`                                           | Windows 包管理器                            |
+| Python 3 (Chocolatey)   | latest                | -                     | -                     | -                     | https://community.chocolatey.org/packages/python3                      | `gitea-runner-windows/Dockerfile`                              | 供 fmt_stream.py 使用                       |
+| VS Build Tools 2022     | 17 release            | 17 release (已是最新) | 17 release (已是最新) | 17 release (已是最新) | https://learn.microsoft.com/visualstudio/releases/2022/release-history | `windows/Dockerfile`                                           | Visual Studio Build Tools                   |
+| ATL (VS 2022 组件)      | latest                | -                     | -                     | -                     | https://learn.microsoft.com/visualstudio/releases/2022/release-history | `windows/Dockerfile`                                           | 原生插件编译依赖 (atlbase.h)                |
+| MSVC v143               | latest (VS 2022)      | -                     | -                     | -                     | https://learn.microsoft.com/visualstudio/releases/2022/release-history | `windows/Dockerfile`                                           | C/C++ 编译器工具链                          |
+| Windows SDK             | latest (VS 2022 安装) | -                     | -                     | -                     | https://learn.microsoft.com/visualstudio/releases/2022/release-history | `windows/Dockerfile`                                           | 通过 VS Build Tools 安装                    |
+| CMake                   | latest (VS 内置)      | -                     | -                     | -                     | https://learn.microsoft.com/visualstudio/releases/2022/release-history | `windows/Dockerfile`                                           | C/C++ 构建系统                              |
+| Mozilla CA 证书包       | latest                | -                     | -                     | -                     | https://curl.se/docs/caextract.html                                    | `gitea-runner-windows/modules/common.sh`                       | 供 Dart/Flutter TLS 验证使用 (`cacert.pem`) |
+| 7-Zip (Chocolatey)      | latest                | -                     | -                     | -                     | https://community.chocolatey.org/packages/7zip                         | `gitea-runner-windows/modules/godot.sh` (`common.sh` 提供函数) | Godot 编辑器与导出模板解压依赖              |
+
+---
+
+## 8. Python & AI 框架
 
 | 组件            | 版本                    | MAJOR 最新版本      | MINOR 最新版本      | PATCH 最新版本      | 查询地址                                  | 引用文件                                     | 说明                                |
 |-----------------|-------------------------|---------------------|---------------------|---------------------|-------------------------------------------|----------------------------------------------|-------------------------------------|
 | Python 3        | apt 默认最新            | -                   | -                   | -                   | -                                         | `ubuntu/Dockerfile`, `pytorch/os_init.sh`    | Python 运行时                       |
-| PyTorch         | `2.14.1` (基础镜像内置) | `2.14.1` (已是最新) | `2.14.1` (已是最新) | `2.14.1` (已是最新) | https://pypi.org/project/torch/           | `pytorch/Dockerfile`                         | 深度学习框架 (pytorch 官方镜像预装) |
-| torchvision     | `0.29.*` (基础镜像内置) | `0.29.1` (已是最新) | `0.29.1` (已是最新) | `0.29.1` (已是最新) | https://pypi.org/project/torchvision/     | `pytorch/Dockerfile`                         | 计算机视觉库 (pytorch 官方镜像预装) |
+| PyTorch         | `2.14.1` (基础镜像内置) | `2.15.0`            | `2.14.1` (已是最新) | `2.14.1` (已是最新) | https://pypi.org/project/torch/           | `pytorch/Dockerfile`                         | 深度学习框架 (pytorch 官方镜像预装) |
+| torchvision     | `0.29.*` (基础镜像内置) | `0.29.2` (已是最新) | `0.29.2` (已是最新) | `0.29.2` (已是最新) | https://pypi.org/project/torchvision/     | `pytorch/Dockerfile`                         | 计算机视觉库 (pytorch 官方镜像预装) |
 | torchcodec      | `0.17.*`                | `0.17.0` (已是最新) | `0.17.0` (已是最新) | `0.17.0` (已是最新) | https://pypi.org/project/torchcodec/      | `pytorch/install_pytorch.sh`                 | 视频编解码库 (cu132 wheel)          |
-| torchaudio      | `2.11.*`                | `2.11.0` (已是最新) | `2.11.0` (已是最新) | `2.11.0` (已是最新) | https://pypi.org/project/torchaudio/      | `pytorch/install_pytorch.sh`                 | 音频处理库 (cu130 wheel)            |
+| torchaudio      | `2.11.*`                | `2.11.1` (已是最新) | `2.11.1` (已是最新) | `2.11.1` (已是最新) | https://pypi.org/project/torchaudio/      | `pytorch/install_pytorch.sh`                 | 音频处理库 (cu130 wheel)            |
 | uv              | latest (`-U`)           | -                   | -                   | -                   | https://pypi.org/project/uv/              | `pytorch/os_init.sh`                         | Python 包管理器                     |
 | huggingface-hub | latest (`[cli,hf_xet]`) | -                   | -                   | -                   | https://pypi.org/project/huggingface-hub/ | `pytorch/os_init.sh`                         | HuggingFace 模型下载工具            |
 | modelscope      | latest                  | -                   | -                   | -                   | https://pypi.org/project/modelscope/      | `pytorch/os_init.sh`                         | ModelScope 模型下载工具             |
@@ -117,18 +127,18 @@
 
 ---
 
-## 8. AI 模型项目 (Git Commit 锁定)
+## 9. AI 模型项目 (Git Commit 锁定)
 
 > ComfyUI 版本取数说明：以 GitHub Releases 中实际存在的版本为准，不能以
 > Git tags 为准（仓库可能存在尚未发布 Release 的 tag）。
 
-| 项目    | 仓库                | Commit    | MAJOR 最新版本       | MINOR 最新版本       | PATCH 最新版本       | 查询地址                                      | 引用文件          | 说明              |
-|---------|---------------------|-----------|----------------------|----------------------|----------------------|-----------------------------------------------|-------------------|-------------------|
-| ComfyUI | `Comfy-Org/ComfyUI` | `v0.43.0` | `v0.43.0`            | `v0.43.0` (已是最新) | `v0.43.0` (已是最新) | https://github.com/Comfy-Org/ComfyUI/releases | `comfyui/code.sh` | AI 图像生成工作流 |
+| 项目    | 仓库                | Commit    | MAJOR 最新版本 | MINOR 最新版本       | PATCH 最新版本       | 查询地址                                      | 引用文件          | 说明              |
+|---------|---------------------|-----------|----------------|----------------------|----------------------|-----------------------------------------------|-------------------|-------------------|
+| ComfyUI | `Comfy-Org/ComfyUI` | `v0.43.0` | `v0.43.0`      | `v0.43.0` (已是最新) | `v0.43.0` (已是最新) | https://github.com/Comfy-Org/ComfyUI/releases | `comfyui/code.sh` | AI 图像生成工作流 |
 
 ---
 
-## 9. GitHub Actions
+## 10. GitHub Actions
 
 | Action                       | 版本 | MAJOR 最新版本      | MINOR 最新版本      | PATCH 最新版本      | 查询地址                                               | 引用文件                    | 说明              |
 |------------------------------|------|---------------------|---------------------|---------------------|--------------------------------------------------------|-----------------------------|-------------------|
@@ -139,7 +149,7 @@
 
 ---
 
-## 10. Ubuntu 系统包
+## 11. Ubuntu 系统包
 
 以下包通过 `apt-get install` 安装在 `ubuntu/Dockerfile` 中，使用 apt 默认最新版本：
 
@@ -161,9 +171,9 @@
 
 ---
 
-## 11. 镜像构建依赖与触发顺序 (Phase)
+## 12. 镜像构建依赖与触发顺序 (Phase)
 
-> 下游 Dockerfile 通过 timestamp tag 硬编码引用上游镜像（如 `20261023_150110`）。
+> 下游 Dockerfile 通过 timestamp tag 硬编码引用上游镜像（如 `20261028_151145`）。
 > Phase 1 构建成功后会自动创建 PR 更新下游 Dockerfile 的 FROM tag（分支 `auto/update-*-base`）。
 > 两个 Phase 的 GitHub `schedule` 已移除（定时队列拥堵导致触发不准时），
 > 改由 gsc-config 仓库的 Gitea 工作流
@@ -181,17 +191,17 @@
 
 ### Phase 2 - 依赖 Phase 1（合并 Phase 1 自动创建的 PR 后触发）
 
-| Workflow                   | 镜像                                                                                              | 依赖 (Phase 1) | 定时触发              | 引用文件                          |
-|----------------------------|---------------------------------------------------------------------------------------------------|----------------|-----------------------|-----------------------------------|
-| `gitea-runner-ubuntu.yml`  | `gitea-runner-ubuntu` + 6 扩展 (jdk21 / jdk25 / graalvm-jdk21 / graalvm-jdk25 / jmeter / flutter) | ubuntu 双架构  | Gitea 触发 周六 03:00 | `gitea-runner-ubuntu/Dockerfile`  |
-| `gitea-runner-windows.yml` | `gitea-runner-windows` + flutter 扩展                                                             | windows        | Gitea 触发 周六 03:00 | `gitea-runner-windows/Dockerfile` |
-| `k3s.yml`                  | `gsc-hub/k3s:<ts>-x86_64`                                                                         | ubuntu         | Gitea 触发 周六 03:00 | `k3s/Dockerfile`                  |
-| `dumbproxy.yml`            | `gsc-hub/dumbproxy:<ts>-x86_64`                                                                   | ubuntu         | Gitea 触发 周六 03:00 | `dumbproxy/Dockerfile`            |
-| `mirrorproxy.yml`          | `gsc-hub/mirrorproxy:<ts>-x86_64`                                                                 | ubuntu         | Gitea 触发 周六 03:00 | `mirrorproxy/Dockerfile`          |
-| `ttyd.yml`                 | `gsc-hub/ttyd:<ts>-x86_64`                                                                        | ubuntu         | Gitea 触发 周六 03:00 | `ttyd/Dockerfile`                 |
-| `audio-cpp.yml`            | `gsc-hub/audio-cpp:<ts>-x86_64`                                                                   | ubuntu         | Gitea 触发 周六 03:00 | `audio-cpp/Dockerfile`            |
-| `unbound.yml`              | `gsc-hub/unbound:<ts>-x86_64`                                                                     | ubuntu         | Gitea 触发 周六 03:00 | `unbound/Dockerfile`              |
-| `comfyui.yml`              | `gsc-hub/comfyui:<ts>-x86_64`                                                                     | pytorch        | Gitea 触发 周六 03:00 | `comfyui/Dockerfile`              |
+| Workflow                   | 镜像                                                                                                      | 依赖 (Phase 1) | 定时触发              | 引用文件                          |
+|----------------------------|-----------------------------------------------------------------------------------------------------------|----------------|-----------------------|-----------------------------------|
+| `gitea-runner-ubuntu.yml`  | `gitea-runner-ubuntu` + 7 扩展 (jdk21 / jdk25 / graalvm-jdk21 / graalvm-jdk25 / jmeter / flutter / godot) | ubuntu 双架构  | Gitea 触发 周六 03:00 | `gitea-runner-ubuntu/Dockerfile`  |
+| `gitea-runner-windows.yml` | `gitea-runner-windows` + flutter / godot 扩展                                                             | windows        | Gitea 触发 周六 03:00 | `gitea-runner-windows/Dockerfile` |
+| `k3s.yml`                  | `gsc-hub/k3s:<ts>-x86_64`                                                                                 | ubuntu         | Gitea 触发 周六 03:00 | `k3s/Dockerfile`                  |
+| `dumbproxy.yml`            | `gsc-hub/dumbproxy:<ts>-x86_64`                                                                           | ubuntu         | Gitea 触发 周六 03:00 | `dumbproxy/Dockerfile`            |
+| `mirrorproxy.yml`          | `gsc-hub/mirrorproxy:<ts>-x86_64`                                                                         | ubuntu         | Gitea 触发 周六 03:00 | `mirrorproxy/Dockerfile`          |
+| `ttyd.yml`                 | `gsc-hub/ttyd:<ts>-x86_64`                                                                                | ubuntu         | Gitea 触发 周六 03:00 | `ttyd/Dockerfile`                 |
+| `audio-cpp.yml`            | `gsc-hub/audio-cpp:<ts>-x86_64`                                                                           | ubuntu         | Gitea 触发 周六 03:00 | `audio-cpp/Dockerfile`            |
+| `unbound.yml`              | `gsc-hub/unbound:<ts>-x86_64`                                                                             | ubuntu         | Gitea 触发 周六 03:00 | `unbound/Dockerfile`              |
+| `comfyui.yml`              | `gsc-hub/comfyui:<ts>-x86_64`                                                                             | pytorch        | Gitea 触发 周六 03:00 | `comfyui/Dockerfile`              |
 
 > `gitea-runner-ubuntu.yml` 和 `gitea-runner-windows.yml` 内部已通过 `needs:` 保证 base 先于扩展构建。
 > `ubuntu.yml` 与 `gitea-runner-ubuntu.yml` 构建 x86_64 与 aarch64 双架构镜像，flutter 扩展仅 x86_64。
@@ -219,15 +229,23 @@
 - 标注为 "-" 的组件使用 "latest" 或 "apt 默认最新" 策略，无需手动跟踪版本。
 - 标注为 "已是最新" 表示当前版本即为该版本线的最新版本。
 - 「版本」列为代码库当前锁定的值，三个「最新版本」列为上游对应版本线的最新 GA；
-  两者不一致的行（如 Docker CE、k3s、Node.js、Android SDK Platform 36/35、
-  build-tools 36/35、NDK 28、CMake）需手动修改对应 Dockerfile 的
-  `FROM` / `ARG` / `ENV` 才能升级，版本号不会自动跟进。这些行当前版本
+  两者不一致的行（如 Docker CE、k3s、pytorch/pytorch、PyTorch、Node.js、MirrorProxy、
+  Gitea Runner、Qwen Code、kubectl、Android SDK Platform 36/35、build-tools 36/35、
+  NDK 28、CMake）需手动修改对应 Dockerfile 的 `FROM` / `ARG` / `ENV` 才能升级，
+  版本号不会自动跟进。其中 Docker CE、k3s、Node.js、PyTorch 等行的当前版本
   已是所在版本线最新，但上游已有更新的主版本线（见 MAJOR 列）。
+- 部分组件在同一版本线内已有新补丁版本：MirrorProxy `1.7.0` → `1.7.1`、
+  Gitea Runner `5.2.3` → `5.2.4`、Qwen Code `0.26.2` → `0.26.4`、
+  kubectl `1.37.1` → `1.37.2`、Node.js `24.22.1` → `24.22.2`、
+  torchaudio `2.11.0` → `2.11.1`；升级后需同步更新本表。
 - GitHub Actions 使用主版本浮标签（如 `actions/checkout@v7`），
   workflow 会自动跟随该主版本线的最新发布，无需逐次修改版本号。
 - 标注为 "apt 默认最新" 的组件未锁定具体版本号，随 Ubuntu 仓库更新而变化。
 - Apache Maven 上游 `4.0.0-rc-7` 为 RC 版本，按 GA 口径不计入，
   MAJOR 列取最新正式版 `3.10.0`。
+- Godot 版本由构建参数 `GODOT_VERSION` 指定（当前 `4.7.2`），须与工程内的
+  `GODOT_VERSION` 及导出模板目录名（`4.7.2.stable`）保持一致；导出模板只保留
+  Web 与 Windows 平台以控制镜像体积。Windows 侧的解压依赖 7-Zip。
 - **查询地址** 列为该行版本数据的取数页面；标注 "-" 表示跟随 apt / latest 策略，
   无上游版本可查（可在镜像内用 `apt-cache policy <包名>` 验证实际安装版本）。
 - `audio.cpp` 另有模型变体 tag（如 `v0.9.2-drama3-base-small`）与应用版本同源，
