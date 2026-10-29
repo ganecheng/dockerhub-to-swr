@@ -10,19 +10,21 @@ gitea-runner-ubuntu/                ← 基础镜像 (Dockerfile)
 ├── run.sh                          # 容器入口脚本（Docker 启动、Runner 注册、守护进程）
 ├── config.template.yaml            # Runner 配置文件模板（环境变量占位符）
 ├── modules/                        # 模块化安装脚本
-│   ├── common.sh                   # 共享函数库 (curl 封装、架构检测、JDK/Maven/JMeter 安装)
+│   ├── common.sh                   # 共享函数库 (curl 封装、架构检测、JDK/Maven/JMeter/Godot 安装)
 │   ├── settings.xml                # Maven 阿里云镜像配置
 │   ├── jdk21.sh                    # Temurin JDK 21 + Maven 3.10.0
 │   ├── jdk25.sh                    # Temurin JDK 25 + Maven 3.10.0
 │   ├── graalvm-jdk21.sh            # Oracle GraalVM JDK 21 + Maven 3.10.0
 │   ├── graalvm-jdk25.sh            # Oracle GraalVM JDK 25 + Maven 3.10.0
-│   └── jmeter.sh                   # Temurin JDK 25 + JMeter 5.6.3
+│   ├── jmeter.sh                   # Temurin JDK 25 + JMeter 5.6.3
+│   └── godot.sh                    # Godot 编辑器 + Web/Windows 导出模板
 ├── Dockerfile.jdk21                # gitea-runner-ubuntu-jdk21
 ├── Dockerfile.jdk25                # gitea-runner-ubuntu-jdk25
 ├── Dockerfile.graalvm-jdk21        # gitea-runner-ubuntu-graalvm-jdk21
 ├── Dockerfile.graalvm-jdk25        # gitea-runner-ubuntu-graalvm-jdk25
 ├── Dockerfile.jmeter               # gitea-runner-ubuntu-jmeter
-└── Dockerfile.flutter              # gitea-runner-ubuntu-flutter
+├── Dockerfile.flutter              # gitea-runner-ubuntu-flutter
+└── Dockerfile.godot                # gitea-runner-ubuntu-godot
 ```
 
 ## 镜像列表
@@ -36,9 +38,15 @@ gitea-runner-ubuntu/                ← 基础镜像 (Dockerfile)
 | `gitea-runner-ubuntu-graalvm-jdk25` | `Dockerfile.graalvm-jdk25` | + GraalVM JDK 25 + Maven 3.10.0 + gcc/g++/zlib1g-dev (native-image)                                          | `ubuntu-latest,ubuntu-26.04,ubuntu-graalvm-jdk-25` | `ubuntu-aarch64-latest,ubuntu-aarch64-26.04,ubuntu-aarch64-graalvm-jdk-25` |
 | `gitea-runner-ubuntu-jmeter`        | `Dockerfile.jmeter`        | + Temurin JDK 25 + JMeter 5.6.3                                                                              | `ubuntu-latest,ubuntu-26.04,ubuntu-jmeter`         | `ubuntu-aarch64-latest,ubuntu-aarch64-26.04,ubuntu-aarch64-jmeter`         |
 | `gitea-runner-ubuntu-flutter`       | `Dockerfile.flutter`       | + Flutter 3.47.8 + Android SDK (compileSdk 37.2, NDK 30, build-tools 37) + OpenJDK 21                        | `ubuntu-latest,ubuntu-26.04,ubuntu-flutter`        | 仅 x86_64                                                                  |
+| `gitea-runner-ubuntu-godot`         | `Dockerfile.godot`         | + Godot 4.7.2 编辑器 + Web/Windows 导出模板                                                                  | `ubuntu-latest,ubuntu-26.04,ubuntu-godot`          | `ubuntu-aarch64-latest,ubuntu-aarch64-26.04,ubuntu-aarch64-godot`          |
 
 > 扩展镜像在基础标签之上追加各自的功能标签，无需重复声明基础标签。
 > Runner 标签为 `GITEA_RUNNER_LABELS_DEFAULT` 的默认值，已按架构分列；flutter 扩展仅提供 x86_64 版本。
+> `godot` 扩展预置 Godot 编辑器与导出模板（只保留 Web 与全部 Windows 架构，裁剪后约 683 MiB），
+> 版本可用构建参数 `GODOT_VERSION` 覆盖；镜像内已提供 `godot` 命令，以及 `GODOT_BIN`、
+> `GODOT_EXPORT_TEMPLATES_DIR` 两个环境变量。官方 Linux 编辑器的 `DT_NEEDED` 只依赖 libc，
+> X11/Vulkan/ALSA 等均为 dlopen 加载，故 `--headless` 导入与导出无需图形、音频库；
+> 非 headless 运行需另行安装 `libgl1`、`libx11-6` 等运行库。
 
 ## 镜像架构
 

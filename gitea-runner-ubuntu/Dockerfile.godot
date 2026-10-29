@@ -1,0 +1,18 @@
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+
+# 构建参数：Runner 默认标签的架构后缀（x86_64 构建为空，aarch64 构建为 -aarch64）
+ARG ARCH_SUFFIX
+
+# 构建参数：Godot 版本号（须与工程的 GODOT_VERSION、导出模板目录名一致）
+ARG GODOT_VERSION=4.7.2
+
+ENV GODOT_VERSION=${GODOT_VERSION} \
+    GODOT_HOME=/opt/godot \
+    GODOT_BIN=/usr/local/bin/godot \
+    GODOT_EXPORT_TEMPLATES_DIR=/root/.local/share/godot/export_templates
+
+COPY gitea-runner-ubuntu/modules/common.sh gitea-runner-ubuntu/modules/godot.sh /tmp/
+RUN bash /tmp/godot.sh && rm -f /tmp/*.sh
+
+ENV GITEA_RUNNER_LABELS_DEFAULT="ubuntu${ARCH_SUFFIX}-latest,ubuntu${ARCH_SUFFIX}-26.04,ubuntu${ARCH_SUFFIX}-godot"

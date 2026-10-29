@@ -99,7 +99,7 @@ jobs:
       fail-fast: false
       matrix:
         arch: [ x86_64, aarch64 ]
-        extension: [ jdk21, jdk25, graalvm-jdk21, graalvm-jdk25, jmeter, flutter ]
+        extension: [ jdk21, jdk25, graalvm-jdk21, graalvm-jdk25, jmeter, flutter, godot ]
         exclude:
           # Flutter 官方未发布 linux-arm64 的 Dart SDK 与 Android 构建工具链二进制，aarch64 暂不支持
           - arch: aarch64
