@@ -26,10 +26,12 @@ gitea-runner-windows/               ← 基础镜像
 ├── run.sh                         # 容器入口脚本（Git Bash，Runner 注册、守护进程）
 ├── config.template.yaml            # Runner 配置文件模板（环境变量占位符）
 ├── modules/                        # 模块化安装脚本
-│   ├── common.sh                   # 共享函数库 (Web 下载封装、Node.js/Qwen Code CLI/Gitea Runner/Flutter 安装)
+│   ├── common.sh                   # 共享函数库 (Web 下载封装、Node.js/Qwen Code CLI/Gitea Runner/Flutter/7-Zip/Godot 安装)
 │   ├── setup.sh                    # 基础镜像安装脚本 (Node.js + Qwen Code + Gitea Runner)
-│   └── flutter.sh                  # Flutter SDK 安装模块
+│   ├── flutter.sh                  # Flutter SDK 安装模块
+│   └── godot.sh                    # 7-Zip + Godot 编辑器与导出模板安装模块
 ├── Dockerfile.flutter               # gitea-runner-windows-flutter
+├── Dockerfile.godot                 # gitea-runner-windows-godot
 └── README.md
 ```
 
@@ -39,11 +41,17 @@ gitea-runner-windows/               ← 基础镜像
 |--------------------------------|----------------------|----------------------------------------------------------------------------------------------------|-----------------------------------------------|
 | `gitea-runner-windows`         | `Dockerfile`         | windows 全部组件 + Node.js 24.22.1 + Qwen Code + Python 3 (Chocolatey) + Gitea Runner 5.2.3       | `windows-latest,windows-2022`                 |
 | `gitea-runner-windows-flutter` | `Dockerfile.flutter` | + Flutter 3.47.8 (仅 Windows 桌面)                                                                 | `windows-latest,windows-2022,windows-flutter` |
+| `gitea-runner-windows-godot`   | `Dockerfile.godot`   | + 7-Zip + Godot 4.7.2 (Windows 桌面 + Web 导出模板)                                                | `windows-latest,windows-2022,windows-godot`   |
 
 > windows 已包含：Windows Server Core ltsc2025 + VS Build Tools 2022 (MSVC v143, Windows SDK, CMake) + Git for
 > Windows（Chocolatey 最新版，含 Git Bash）+ NuGet + PowerShell 7
 
 > 扩展镜像在基础标签之上追加各自的功能标签，无需重复声明基础标签。
+
+> `godot` 扩展额外安装 7-Zip（`C:\Program Files\7-Zip` 已加入机器级 PATH）与 Godot 编辑器、导出模板
+> （只保留 Web 与全部 Windows 架构，裁剪后约 683 MiB），版本可用构建参数 `GODOT_VERSION` 覆盖；
+> 镜像内已提供 `godot` 命令（`C:\opt\bin\godot` 包装脚本），以及 `GODOT_BIN`、
+> `GODOT_EXPORT_TEMPLATES_DIR` 两个环境变量。
 
 ## 本地构建
 

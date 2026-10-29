@@ -87,7 +87,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        extension: [ flutter ]
+        extension: [ flutter, godot ]
     steps:
       - name: 检出代码
         uses: actions/checkout@v7

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 共享安装函数库 (Git Bash 版)：Web 下载封装、Node.js/Qwen Code CLI/Gitea Runner/Flutter 安装
+# 共享安装函数库 (Git Bash 版)：Web 下载封装、Node.js/Qwen Code CLI/Gitea Runner/Flutter/7-Zip/Godot 安装
 # 对应 Linux 版的 modules/common.sh
 # VS Build Tools 和 NuGet 已由基础镜像 (windows) 提供，无需在此安装
 
@@ -145,4 +145,93 @@ function install_gitea_runner() {
 
   echo ">>> Gitea Runner $version installed:"
   "$runner_home/gitea-runner.exe" --version
+}
+
+# 安装 7-Zip（job 内的 "7z x" 依赖它；Git Bash 里不带 .exe 也能直接调用）
+# 安装目录 C:\Program Files\7-Zip 由 Dockerfile.godot 追加到机器级 PATH，
+# 这里同时 export 到当前进程，供后续安装步骤（解压 Godot/tpz）直接使用。
+function install_7zip() {
+  local seven_zip_home="C:/Program Files/7-Zip"
+
+  echo ">>> Installing 7-Zip..."
+  choco install 7zip -y --no-progress
+  export PATH="$PATH:$seven_zip_home"
+
+  local seven_zip_exe="$seven_zip_home/7z.exe"
+  if [[ ! -x "$seven_zip_exe" ]]; then
+    # chocolatey 若改用 shim 方式安装，7z 会落在 chocolatey\bin 下
+    seven_zip_exe=$(command -v 7z || true)
+  fi
+  if [[ -z "$seven_zip_exe" || ! -x "$seven_zip_exe" ]]; then
+    echo "ERROR: 7z.exe not found after choco install" >&2
+    exit 1
+  fi
+
+  echo ">>> 7-Zip installed:"
+  # 用 "7z i" 打印版本信息（无参数直接调用在 set -o pipefail 下不够稳妥）
+  "$seven_zip_exe" i | sed -n '1,2p'
+}
+
+# 安装 Godot 编辑器（Windows 桌面版，供 job 内的 headless 导入/导出复用）
+# 参数: $1 - Godot 版本号 (如 4.7.2，对应上游 tag 4.7.2-stable)
+# 安装路径: ${GODOT_HOME:-C:/opt/godot}，并在 ${GITEA_RUNNER_HOME:-C:/opt/bin} 生成 godot 包装脚本
+# 说明: _console.exe 是主程序的包装器，两者必须在同一目录并保持 "_console" 命名对应关系，
+#       因此保留官方文件名，另用包装脚本提供与 Linux 版一致的 godot 命令。
+function install_godot_editor() {
+  local version=${1:?}
+  local godot_home=${GODOT_HOME:-C:/opt/godot}
+  godot_home=${godot_home//\\//}
+  local bin_dir=${GITEA_RUNNER_HOME:-C:/opt/bin}
+  bin_dir=${bin_dir//\\//}
+  local tmp_dir=C:/tmp/godot-install
+
+  echo ">>> Installing Godot ${version} editor (win64) to ${godot_home}..."
+  mkdir -p "$tmp_dir" "$godot_home"
+  curl "https://github.com/godotengine/godot/releases/download/${version}-stable/Godot_v${version}-stable_win64.exe.zip" -o "$tmp_dir/godot.zip"
+  7z x -y "$tmp_dir/godot.zip" -o"$godot_home" > /dev/null
+  rm -rf "$tmp_dir"
+
+  mkdir -p "$bin_dir"
+  cat > "$bin_dir/godot" <<EOF
+#!/usr/bin/env bash
+exec "${godot_home}/Godot_v${version}-stable_win64_console.exe" "\$@"
+EOF
+  chmod +x "$bin_dir/godot"
+
+  echo ">>> Godot ${version} installed:"
+  "$bin_dir/godot" --version
+}
+
+# 安装 Godot 导出模板（只保留 Web 与 Windows 桌面平台）
+# 参数: $1 - Godot 版本号 (必填)
+# 安装路径: ${GODOT_EXPORT_TEMPLATES_DIR:-%APPDATA%\Godot\export_templates}\{version}.stable
+# 说明: 模板包 1.28 GiB（全平台），仅保留 Web 与全部 Windows 架构（32/64 位、arm64）后约 683 MiB；
+#       目录名必须严格等于 {version}.stable，Godot 按该目录名查找模板。
+function install_godot_export_templates() {
+  local version=${1:?}
+  local templates_root=${GODOT_EXPORT_TEMPLATES_DIR:-${APPDATA:-C:/Users/ContainerAdministrator/AppData/Roaming}/Godot/export_templates}
+  # APPDATA 是 Windows 反斜杠形式，转成正斜杠后才能被 Git Bash 的文件工具正确解析
+  templates_root=${templates_root//\\//}
+  local tmp_dir=C:/tmp/godot-install
+
+  echo ">>> Installing Godot ${version} export templates to ${templates_root}..."
+  mkdir -p "$tmp_dir"
+  # 模板包 1.28 GiB，curl 封装里的 --max-time 300 会中途掐断，这里单独放宽到 30 分钟
+  command curl -sSfL --connect-timeout 10 --max-time 1800 --retry 3 --retry-all-errors \
+    "https://github.com/godotengine/godot/releases/download/${version}-stable/Godot_v${version}-stable_export_templates.tpz" \
+    -o "$tmp_dir/templates.tpz"
+  7z x -y "$tmp_dir/templates.tpz" -o"$tmp_dir/unpacked" > /dev/null
+  mkdir -p "$templates_root"
+  rm -rf "$templates_root/${version}.stable"
+  mv "$tmp_dir/unpacked/templates" "$templates_root/${version}.stable"
+  rm -rf "$tmp_dir"
+
+  # 只保留 Web 与 Windows 桌面模板，其余平台（android/ios/macos/linux，约 600 MiB）删除以控制镜像体积；
+  # icudt_godot.dat 是导出时可能用到的 ICU 数据（约 5 MiB），一并保留
+  find "$templates_root/${version}.stable" -maxdepth 1 -type f \
+    ! -name 'version.txt' ! -name 'icudt_godot.dat' \
+    ! -name 'web_*' ! -name 'windows_*' -delete
+
+  echo ">>> Export templates installed:"
+  ls -lh "$templates_root/${version}.stable"
 }

@@ -1,0 +1,25 @@
+# escape=`
+
+# 基于 gitea-runner-windows 叠加 7-Zip + Godot 编辑器与导出模板
+
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+
+# 构建参数：Godot 版本号（须与工程的 GODOT_VERSION、导出模板目录名一致）
+ARG GODOT_VERSION=4.7.2
+
+ENV GODOT_VERSION=${GODOT_VERSION} `
+    GODOT_HOME="C:\opt\godot" `
+    GODOT_BIN="C:\opt\godot\Godot_v${GODOT_VERSION}-stable_win64_console.exe" `
+    GODOT_EXPORT_TEMPLATES_DIR="C:\Users\ContainerAdministrator\AppData\Roaming\Godot\export_templates"
+
+# 7-Zip 的 MSI 不会把安装目录写入 PATH，追加到机器级 PATH 供 job 内的 "7z x" 使用
+RUN [Environment]::SetEnvironmentVariable('PATH', \"${env:PATH};C:\Program Files\7-Zip\", 'Machine')
+
+# 模块化安装脚本（Git Bash 版）
+COPY gitea-runner-windows/modules/common.sh gitea-runner-windows/modules/godot.sh C:/tmp/
+
+# Git Bash 执行安装脚本（ENV 变量直接传递给 bash）
+RUN bash /c/tmp/godot.sh; Remove-Item -Recurse -Force C:\tmp -ErrorAction SilentlyContinue
+
+ENV GITEA_RUNNER_LABELS_DEFAULT='windows-latest,windows-2022,windows-godot'
