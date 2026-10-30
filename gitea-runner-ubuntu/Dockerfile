@@ -5,15 +5,15 @@ ARG BASE_ARCH=x86_64
 FROM ghcr.io/ganecheng/ubuntu:20261028_151145-${BASE_ARCH}
 
 # 构建参数：Gitea Runner 版本号
-ARG GITEA_RUNNER_VERSION=5.2.3
+ARG GITEA_RUNNER_VERSION=5.2.4
 # 构建参数：Docker 引擎版本号（静态二进制）
 ARG DOCKER_VERSION=28.5.2
 # 构建参数：Node.js 版本号
-ARG NODE_VERSION=24.22.1
+ARG NODE_VERSION=24.22.2
 # 构建参数：Qwen Code 版本号
-ARG QWEN_CODE_VERSION=0.26.2
+ARG QWEN_CODE_VERSION=0.26.4
 # 构建参数：kubectl 版本号
-ARG KUBECTL_VERSION=1.37.1
+ARG KUBECTL_VERSION=1.37.2
 # 构建参数：Helm 版本号
 ARG HELM_VERSION=4.3.1
 # 构建参数：Runner 默认标签的架构后缀（x86_64 构建为空，aarch64 构建为 -aarch64）
