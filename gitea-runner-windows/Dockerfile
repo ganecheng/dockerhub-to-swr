@@ -5,7 +5,9 @@ FROM ghcr.io/ganecheng/windows:20261030_150125-x86_64
 
 ENV GITEA_RUNNER_VERSION=5.2.4 `
     NODE_VERSION=24.22.2 `
-    QWEN_CODE_VERSION=0.26.4
+    QWEN_CODE_VERSION=0.26.4 `
+    GH_VERSION=2.103.3 `
+    TEA_VERSION=0.16.0
 
 # 安装目录
 ENV NODE_HOME="C:\Program Files\nodejs" `

@@ -147,6 +147,70 @@ function install_gitea_runner() {
   "$runner_home/gitea-runner.exe" --version
 }
 
+# 安装 GitHub CLI (gh)
+# 参数: $1 - gh 版本号（必传，由 setup.sh 从 ENV GH_VERSION 传入）
+# 安装路径: ${GITEA_RUNNER_HOME:-C:/opt/bin}（该目录已由 Dockerfile 追加到机器级 PATH）
+function install_github_cli() {
+  local version=${1:?}
+  local arch
+  arch=$(uname -m)
+  local gh_arch
+  case "$arch" in
+    x86_64|amd64)  gh_arch="amd64" ;;
+    aarch64|arm64) gh_arch="arm64" ;;
+    *) echo "ERROR: Unsupported architecture: $arch" >&2; exit 1 ;;
+  esac
+
+  local bin_dir=${GITEA_RUNNER_HOME:-C:/opt/bin}
+  bin_dir=${bin_dir//\\//}
+  local tmp_dir=C:/tmp/gh-install
+
+  echo ">>> Installing GitHub CLI $version ($gh_arch) to $bin_dir..."
+  mkdir -p "$tmp_dir" "$bin_dir"
+  curl "https://github.com/cli/cli/releases/download/v${version}/gh_${version}_windows_${gh_arch}.zip" -o "$tmp_dir/gh.zip"
+
+  # 使用 PowerShell 解压 zip（Git Bash 自带的 GNU tar 不支持 zip 格式）
+  pwsh -NoProfile -Command "Expand-Archive -Path '$tmp_dir/gh.zip' -DestinationPath '$tmp_dir/extracted' -Force"
+
+  # 压缩包内路径形如 bin/gh.exe，直接定位而不写死层级
+  local gh_exe
+  gh_exe=$(find "$tmp_dir/extracted" -type f -name gh.exe | head -n 1)
+  if [[ -z "$gh_exe" ]]; then
+    echo "ERROR: gh.exe not found in archive" >&2
+    exit 1
+  fi
+  cp "$gh_exe" "$bin_dir/gh.exe"
+  rm -rf "$tmp_dir"
+
+  echo ">>> GitHub CLI $version installed:"
+  "$bin_dir/gh.exe" --version
+}
+
+# 安装 Gitea CLI (tea)
+# 参数: $1 - tea 版本号（必传，由 setup.sh 从 ENV TEA_VERSION 传入）
+# 安装路径: ${GITEA_RUNNER_HOME:-C:/opt/bin}（该目录已由 Dockerfile 追加到机器级 PATH）
+function install_gitea_cli() {
+  local version=${1:?}
+  local arch
+  arch=$(uname -m)
+  local tea_arch
+  case "$arch" in
+    x86_64|amd64)  tea_arch="amd64" ;;
+    aarch64|arm64) tea_arch="arm64" ;;
+    *) echo "ERROR: Unsupported architecture: $arch" >&2; exit 1 ;;
+  esac
+
+  local bin_dir=${GITEA_RUNNER_HOME:-C:/opt/bin}
+  bin_dir=${bin_dir//\\//}
+
+  echo ">>> Installing Gitea CLI $version ($tea_arch) to $bin_dir..."
+  mkdir -p "$bin_dir"
+  curl "https://gitea.com/gitea/tea/releases/download/v${version}/tea-${version}-windows-${tea_arch}.exe" -o "$bin_dir/tea.exe"
+
+  echo ">>> Gitea CLI $version installed:"
+  "$bin_dir/tea.exe" --version
+}
+
 # 安装 7-Zip（job 内的 "7z x" 依赖它；Git Bash 里不带 .exe 也能直接调用）
 # 安装目录 C:\Program Files\7-Zip 由 Dockerfile.godot 追加到机器级 PATH，
 # 这里同时 export 到当前进程，供后续安装步骤（解压 Godot/tpz）直接使用。

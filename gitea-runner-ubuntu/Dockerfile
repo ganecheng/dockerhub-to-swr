@@ -16,6 +16,10 @@ ARG QWEN_CODE_VERSION=0.26.4
 ARG KUBECTL_VERSION=1.37.2
 # 构建参数：Helm 版本号
 ARG HELM_VERSION=4.3.1
+# 构建参数：GitHub CLI (gh) 版本号
+ARG GH_VERSION=2.103.3
+# 构建参数：Gitea CLI (tea) 版本号
+ARG TEA_VERSION=0.16.0
 # 构建参数：Runner 默认标签的架构后缀（x86_64 构建为空，aarch64 构建为 -aarch64）
 ARG ARCH_SUFFIX
 
@@ -69,6 +73,18 @@ RUN <<EOF
   tar -xzf /tmp/helm.tar.gz -C /usr/local/bin --strip-components=1 linux-${arch}/helm
   rm -f /tmp/helm.tar.gz
   helm version
+
+  # 下载并安装 GitHub CLI (gh)
+  curl "https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${arch}.tar.gz" -o /tmp/gh.tar.gz
+  tar -xzf /tmp/gh.tar.gz -C /usr/local/bin --strip-components=2 "gh_${GH_VERSION}_linux_${arch}/bin/gh"
+  rm -f /tmp/gh.tar.gz
+  chmod 755 /usr/local/bin/gh
+  gh --version
+
+  # 下载并安装 Gitea CLI (tea)
+  curl "https://gitea.com/gitea/tea/releases/download/v${TEA_VERSION}/tea-${TEA_VERSION}-linux-${arch}" -o /usr/local/bin/tea
+  chmod 755 /usr/local/bin/tea
+  tea --version
 
   # 切换 iptables 为 legacy 模式，兼容性更好
   update-alternatives --set iptables /usr/sbin/iptables-legacy
