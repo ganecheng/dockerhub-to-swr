@@ -196,7 +196,7 @@ gitea-runner daemon --config "$effective_config_file" \
   > "$daemon_log" 2> "$daemon_err" &
 gitea_runner_pid=$!
 
-# 计算超时时间戳（默认 60 分钟）
+# 计算超时时间戳
 timeout_seconds=$((runner_timeout_minutes * 60))
 deadline=$(( $(date +%s) + timeout_seconds ))
 log INFO "Container timeout: ${runner_timeout_minutes}m (will exit after $(date -d "@$deadline" '+%H:%M:%S'))"

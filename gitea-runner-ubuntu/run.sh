@@ -242,7 +242,7 @@ unset "${!GITEA_@}"
 gitea-runner daemon --config "$effective_config_file" > /tmp/gitea-runner-daemon.log 2>&1 &
 gitea_runner_pid=$!
 
-# 计算超时时间戳（默认 60 分钟）
+# 计算超时时间戳
 timeout_seconds=$((runner_timeout_minutes * 60))
 start_time=$(date +%s)
 deadline=$((start_time + timeout_seconds))

@@ -106,7 +106,7 @@ docker build -f gitea-runner-ubuntu/Dockerfile.jdk21 --build-arg BASE_IMAGE=gite
 
 Runner 以 **ephemeral 模式**运行：完成一个任务后自动退出，容器随之销毁。
 
-容器空闲超时由 `GITEA_RUNNER_TIMEOUT_MINUTES`（默认 `60`）控制。启动时计算 deadline，任务被接收后 deadline
+容器空闲超时由 `GITEA_RUNNER_TIMEOUT_MINUTES`（默认 `120`）控制。启动时计算 deadline，任务被接收后 deadline
 刷新，确保任务有充足执行时间。超时后容器自动退出。
 
 ### 配置模板（`config.template.yaml`）
@@ -215,7 +215,7 @@ docker run -e CA_CERT_DIR=/etc/my-certs -v /path/to/my-certs:/etc/my-certs:ro ..
 | `GITEA_RUNNER_REGISTRATION_TOKEN_FILE`     | -                                                        | 注册令牌文件路径（当 `GITEA_RUNNER_REGISTRATION_TOKEN` 为空时从此文件读取）  |
 | `GITEA_RUNNER_NAME`                        | -                                                        | Runner 名称                                                                  |
 | `GITEA_RUNNER_LABELS`                      | `GITEA_RUNNER_LABELS_DEFAULT`                            | Runner 标签（逗号分隔）                                                      |
-| `GITEA_RUNNER_TIMEOUT_MINUTES`             | `60`                                                     | 容器空闲超时（分钟）                                                         |
+| `GITEA_RUNNER_TIMEOUT_MINUTES`             | `120`                                                    | 容器空闲超时（分钟）                                                         |
 | `GITEA_RUNNER_REGISTRATION_TIMEOUT`        | `30`                                                     | 注册超时（秒）                                                               |
 | `GITEA_RUNNER_REGISTRATION_RETRY_INTERVAL` | `3`                                                      | 注册重试间隔（秒）                                                           |
 | `INIT_SH_FILE`                             | -                                                        | 自定义初始化脚本路径（容器内）                                               |
