@@ -2,7 +2,7 @@
 
 > 本文件统计本仓库中所有 Dockerfile、GitHub Actions workflow 和 shell 脚本引用的开源组件版本号。
 >
-> 最后更新：2026-11-02
+> 最后更新：2026-11-03
 
 ---
 
@@ -30,6 +30,7 @@
 | tini            | apt 默认最新    | -                   | -                          | -                          | -                                                       | `ubuntu/Dockerfile`                                                                                                    | PID 1 进程管理                         |
 | skopeo          | apt 默认最新    | -                   | -                          | -                          | -                                                       | `ubuntu/Dockerfile`                                                                                                    | 镜像同步工具                           |
 | yq              | apt 默认最新    | -                   | -                          | -                          | -                                                       | `ubuntu/Dockerfile`                                                                                                    | YAML 处理工具                          |
+| Linux 编译工具链 | apt 默认最新   | -                   | -                          | -                          | -                                                       | `gitea-runner-ubuntu/Dockerfile`                                                                                       | build-essential/clang/cmake/ninja-build/pkg-config/libgtk-3-dev |
 | dumbproxy       | `1.52.2`        | `1.52.2` (已是最新) | `1.52.2` (已是最新)        | `1.52.2` (已是最新)        | https://github.com/SenseUnit/dumbproxy/releases         | `dumbproxy/Dockerfile`                                                                                                 | 轻量 HTTP 代理                         |
 | MirrorProxy     | `1.7.1`         | `1.7.1` (已是最新) | `1.7.1` (已是最新) | `1.7.1` (已是最新) | https://github.com/inbjo/MirrorProxy/releases           | `mirrorproxy/Dockerfile`                                                                                               | 自部署镜像代理平台                     |
 | ttyd            | `1.7.7`         | `1.7.7` (已是最新)  | `1.7.7` (已是最新)         | `1.7.7` (已是最新)         | https://github.com/tsl0922/ttyd/releases                | `ttyd/Dockerfile`                                                                                                      | Web 终端共享工具                       |
