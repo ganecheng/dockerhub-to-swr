@@ -39,6 +39,21 @@ RUN <<EOF
   # Node.js 预编译二进制使用自身命名（amd64 -> x64, arm64 -> arm64）
   node_arch=$([ "${arch}" = "amd64" ] && echo "x64" || echo "${arch}")
 
+  # 安装 Linux 原生编译工具链，供 job 内编译 C/C++ 扩展与 Flutter Linux 桌面目标使用
+  # - build-essential: gcc/g++/make/libc 头文件
+  # - clang / cmake / ninja-build / pkg-config: Flutter 与多数 C++ 项目的构建依赖
+  # - libgtk-3-dev: Flutter Linux 桌面（GTK3 窗口）编译依赖
+  apt-get update
+  apt-get install --no-install-recommends -y \
+    build-essential clang cmake ninja-build pkg-config libgtk-3-dev
+
+  # 验证编译工具链安装
+  gcc --version | head -1
+  clang --version | head -1
+  cmake --version | head -1
+  ninja --version
+  pkg-config --version
+
   # 安装 Node.js（自带 npm）via 官方预编译二进制
   curl "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-${node_arch}.tar.xz" -o /tmp/node.tar.xz
   tar -xf /tmp/node.tar.xz -C /usr/local --strip-components=1 --no-same-owner
@@ -96,6 +111,9 @@ RUN <<EOF
 
   # 配置 Docker daemon 开启 experimental 模式（支持 --squash）
   echo '{"experimental":true}' > /etc/docker/daemon.json
+
+  # 清理 APT 缓存和临时文件，减小镜像体积
+  rm -rf /var/cache/{apt,debconf} /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 EOF
 
