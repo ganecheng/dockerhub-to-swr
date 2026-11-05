@@ -1,8 +1,8 @@
 # 基础镜像：Ubuntu 26.04 (resolute)
 FROM ghcr.io/ganecheng/ubuntu:20261103_195451-x86_64
 
-# 构建参数：mirrorproxy-server 版本号
-ARG MIRRORPROXY_VERSION=1.7.2
+# 构建参数：mirrorproxy-server 版本号（上游原版有 bug，改用自建的修复版发布标签）
+ARG MIRRORPROXY_VERSION=1.7.2-ext1
 
 # 下载并安装 mirrorproxy-server 二进制文件
 RUN <<EOF
@@ -26,7 +26,7 @@ RUN <<EOF
       ;;
   esac
 
-  mirrorproxy_url="https://github.com/inbjo/MirrorProxy/releases/download/v${MIRRORPROXY_VERSION}/mirrorproxy-server-${mirrorproxy_arch}.tar.gz"
+  mirrorproxy_url="https://github.com/ganecheng/MirrorProxy/releases/download/v${MIRRORPROXY_VERSION}/mirrorproxy-server-${mirrorproxy_arch}.tar.gz"
   echo "Downloading mirrorproxy-server from $mirrorproxy_url"
   curl "$mirrorproxy_url" -o /tmp/mirrorproxy-server.tar.gz
   tar -xzf /tmp/mirrorproxy-server.tar.gz -C /tmp/
