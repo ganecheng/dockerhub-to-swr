@@ -3,9 +3,9 @@
 # 基于 windows（Windows Server Core + VS Build Tools + Git + NuGet）追加 Node.js + Qwen Code + Gitea Runner
 FROM ghcr.io/ganecheng/windows:20261104_213358-x86_64
 
-ENV GITEA_RUNNER_VERSION=5.3.0 `
+ENV GITEA_RUNNER_VERSION=5.4.1 `
     NODE_VERSION=24.22.2 `
-    QWEN_CODE_VERSION=0.26.7 `
+    QWEN_CODE_VERSION=0.26.8 `
     GH_VERSION=2.103.3 `
     TEA_VERSION=0.16.0
 
