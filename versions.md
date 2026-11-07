@@ -32,7 +32,7 @@
 | yq               | apt 默认最新    | -                   | -                          | -                          | -                                                       | `ubuntu/Dockerfile`                                                                                                    | YAML 处理工具                                                   |
 | Linux 编译工具链 | apt 默认最新    | -                   | -                          | -                          | -                                                       | `gitea-runner-ubuntu/Dockerfile`                                                                                       | build-essential/clang/cmake/ninja-build/pkg-config/libgtk-3-dev |
 | dumbproxy        | `1.52.2`        | `1.52.2` (已是最新) | `1.52.2` (已是最新)        | `1.52.2` (已是最新)        | https://github.com/SenseUnit/dumbproxy/releases         | `dumbproxy/Dockerfile`                                                                                                 | 轻量 HTTP 代理                                                  |
-| MirrorProxy      | `1.7.2-ext5`    | `1.7.3`             | `1.7.3`                    | `1.7.3`                    | https://github.com/ganecheng/MirrorProxy/releases       | `mirrorproxy/Dockerfile`                                                                                               | 自部署镜像代理平台 (自建修复版)                                 |
+| MirrorProxy      | `1.7.2-ext6`    | `1.7.3`             | `1.7.3`                    | `1.7.3`                    | https://github.com/ganecheng/MirrorProxy/releases       | `mirrorproxy/Dockerfile`                                                                                               | 自部署镜像代理平台 (自建修复版)                                 |
 | ttyd             | `1.7.7`         | `1.7.7` (已是最新)  | `1.7.7` (已是最新)         | `1.7.7` (已是最新)         | https://github.com/tsl0922/ttyd/releases                | `ttyd/Dockerfile`                                                                                                      | Web 终端共享工具                                                |
 | audio.cpp        | `v0.9.4`        | `v0.9.4` (已是最新) | `v0.9.4` (已是最新)        | `v0.9.4` (已是最新)        | https://github.com/0xShug0/audio.cpp/releases           | `audio-cpp/Dockerfile`                                                                                                 | 语音 AI 推理服务 (Vulkan 预编译二进制)                          |
 | unbound          | apt 默认最新    | -                   | -                          | -                          | -                                                       | `unbound/Dockerfile`                                                                                                   | 验证性递归缓存 DNS 解析器                                       |
@@ -252,7 +252,7 @@
   无上游版本可查（可在镜像内用 `apt-cache policy <包名>` 验证实际安装版本）。
 - `audio.cpp` 另有模型变体 tag（如 `v0.9.2-drama3-base-small`）与应用版本同源，
   不计入版本线比较；「版本」列按 Dockerfile 中锁定的应用版本记录。
-- `MirrorProxy` 使用自建修复版标签 `v1.7.2-ext5`（基于上游 `v1.7.2`），
+- `MirrorProxy` 使用自建修复版标签 `v1.7.2-ext6`（基于上游 `v1.7.2`），
   用于修正上游原版问题；版本线比较仍按上游 `1.7.2` 计。
 - AI 模型项目通过 git commit hash 或 tag 锁定代码版本，具体依赖（如 `requirements.txt`）在构建时从上游仓库动态拉取。
 - 本仓库不存在 `requirements.txt`、`package.json`、`pom.xml`、`go.mod` 等传统依赖声明文件。
