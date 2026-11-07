@@ -2,7 +2,7 @@
 FROM ghcr.io/ganecheng/ubuntu:20261106_150113-x86_64
 
 # 构建参数：mirrorproxy-server 版本号（上游原版有 bug，改用自建的修复版发布标签）
-ARG MIRRORPROXY_VERSION=1.7.2-ext4
+ARG MIRRORPROXY_VERSION=1.7.2-ext5
 
 # 下载并安装 mirrorproxy-server 二进制文件
 RUN <<EOF
