@@ -2,7 +2,7 @@
 
 > 本文件统计本仓库中所有 Dockerfile、GitHub Actions workflow 和 shell 脚本引用的开源组件版本号。
 >
-> 最后更新：2026-11-09
+> 最后更新：2026-11-11
 
 ---
 
@@ -46,7 +46,7 @@
 |--------------|-----------|----------------------|----------------------|----------------------|-------------------------------------------------|---------------------------------------------------------------------|-----------------------|
 | Gitea Runner | `5.4.1`   | `5.4.1` (已是最新)   | `5.4.1` (已是最新)   | `5.4.1` (已是最新)   | https://gitea.com/gitea/runner/releases         | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | CI/CD Runner          |
 | Node.js      | `24.22.2` | `26.13.0`            | `24.22.2` (已是最新) | `24.22.2` (已是最新) | https://nodejs.org/dist/index.json              | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | JavaScript 运行时     |
-| Qwen Code    | `0.26.8`  | `0.27.0`             | `0.26.9`             | `0.26.9`             | https://registry.npmjs.org/@qwen-code/qwen-code | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | 终端 AI 编码助手      |
+| Qwen Code    | `0.26.8`  | `0.27.1`             | `0.26.9`             | `0.26.9`             | https://registry.npmjs.org/@qwen-code/qwen-code | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | 终端 AI 编码助手      |
 | kubectl      | `1.37.2`  | `1.37.2` (已是最新)  | `1.37.2` (已是最新)  | `1.37.2` (已是最新)  | https://dl.k8s.io/release/stable.txt            | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 命令行工具 |
 | Helm         | `4.3.1`   | `4.3.1` (已是最新)   | `4.3.1` (已是最新)   | `4.3.1` (已是最新)   | https://github.com/helm/helm/releases           | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 包管理器   |
 | GitHub CLI   | `2.103.3` | `2.103.3` (已是最新) | `2.103.3` (已是最新) | `2.103.3` (已是最新) | https://github.com/cli/cli/releases             | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | GitHub 命令行工具     |
@@ -236,8 +236,9 @@
   两者不一致的行需手动修改对应 Dockerfile 的 `FROM` / `ARG` / `ENV` 才能升级，
   版本号不会自动跟进。其中 Docker CE、Node.js、k3s、Android SDK Platform 36/35、
   build-tools 36/35、NDK 28、CMake 的当前版本已是所在版本线最新，但上游已有
-  更新的主版本线（见 MAJOR 列）；Qwen Code 在 0.26 线内已有 `0.26.9` 可跟进，
-  MirrorProxy 自建修复版仍基于上游 `1.7.2`，上游已发布 `1.7.3`。
+  更新的主版本线（见 MAJOR 列）；Qwen Code 当前 `0.26.8`，0.26 线已有 `0.26.9`，
+  上游最新为 `0.27.1`；MirrorProxy 自建修复版仍基于上游 `1.7.2`，
+  上游已发布 `1.7.3`。
 - `torchvision` `0.29.*`、`torchcodec` `0.17.*`、`torchaudio` `2.11.*` 以通配补丁位锁定，
   构建时自动取该版本线最新补丁，无需手动跟进。
 - GitHub Actions 使用主版本浮标签（如 `actions/checkout@v7`），
