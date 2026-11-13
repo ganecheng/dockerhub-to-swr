@@ -10,7 +10,7 @@
 
 | 组件                           | 版本                             | MAJOR 最新版本                   | MINOR 最新版本                   | PATCH 最新版本                   | 查询地址                                                                     | 引用文件                                                                                                                                                                                          | 说明                                                                           |
 |--------------------------------|----------------------------------|----------------------------------|----------------------------------|----------------------------------|------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
-| Ubuntu (resolute)              | `resolute-20261024.1`            | `resolute-20261105.1`            | `resolute-20261105.1`            | `resolute-20261105.1`            | https://github.com/docker-library/official-images/blob/master/library/ubuntu | `ubuntu/Dockerfile`                                                                                                                                                                               | Ubuntu 26.04 基础镜像                                                          |
+| Ubuntu (resolute)              | `resolute-20261105.1`            | `resolute-20261105.1` (已是最新) | `resolute-20261105.1` (已是最新) | `resolute-20261105.1` (已是最新) | https://github.com/docker-library/official-images/blob/master/library/ubuntu | `ubuntu/Dockerfile`                                                                                                                                                                               | Ubuntu 26.04 基础镜像                                                          |
 | pytorch/pytorch                | `2.15.0-cuda13.2-cudnn9-runtime` | `2.15.0` (已是最新)              | `2.15.0` (已是最新)              | `2.15.0` (已是最新)              | https://github.com/pytorch/pytorch/releases                                  | `pytorch/Dockerfile`                                                                                                                                                                              | PyTorch 官方运行时基础镜像 (Ubuntu 24.04 + Python 3.12 + torch/CUDA 13.2 预装) |
 | Windows Server Core (ltsc2025) | `ltsc2025`                       | `ltsc2025` (已是最新)            | `ltsc2025` (已是最新)            | `ltsc2025` (已是最新)            | https://hub.docker.com/r/amitie10g/visualstudio2022-workload-vctools/tags    | `windows/Dockerfile` (via `amitie10g/visualstudio2022-workload-vctools`)                                                                                                                          | Windows 构建基础镜像                                                           |
 | 自建 Ubuntu 镜像               | `20261106_150113`                | -                                | -                                | -                                | https://github.com/users/ganecheng/packages/container/package/ubuntu         | `k3s/Dockerfile`, `dumbproxy/Dockerfile`, `mirrorproxy/Dockerfile`, `download_file/Dockerfile`, `gitea-runner-ubuntu/Dockerfile`, `ttyd/Dockerfile`, `audio-cpp/Dockerfile`, `unbound/Dockerfile` | 基于 `ubuntu/Dockerfile` 构建的内部镜像 (x86_64 / aarch64 双架构)              |
@@ -44,12 +44,12 @@
 
 | 组件         | 版本      | MAJOR 最新版本       | MINOR 最新版本       | PATCH 最新版本       | 查询地址                                        | 引用文件                                                            | 说明                  |
 |--------------|-----------|----------------------|----------------------|----------------------|-------------------------------------------------|---------------------------------------------------------------------|-----------------------|
-| Gitea Runner | `5.4.1`   | `6.0.0`              | `5.4.1` (已是最新)   | `5.4.1` (已是最新)   | https://gitea.com/gitea/runner/releases         | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | CI/CD Runner          |
-| Node.js      | `24.22.2` | `26.13.1`            | `24.22.3`            | `24.22.3`            | https://nodejs.org/dist/index.json              | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | JavaScript 运行时     |
-| Qwen Code    | `0.26.8`  | `0.27.3`             | `0.26.9`             | `0.26.9`             | https://registry.npmjs.org/@qwen-code/qwen-code | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | 终端 AI 编码助手      |
+| Gitea Runner | `6.0.0`   | `6.0.0` (已是最新)   | `6.0.0` (已是最新)   | `6.0.0` (已是最新)   | https://gitea.com/gitea/runner/releases         | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | CI/CD Runner          |
+| Node.js      | `24.22.3` | `26.13.1`            | `24.22.3` (已是最新) | `24.22.3` (已是最新) | https://nodejs.org/dist/index.json              | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | JavaScript 运行时     |
+| Qwen Code    | `0.27.3`  | `0.27.3` (已是最新)  | `0.27.3` (已是最新)  | `0.27.3` (已是最新)  | https://registry.npmjs.org/@qwen-code/qwen-code | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | 终端 AI 编码助手      |
 | kubectl      | `1.37.2`  | `1.37.2` (已是最新)  | `1.37.2` (已是最新)  | `1.37.2` (已是最新)  | https://dl.k8s.io/release/stable.txt            | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 命令行工具 |
 | Helm         | `4.3.1`   | `4.3.1` (已是最新)   | `4.3.1` (已是最新)   | `4.3.1` (已是最新)   | https://github.com/helm/helm/releases           | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 包管理器   |
-| GitHub CLI   | `2.103.3` | `2.104.0`            | `2.104.0`            | `2.104.0`            | https://github.com/cli/cli/releases             | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | GitHub 命令行工具     |
+| GitHub CLI   | `2.104.0` | `2.104.0` (已是最新) | `2.104.0` (已是最新) | `2.104.0` (已是最新) | https://github.com/cli/cli/releases             | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | GitHub 命令行工具     |
 | Gitea CLI    | `0.16.0`  | `0.16.0` (已是最新)  | `0.16.0` (已是最新)  | `0.16.0` (已是最新)  | https://gitea.com/gitea/tea/releases            | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | Gitea 命令行工具      |
 
 ---
@@ -137,7 +137,7 @@
 
 | 项目    | 仓库                | Commit    | MAJOR 最新版本       | MINOR 最新版本       | PATCH 最新版本       | 查询地址                                      | 引用文件          | 说明              |
 |---------|---------------------|-----------|----------------------|----------------------|----------------------|-----------------------------------------------|-------------------|-------------------|
-| ComfyUI | `Comfy-Org/ComfyUI` | `v0.44.0` | `v0.45.0`            | `v0.44.0` (已是最新) | `v0.44.0` (已是最新) | https://github.com/Comfy-Org/ComfyUI/releases | `comfyui/code.sh` | AI 图像生成工作流 |
+| ComfyUI | `Comfy-Org/ComfyUI` | `v0.45.0` | `v0.45.0` (已是最新)  | `v0.45.0` (已是最新)  | `v0.45.0` (已是最新)  | https://github.com/Comfy-Org/ComfyUI/releases | `comfyui/code.sh` | AI 图像生成工作流 |
 
 ---
 
@@ -237,13 +237,9 @@
   版本号不会自动跟进。其中 Docker CE、k3s、Android SDK Platform 36/35、
   build-tools 36/35、NDK 28、CMake 的当前版本已是所在版本线最新，但上游已有
   更新的主版本线（见 MAJOR 列）。
-- 下列组件「版本」列落后于上游，需手动升级：Ubuntu 基础镜像当前
-  `resolute-20261024.1`，上游已发布 `resolute-20261105.1`；Gitea Runner 当前
-  `5.4.1`（5.x 线最新），上游已发布 `6.0.0`；Node.js 当前 `24.22.2`，
-  24.22 线已有 `24.22.3`，上游最新为 `26.13.1`；Qwen Code 当前 `0.26.8`，
-  0.26 线已有 `0.26.9`，上游最新为 `0.27.3`；GitHub CLI 当前 `2.103.3`，
-  上游已发布 `2.104.0`；Flutter 当前 `3.47.9`（3.47 线最新），上游已发布
-  `3.50.0`；ComfyUI 当前 `v0.44.0`（0.44 线最新），上游已发布 `v0.45.0`。
+- 下列组件「版本」列落后于上游，需手动升级：Flutter 当前 `3.47.9`（3.47 线最新），
+  上游已发布 `3.50.0`。Node.js 当前 `24.22.3` 已是 24.22 线最新，上游最新为
+  `26.13.1`（跨主版本线，暂不跟进）。
 - `torchvision` `0.29.*`、`torchcodec` `0.17.*`、`torchaudio` `2.11.*` 以通配补丁位锁定，
   构建时自动取该版本线最新补丁，无需手动跟进。
 - `pytorch/pytorch` 同一 torch 版本另有 `2.15.0-cuda13.4-cudnn9-runtime`
