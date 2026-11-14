@@ -85,7 +85,7 @@ if [[ ! -f /etc/apt/sources.list.d/huaweicloud.sources ]]; then
   cat > /etc/apt/sources.list.d/huaweicloud.sources <<EOF
 Types: deb
 URIs: ${APT_MIRROR_URI}
-Suites: resolute resolute-updates resolute-security
+Suites: stonking stonking-updates stonking-security
 Components: main universe restricted
 Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
 EOF

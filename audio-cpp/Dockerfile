@@ -1,4 +1,4 @@
-# 基础镜像：Ubuntu 26.04 (resolute)
+# 基础镜像：Ubuntu 26.10 (stonking)
 FROM ghcr.io/ganecheng/ubuntu:20261114_195222-x86_64
 
 # 构建参数：audio.cpp 版本号（latest 跟随最新 release，其他值视为固定 tag）

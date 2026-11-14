@@ -88,4 +88,4 @@ RUN git clone --depth 1 --branch ${FLUTTER_VERSION} https://github.com/flutter/f
 RUN mkdir -p /root/.gradle \
     && printf 'org.gradle.daemon=false\n' > /root/.gradle/gradle.properties
 
-ENV GITEA_RUNNER_LABELS_DEFAULT="ubuntu${ARCH_SUFFIX}-latest,ubuntu${ARCH_SUFFIX}-26.04,ubuntu${ARCH_SUFFIX}-flutter"
+ENV GITEA_RUNNER_LABELS_DEFAULT="ubuntu${ARCH_SUFFIX}-latest,ubuntu${ARCH_SUFFIX}-26.10,ubuntu${ARCH_SUFFIX}-flutter"

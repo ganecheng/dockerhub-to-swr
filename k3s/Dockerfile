@@ -1,4 +1,4 @@
-# 基础镜像：Ubuntu 26.04 (resolute)
+# 基础镜像：Ubuntu 26.10 (stonking)
 FROM ghcr.io/ganecheng/ubuntu:20261114_195222-x86_64
 
 # 构建参数：k3s 版本号，留空时下载最新发布版二进制文件
@@ -95,7 +95,7 @@ EOF_DOCKER
   cat >>/etc/apt/sources.list.d/ubuntu_HuaweiCloud.sources <<'EOF_APT'
 Types: deb
 URIs: https://mirrors.huaweicloud.com/ubuntu/
-Suites: resolute resolute-updates resolute-security
+Suites: stonking stonking-updates stonking-security
 Components: main universe restricted
 Signed-By: /usr/share/keyrings/ubuntu-archive-keyring.gpg
 EOF_APT

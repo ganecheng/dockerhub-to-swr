@@ -15,4 +15,4 @@ ENV GODOT_VERSION=${GODOT_VERSION} \
 COPY gitea-runner-ubuntu/modules/common.sh gitea-runner-ubuntu/modules/godot.sh /tmp/
 RUN bash /tmp/godot.sh && rm -f /tmp/*.sh
 
-ENV GITEA_RUNNER_LABELS_DEFAULT="ubuntu${ARCH_SUFFIX}-latest,ubuntu${ARCH_SUFFIX}-26.04,ubuntu${ARCH_SUFFIX}-godot"
+ENV GITEA_RUNNER_LABELS_DEFAULT="ubuntu${ARCH_SUFFIX}-latest,ubuntu${ARCH_SUFFIX}-26.10,ubuntu${ARCH_SUFFIX}-godot"

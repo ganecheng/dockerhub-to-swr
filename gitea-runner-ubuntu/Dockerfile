@@ -1,7 +1,7 @@
 # 构建参数：基础镜像架构后缀（x86_64 / aarch64）
 ARG BASE_ARCH=x86_64
 
-# 基础镜像：Ubuntu 26.04 (resolute)
+# 基础镜像：Ubuntu 26.10 (stonking)
 FROM ghcr.io/ganecheng/ubuntu:20261114_195222-${BASE_ARCH}
 
 # 构建参数：Gitea Runner 版本号
@@ -134,7 +134,7 @@ ENV \
   GITEA_RUNNER_CONFIG_TEMPLATE_FILE='/opt/config.template.yaml' \
   GITEA_RUNNER_NAME='' \
   GITEA_RUNNER_LABELS='' \
-  GITEA_RUNNER_LABELS_DEFAULT="ubuntu${ARCH_SUFFIX}-latest,ubuntu${ARCH_SUFFIX}-26.04" \
+  GITEA_RUNNER_LABELS_DEFAULT="ubuntu${ARCH_SUFFIX}-latest,ubuntu${ARCH_SUFFIX}-26.10" \
   GITEA_RUNNER_REGISTRATION_TIMEOUT=30 \
   GITEA_RUNNER_REGISTRATION_RETRY_INTERVAL=3 \
   GITEA_RUNNER_TIMEOUT_MINUTES=120 \

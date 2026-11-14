@@ -1,4 +1,4 @@
-# 基础镜像：Ubuntu 26.04 (resolute)
+# 基础镜像：Ubuntu 26.10 (stonking)
 FROM ghcr.io/ganecheng/ubuntu:20261114_195222-x86_64
 
 # 构建参数：ttyd 版本号

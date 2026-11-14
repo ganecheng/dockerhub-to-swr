@@ -4,7 +4,7 @@
 
 | 维度            | Linux 版 (gitea-runner-ubuntu)   | Windows 版 (gitea-runner-windows)               |
 |-----------------|----------------------------------|-------------------------------------------------|
-| 基础镜像        | Ubuntu 26.04                     | windows (Windows Server Core + VS Build Tools)  |
+| 基础镜像        | Ubuntu 26.10                     | windows (Windows Server Core + VS Build Tools)  |
 | Shell           | bash                             | Git Bash (随完整版 Git for Windows 提供)        |
 | 启动脚本        | `run.sh`                         | `run.sh`                                        |
 | 模块脚本        | `modules/*.sh`                   | `modules/*.sh`                                  |
@@ -13,7 +13,7 @@
 | 自定义初始化    | `INIT_SH_FILE`                   | `INIT_SH_FILE`                                  |
 | 配置模板渲染    | bash `eval`                      | bash `eval` (与 Linux 版同实现)                 |
 | qwen 日志格式化 | `python3` + `/opt/fmt_stream.py` | `python3`/`python` + `C:\opt\bin\fmt_stream.py` |
-| Runner 标签     | `ubuntu-latest,ubuntu-26.04`     | `windows-latest,windows-2022`                   |
+| Runner 标签     | `ubuntu-latest,ubuntu-26.10`     | `windows-latest,windows-2022`                   |
 
 ## 镜像结构
 
