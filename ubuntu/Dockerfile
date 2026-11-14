@@ -31,7 +31,7 @@ RUN <<EOF
     findutils util-linux binutils bc file \
     net-tools iproute2 iputils-ping telnet bind9-dnsutils \
     rsync debmirror \
-    zip unzip zstd xz-utils bzip2 gzip dos2unix \
+    zip unzip zstd xz-utils bzip2 gzip pigz dos2unix \
     vim tree jq yq \
     sudo openssl iptables \
     python3 python3-pip python3-venv skopeo aria2
