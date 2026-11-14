@@ -39,7 +39,7 @@ gitea-runner-windows/               ← 基础镜像
 
 | 镜像名称                       | Dockerfile           | 包含组件                                                                                           | Runner 标签                                   |
 |--------------------------------|----------------------|----------------------------------------------------------------------------------------------------|-----------------------------------------------|
-| `gitea-runner-windows`         | `Dockerfile`         | windows 全部组件 + Node.js 24.22.3 + Qwen Code + Python 3 (Chocolatey) + Gitea Runner 6.0.0       | `windows-latest,windows-2022`                 |
+| `gitea-runner-windows`         | `Dockerfile`         | windows 全部组件 + Node.js 26.13.1 + Qwen Code + Python 3 (Chocolatey) + Gitea Runner 6.0.0       | `windows-latest,windows-2022`                 |
 | `gitea-runner-windows-flutter` | `Dockerfile.flutter` | + Flutter 3.47.9 (仅 Windows 桌面)                                                                 | `windows-latest,windows-2022,windows-flutter` |
 | `gitea-runner-windows-godot`   | `Dockerfile.godot`   | + 7-Zip + Godot 4.7.2 (Windows 桌面 + Web 导出模板)                                                | `windows-latest,windows-2022,windows-godot`   |
 

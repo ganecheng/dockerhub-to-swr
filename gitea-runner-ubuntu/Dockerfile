@@ -9,7 +9,7 @@ ARG GITEA_RUNNER_VERSION=6.0.0
 # 构建参数：Docker 引擎版本号（静态二进制）
 ARG DOCKER_VERSION=28.5.2
 # 构建参数：Node.js 版本号
-ARG NODE_VERSION=24.22.3
+ARG NODE_VERSION=26.13.1
 # 构建参数：Qwen Code 版本号
 ARG QWEN_CODE_VERSION=0.27.3
 # 构建参数：kubectl 版本号
