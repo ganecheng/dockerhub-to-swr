@@ -2,7 +2,7 @@
 
 > 本文件统计本仓库中所有 Dockerfile、GitHub Actions workflow 和 shell 脚本引用的开源组件版本号。
 >
-> 最后更新：2026-11-13
+> 最后更新：2026-11-14
 
 ---
 
@@ -10,7 +10,7 @@
 
 | 组件                           | 版本                             | MAJOR 最新版本                   | MINOR 最新版本                   | PATCH 最新版本                   | 查询地址                                                                     | 引用文件                                                                                                                                                                                          | 说明                                                                           |
 |--------------------------------|----------------------------------|----------------------------------|----------------------------------|----------------------------------|------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
-| Ubuntu (resolute)              | `resolute-20261105.1`            | `resolute-20261105.1` (已是最新) | `resolute-20261105.1` (已是最新) | `resolute-20261105.1` (已是最新) | https://github.com/docker-library/official-images/blob/master/library/ubuntu | `ubuntu/Dockerfile`                                                                                                                                                                               | Ubuntu 26.04 基础镜像                                                          |
+| Ubuntu (stonking)              | `stonking-20261105.1`            | `stonking-20261105.1` (已是最新) | `stonking-20261105.1` (已是最新) | `stonking-20261105.1` (已是最新) | https://github.com/docker-library/official-images/blob/master/library/ubuntu | `ubuntu/Dockerfile`                                                                                                                                                                               | Ubuntu 26.10 基础镜像                                                          |
 | pytorch/pytorch                | `2.15.0-cuda13.2-cudnn9-runtime` | `2.15.0` (已是最新)              | `2.15.0` (已是最新)              | `2.15.0` (已是最新)              | https://github.com/pytorch/pytorch/releases                                  | `pytorch/Dockerfile`                                                                                                                                                                              | PyTorch 官方运行时基础镜像 (Ubuntu 24.04 + Python 3.12 + torch/CUDA 13.2 预装) |
 | Windows Server Core (ltsc2025) | `ltsc2025`                       | `ltsc2025` (已是最新)            | `ltsc2025` (已是最新)            | `ltsc2025` (已是最新)            | https://hub.docker.com/r/amitie10g/visualstudio2022-workload-vctools/tags    | `windows/Dockerfile` (via `amitie10g/visualstudio2022-workload-vctools`)                                                                                                                          | Windows 构建基础镜像                                                           |
 | 自建 Ubuntu 镜像               | `20261106_150113`                | -                                | -                                | -                                | https://github.com/users/ganecheng/packages/container/package/ubuntu         | `k3s/Dockerfile`, `dumbproxy/Dockerfile`, `mirrorproxy/Dockerfile`, `download_file/Dockerfile`, `gitea-runner-ubuntu/Dockerfile`, `ttyd/Dockerfile`, `audio-cpp/Dockerfile`, `unbound/Dockerfile` | 基于 `ubuntu/Dockerfile` 构建的内部镜像 (x86_64 / aarch64 双架构)              |
@@ -45,7 +45,7 @@
 | 组件         | 版本      | MAJOR 最新版本       | MINOR 最新版本       | PATCH 最新版本       | 查询地址                                        | 引用文件                                                            | 说明                  |
 |--------------|-----------|----------------------|----------------------|----------------------|-------------------------------------------------|---------------------------------------------------------------------|-----------------------|
 | Gitea Runner | `6.0.0`   | `6.0.0` (已是最新)   | `6.0.0` (已是最新)   | `6.0.0` (已是最新)   | https://gitea.com/gitea/runner/releases         | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | CI/CD Runner          |
-| Node.js      | `24.22.3` | `26.13.1`            | `24.22.3` (已是最新) | `24.22.3` (已是最新) | https://nodejs.org/dist/index.json              | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | JavaScript 运行时     |
+| Node.js      | `26.13.1` | `26.13.1` (已是最新) | `26.13.1` (已是最新) | `26.13.1` (已是最新) | https://nodejs.org/dist/index.json              | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | JavaScript 运行时     |
 | Qwen Code    | `0.27.3`  | `0.27.3` (已是最新)  | `0.27.3` (已是最新)  | `0.27.3` (已是最新)  | https://registry.npmjs.org/@qwen-code/qwen-code | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | 终端 AI 编码助手      |
 | kubectl      | `1.37.2`  | `1.37.2` (已是最新)  | `1.37.2` (已是最新)  | `1.37.2` (已是最新)  | https://dl.k8s.io/release/stable.txt            | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 命令行工具 |
 | Helm         | `4.3.1`   | `4.3.1` (已是最新)   | `4.3.1` (已是最新)   | `4.3.1` (已是最新)   | https://github.com/helm/helm/releases           | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 包管理器   |
@@ -189,7 +189,7 @@
 
 | Workflow      | 镜像                                 | FROM                            | 定时触发              | 自动 PR 分支               |
 |---------------|--------------------------------------|---------------------------------|-----------------------|----------------------------|
-| `ubuntu.yml`  | `gsc-hub/ubuntu:<ts>-x86_64/aarch64` | 官方 Ubuntu 26.04               | Gitea 触发 周五 15:00 | `auto/update-ubuntu-base`  |
+| `ubuntu.yml`  | `gsc-hub/ubuntu:<ts>-x86_64/aarch64` | 官方 Ubuntu 26.10               | Gitea 触发 周五 15:00 | `auto/update-ubuntu-base`  |
 | `windows.yml` | `gsc-hub/windows:<ts>-x86_64`        | Windows Server Core (ltsc2025)  | Gitea 触发 周五 15:00 | `auto/update-windows-base` |
 | `pytorch.yml` | `gsc-hub/pytorch:<ts>-x86_64`        | pytorch/pytorch 2.15.0-cuda13.2 | Gitea 触发 周五 15:00 | `auto/update-pytorch-base` |
 
@@ -238,8 +238,7 @@
   build-tools 36/35、NDK 28、CMake 的当前版本已是所在版本线最新，但上游已有
   更新的主版本线（见 MAJOR 列）。
 - 下列组件「版本」列落后于上游，需手动升级：Flutter 当前 `3.47.9`（3.47 线最新），
-  上游已发布 `3.50.0`。Node.js 当前 `24.22.3` 已是 24.22 线最新，上游最新为
-  `26.13.1`（跨主版本线，暂不跟进）。
+  上游已发布 `3.50.0`。
 - `torchvision` `0.29.*`、`torchcodec` `0.17.*`、`torchaudio` `2.11.*` 以通配补丁位锁定，
   构建时自动取该版本线最新补丁，无需手动跟进。
 - `pytorch/pytorch` 同一 torch 版本另有 `2.15.0-cuda13.4-cudnn9-runtime`
