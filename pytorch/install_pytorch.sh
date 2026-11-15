@@ -12,14 +12,11 @@ pip install --no-cache-dir \
 
 pip install --no-cache-dir --no-deps \
     torchaudio==2.11.* \
-    --index-url https://download.pytorch.org/whl/cu130
+    --index-url https://download.pytorch.org/whl/cu134
 
-# torchaudio (cu130) 与 torch (cu132) CUDA 版本不匹配，注释掉版本检查避免 RuntimeError
-SITE_PACKAGES=$(python3 -c "import site; print(site.getsitepackages()[0])" 2>/dev/null)
-TORCHAUDIO_INIT="${SITE_PACKAGES}/torchaudio/_extension/__init__.py"
-if [ -f "$TORCHAUDIO_INIT" ]; then
-    sed -i '/^[[:space:]]*_check_cuda_version()[[:space:]]*$/s/^/#/' "$TORCHAUDIO_INIT"
-fi
+# 校验两个补装的库能否真正加载：torchaudio 导入即触发 CUDA 版本检查，
+# torchcodec 导入不会因缺 ffmpeg 报错，必须断言探测到 ffmpeg 才算可用
+python3 -c "import torchaudio, torchcodec; print(torchaudio.__version__, torchcodec.__version__, 'ffmpeg' + str(torchcodec.ffmpeg_major_version)); assert torchcodec.ffmpeg_major_version, 'torchcodec 未能加载 ffmpeg'"
 
 # 清理无用文件
 sh /os_clean.sh
