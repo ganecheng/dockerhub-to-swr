@@ -122,7 +122,7 @@
 | PyTorch         | `2.15.0` (基础镜像内置) | `2.15.0` (已是最新) | `2.15.0` (已是最新) | `2.15.0` (已是最新) | https://pypi.org/project/torch/           | `pytorch/Dockerfile`                         | 深度学习框架 (pytorch 官方镜像预装) |
 | torchvision     | `0.29.*` (基础镜像内置) | `0.29.2` (已是最新) | `0.29.2` (已是最新) | `0.29.2` (已是最新) | https://pypi.org/project/torchvision/     | `pytorch/Dockerfile`                         | 计算机视觉库 (pytorch 官方镜像预装) |
 | torchcodec      | `0.17.*`                | `0.17.0` (已是最新) | `0.17.0` (已是最新) | `0.17.0` (已是最新) | https://pypi.org/project/torchcodec/      | `pytorch/install_pytorch.sh`                 | 视频编解码库 (cu132 wheel)          |
-| torchaudio      | `2.11.*`                | `2.11.1` (已是最新) | `2.11.1` (已是最新) | `2.11.1` (已是最新) | https://pypi.org/project/torchaudio/      | `pytorch/install_pytorch.sh`                 | 音频处理库 (cu130 wheel)            |
+| torchaudio      | `2.11.*` (基础镜像内置) | `2.11.1` (已是最新) | `2.11.1` (已是最新) | `2.11.1` (已是最新) | https://pypi.org/project/torchaudio/      | `pytorch/Dockerfile`                         | 音频处理库 (pytorch 官方镜像预装)   |
 | uv              | latest (`-U`)           | -                   | -                   | -                   | https://pypi.org/project/uv/              | `pytorch/os_init.sh`                         | Python 包管理器                     |
 | huggingface-hub | latest (`[cli,hf_xet]`) | -                   | -                   | -                   | https://pypi.org/project/huggingface-hub/ | `pytorch/os_init.sh`                         | HuggingFace 模型下载工具            |
 | modelscope      | latest                  | -                   | -                   | -                   | https://pypi.org/project/modelscope/      | `pytorch/os_init.sh`                         | ModelScope 模型下载工具             |
@@ -239,13 +239,17 @@
   更新的主版本线（见 MAJOR 列）。
 - 当前无「版本」列落后于上游的组件：Helm 已升级到 `4.3.2`，Flutter 已升级到
   `3.50.0`，均与上游最新版本一致。
-- `torchvision` `0.29.*`、`torchcodec` `0.17.*`、`torchaudio` `2.11.*` 以通配补丁位锁定，
-  构建时自动取该版本线最新补丁，无需手动跟进。
+- `torchcodec` `0.17.*` 以通配补丁位锁定，构建时自动取该版本线最新补丁，无需手动跟进；
+  `torch` / `torchvision` / `torchaudio` 由 `pytorch/pytorch` 基镜像提供，跟随基镜像 tag 变更。
 - `pytorch/pytorch` 同一 torch 版本另有 `2.15.0-cuda13.2-cudnn9-runtime` 变体，
-  当前基础镜像使用 `2.15.0-cuda13.4-cudnn9-runtime`；`install_pytorch.sh` 仍从
-  `cu132` / `cu130` 轮子索引安装 `torchcodec` / `torchaudio`（并注释掉 torchaudio 的
-  CUDA 版本检查），因此镜像内 torch 与这两个库的 CUDA 小版本并不完全一致。
-  「版本」列按镜像 tag 记录，版本线比较以 torch 版本为准。
+  当前基础镜像使用 `2.15.0-cuda13.4-cudnn9-runtime`，已预装 torch、torchvision、
+  torchaudio（均为 `+cu134` 构建），脚本不再重复安装；`install_pytorch.sh` 只从
+  `cu132` 索引补装 torchcodec（`cu134` 索引未发布该包），因此只有 torchcodec 的
+  CUDA 小版本与 torch 不同，加载不受影响。「版本」列按镜像 tag 记录，版本线比较
+  以 torch 版本为准。
+- torchaudio 2.11 的 `_check_cuda_version()` 只比较 CUDA 主版本，基镜像与
+  torchaudio 又同为 cu134；旧版为规避 cu130 / cu132 不匹配而注释该检查的兼容
+  处理已移除，改由 `install_pytorch.sh` 开头的导入校验兜住加载问题。
 - GitHub Actions 使用主版本浮标签（如 `actions/checkout@v7`），
   workflow 会自动跟随该主版本线的最新发布，无需逐次修改版本号。
 - 标注为 "apt 默认最新" 的组件未锁定具体版本号，随 Ubuntu 仓库更新而变化。
