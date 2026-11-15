@@ -2,7 +2,7 @@
 
 > 本文件统计本仓库中所有 Dockerfile、GitHub Actions workflow 和 shell 脚本引用的开源组件版本号。
 >
-> 最后更新：2026-11-14
+> 最后更新：2026-11-15
 
 ---
 
@@ -48,7 +48,7 @@
 | Node.js      | `26.13.1` | `26.13.1` (已是最新) | `26.13.1` (已是最新) | `26.13.1` (已是最新) | https://nodejs.org/dist/index.json              | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | JavaScript 运行时     |
 | Qwen Code    | `0.27.3`  | `0.27.3` (已是最新)  | `0.27.3` (已是最新)  | `0.27.3` (已是最新)  | https://registry.npmjs.org/@qwen-code/qwen-code | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | 终端 AI 编码助手      |
 | kubectl      | `1.37.2`  | `1.37.2` (已是最新)  | `1.37.2` (已是最新)  | `1.37.2` (已是最新)  | https://dl.k8s.io/release/stable.txt            | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 命令行工具 |
-| Helm         | `4.3.1`   | `4.3.2`              | `4.3.2`              | `4.3.2`              | https://github.com/helm/helm/releases           | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 包管理器   |
+| Helm         | `4.3.2`   | `4.3.2` (已是最新)   | `4.3.2` (已是最新)   | `4.3.2` (已是最新)   | https://github.com/helm/helm/releases           | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 包管理器   |
 | GitHub CLI   | `2.104.0` | `2.104.0` (已是最新) | `2.104.0` (已是最新) | `2.104.0` (已是最新) | https://github.com/cli/cli/releases             | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | GitHub 命令行工具     |
 | Gitea CLI    | `0.16.0`  | `0.16.0` (已是最新)  | `0.16.0` (已是最新)  | `0.16.0` (已是最新)  | https://gitea.com/gitea/tea/releases            | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | Gitea 命令行工具      |
 
@@ -237,8 +237,8 @@
   版本号不会自动跟进。其中 Docker CE、k3s、Android SDK Platform 36/35、
   build-tools 36/35、NDK 28、CMake 的当前版本已是所在版本线最新，但上游已有
   更新的主版本线（见 MAJOR 列）。
-- 下列组件「版本」列落后于上游，需手动升级：Helm 当前 `4.3.1`（4.3 线），
-  上游已发布 `4.3.2`。Flutter 已升级到 `3.50.0`，与上游最新稳定版一致。
+- 当前无「版本」列落后于上游的组件：Helm 已升级到 `4.3.2`，Flutter 已升级到
+  `3.50.0`，均与上游最新版本一致。
 - `torchvision` `0.29.*`、`torchcodec` `0.17.*`、`torchaudio` `2.11.*` 以通配补丁位锁定，
   构建时自动取该版本线最新补丁，无需手动跟进。
 - `pytorch/pytorch` 同一 torch 版本另有 `2.15.0-cuda13.2-cudnn9-runtime` 变体，

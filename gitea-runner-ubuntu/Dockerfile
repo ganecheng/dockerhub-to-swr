@@ -15,7 +15,7 @@ ARG QWEN_CODE_VERSION=0.27.3
 # 构建参数：kubectl 版本号
 ARG KUBECTL_VERSION=1.37.2
 # 构建参数：Helm 版本号
-ARG HELM_VERSION=4.3.1
+ARG HELM_VERSION=4.3.2
 # 构建参数：GitHub CLI (gh) 版本号
 ARG GH_VERSION=2.104.0
 # 构建参数：Gitea CLI (tea) 版本号
