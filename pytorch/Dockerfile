@@ -17,6 +17,7 @@ COPY pytorch/install_pytorch.sh /install_pytorch.sh
 
 # 设置时区
 ENV TZ=Asia/Shanghai
+ENV SHELL=/bin/bash
 
 # 设置全局命令
 ENV PATH="$PATH:/root/.local/bin"

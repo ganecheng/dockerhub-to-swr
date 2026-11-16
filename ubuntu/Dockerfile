@@ -69,6 +69,7 @@ EOF
 # 默认环境变量
 ENV TZ='Asia/Shanghai'
 ENV LANG=zh_CN.UTF-8
+ENV SHELL=/bin/bash
 
 # 使用 tini 作为 PID 1，正确处理信号和僵尸进程
 ENTRYPOINT ["/usr/bin/tini", "--"]
