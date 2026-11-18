@@ -2,7 +2,7 @@
 
 > 本文件统计本仓库中所有 Dockerfile、GitHub Actions workflow 和 shell 脚本引用的开源组件版本号。
 >
-> 最后更新：2026-11-16
+> 最后更新：2026-11-18
 
 ---
 
@@ -23,7 +23,7 @@
 
 | 组件             | 版本            | MAJOR 最新版本      | MINOR 最新版本             | PATCH 最新版本             | 查询地址                                                | 引用文件                                                                                                               | 说明                                                            |
 |------------------|-----------------|---------------------|----------------------------|----------------------------|---------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------|
-| Docker CE        | `28.5.2`        | `29.9.3`            | `28.5.2` (已是最新)        | `28.5.2` (已是最新)        | https://download.docker.com/linux/static/stable/x86_64/ | `gitea-runner-ubuntu/Dockerfile` (静态二进制), 各 workflow (`docker/setup-docker-action@v5` with `version: 'v28.5.2'`) | 容器引擎 (28.x 已被 29.x 取代)                                  |
+| Docker CE        | `28.5.2`        | `29.10.0`           | `28.5.2` (已是最新)        | `28.5.2` (已是最新)        | https://download.docker.com/linux/static/stable/x86_64/ | `gitea-runner-ubuntu/Dockerfile` (静态二进制), 各 workflow (`docker/setup-docker-action@v5` with `version: 'v28.5.2'`) | 容器引擎 (28.x 已被 29.x 取代)                                  |
 | Docker CE (apt)  | apt 默认最新    | -                   | -                          | -                          | https://download.docker.com/linux/ubuntu/               | `k3s/Dockerfile`                                                                                                       | 通过 Docker 官方 APT 源安装                                     |
 | containerd.io    | apt 默认最新    | -                   | -                          | -                          | https://download.docker.com/linux/ubuntu/               | `k3s/Dockerfile`                                                                                                       | Docker CE 运行依赖                                              |
 | k3s              | `v1.34.13+k3s1` | `v1.37.2+k3s1`      | `v1.34.13+k3s1` (已是最新) | `v1.34.13+k3s1` (已是最新) | https://update.k3s.io/v1-release/channels               | `k3s/Dockerfile`                                                                                                       | 轻量级 Kubernetes 发行版                                        |
@@ -46,10 +46,10 @@
 |--------------|-----------|----------------------|----------------------|----------------------|-------------------------------------------------|---------------------------------------------------------------------|-----------------------|
 | Gitea Runner | `6.0.0`   | `6.0.0` (已是最新)   | `6.0.0` (已是最新)   | `6.0.0` (已是最新)   | https://gitea.com/gitea/runner/releases         | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | CI/CD Runner          |
 | Node.js      | `26.13.1` | `26.13.1` (已是最新) | `26.13.1` (已是最新) | `26.13.1` (已是最新) | https://nodejs.org/dist/index.json              | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | JavaScript 运行时     |
-| Qwen Code    | `0.27.3`  | `0.27.4`             | `0.27.4`             | `0.27.4`             | https://registry.npmjs.org/@qwen-code/qwen-code | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | 终端 AI 编码助手      |
+| Qwen Code    | `0.27.3`  | `0.28.0`             | `0.27.4`             | `0.27.4`             | https://registry.npmjs.org/@qwen-code/qwen-code | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | 终端 AI 编码助手      |
 | kubectl      | `1.37.2`  | `1.37.2` (已是最新)  | `1.37.2` (已是最新)  | `1.37.2` (已是最新)  | https://dl.k8s.io/release/stable.txt            | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 命令行工具 |
 | Helm         | `4.3.2`   | `4.3.2` (已是最新)   | `4.3.2` (已是最新)   | `4.3.2` (已是最新)   | https://github.com/helm/helm/releases           | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 包管理器   |
-| GitHub CLI   | `2.104.0` | `2.104.0` (已是最新) | `2.104.0` (已是最新) | `2.104.0` (已是最新) | https://github.com/cli/cli/releases             | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | GitHub 命令行工具     |
+| GitHub CLI   | `2.104.0` | `2.105.0`            | `2.104.0` (已是最新) | `2.104.0` (已是最新) | https://github.com/cli/cli/releases             | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | GitHub 命令行工具     |
 | Gitea CLI    | `0.16.0`  | `0.16.0` (已是最新)  | `0.16.0` (已是最新)  | `0.16.0` (已是最新)  | https://gitea.com/gitea/tea/releases            | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | Gitea 命令行工具      |
 
 ---
@@ -238,9 +238,10 @@
   build-tools 36/35、NDK 28、CMake 的当前版本已是所在版本线最新，但上游已有
   更新的主版本线（见 MAJOR 列）。
 - 当前「版本」列落后于上游的组件：`audio.cpp`（`v0.9.4` → 最新 `v0.9.5`）、
-  Qwen Code（`0.27.3` → 最新 `0.27.4`）、Apache Maven（`3.10.0` → 最新
-  `3.10.1`）；其余组件（如 Helm `4.3.2`、Flutter `3.50.0`、ComfyUI
-  `v0.45.0`）均与上游最新版本一致。
+  Qwen Code（`0.27.3` → 最新 `0.28.0`，跨一个次版本线，`0.27` 线最新为
+  `0.27.4`）、GitHub CLI（`2.104.0` → 最新 `2.105.0`）、Apache Maven
+  （`3.10.0` → 最新 `3.10.1`）；其余组件（如 Helm `4.3.2`、Flutter
+  `3.50.0`、ComfyUI `v0.45.0`）均与上游最新版本一致。
 - `torchcodec` `0.17.*` 以通配补丁位锁定，构建时自动取该版本线最新补丁，无需手动跟进；
   `torch` / `torchvision` / `torchaudio` 由 `pytorch/pytorch` 基镜像提供，跟随基镜像 tag 变更。
 - `pytorch/pytorch` 同一 torch 版本另有 `2.15.0-cuda13.2-cudnn9-runtime` 变体，
