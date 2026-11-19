@@ -2,7 +2,7 @@
 
 > 本文件统计本仓库中所有 Dockerfile、GitHub Actions workflow 和 shell 脚本引用的开源组件版本号。
 >
-> 最后更新：2026-11-18
+> 最后更新：2026-11-20
 
 ---
 
@@ -32,7 +32,7 @@
 | yq               | apt 默认最新    | -                   | -                          | -                          | -                                                       | `ubuntu/Dockerfile`                                                                                                    | YAML 处理工具                                                   |
 | Linux 编译工具链 | apt 默认最新    | -                   | -                          | -                          | -                                                       | `gitea-runner-ubuntu/Dockerfile`                                                                                       | build-essential/clang/cmake/ninja-build/pkg-config/libgtk-3-dev |
 | dumbproxy        | `1.52.2`        | `1.52.2` (已是最新) | `1.52.2` (已是最新)        | `1.52.2` (已是最新)        | https://github.com/SenseUnit/dumbproxy/releases         | `dumbproxy/Dockerfile`                                                                                                 | 轻量 HTTP 代理                                                  |
-| MirrorProxy      | `1.7.2-ext6`    | `1.7.3`             | `1.7.3`                    | `1.7.3`                    | https://github.com/ganecheng/MirrorProxy/releases       | `mirrorproxy/Dockerfile`                                                                                               | 自部署镜像代理平台 (自建修复版)                                 |
+| MirrorProxy      | `1.7.2-ext6`    | `1.8.0`             | `1.7.3`                    | `1.7.3`                    | https://github.com/ganecheng/MirrorProxy/releases       | `mirrorproxy/Dockerfile`                                                                                               | 自部署镜像代理平台 (自建修复版)                                 |
 | ttyd             | `1.7.7`         | `1.7.7` (已是最新)  | `1.7.7` (已是最新)         | `1.7.7` (已是最新)         | https://github.com/tsl0922/ttyd/releases                | `ttyd/Dockerfile`                                                                                                      | Web 终端共享工具                                                |
 | audio.cpp        | `v0.9.4`        | `v0.9.5`            | `v0.9.5`                   | `v0.9.5`                   | https://github.com/0xShug0/audio.cpp/releases           | `audio-cpp/Dockerfile`                                                                                                 | 语音 AI 推理服务 (Vulkan 预编译二进制)                          |
 | unbound          | apt 默认最新    | -                   | -                          | -                          | -                                                       | `unbound/Dockerfile`                                                                                                   | 验证性递归缓存 DNS 解析器                                       |
@@ -137,7 +137,7 @@
 
 | 项目    | 仓库                | Commit    | MAJOR 最新版本       | MINOR 最新版本       | PATCH 最新版本       | 查询地址                                      | 引用文件          | 说明              |
 |---------|---------------------|-----------|----------------------|----------------------|----------------------|-----------------------------------------------|-------------------|-------------------|
-| ComfyUI | `Comfy-Org/ComfyUI` | `v0.45.0` | `v0.45.0` (已是最新) | `v0.45.0` (已是最新) | `v0.45.0` (已是最新) | https://github.com/Comfy-Org/ComfyUI/releases | `comfyui/code.sh` | AI 图像生成工作流 |
+| ComfyUI | `Comfy-Org/ComfyUI` | `v0.45.0` | `v0.46.0`            | `v0.45.0` (已是最新) | `v0.45.0` (已是最新) | https://github.com/Comfy-Org/ComfyUI/releases | `comfyui/code.sh` | AI 图像生成工作流 |
 
 ---
 
@@ -240,8 +240,9 @@
 - 当前「版本」列落后于上游的组件：`audio.cpp`（`v0.9.4` → 最新 `v0.9.5`）、
   Qwen Code（`0.27.3` → 最新 `0.28.0`，跨一个次版本线，`0.27` 线最新为
   `0.27.4`）、GitHub CLI（`2.104.0` → 最新 `2.105.0`）、Apache Maven
-  （`3.10.0` → 最新 `3.10.1`）；其余组件（如 Helm `4.3.2`、Flutter
-  `3.50.0`、ComfyUI `v0.45.0`）均与上游最新版本一致。
+  （`3.10.0` → 最新 `3.10.1`）、ComfyUI（`v0.45.0` → 最新 `v0.46.0`）、
+  MirrorProxy（`v1.7.2-ext6` → 上游最新 `v1.8.0`）；其余组件（如 Helm
+  `4.3.2`、Flutter `3.50.0`、Godot `4.7.2`）均与上游最新版本一致。
 - `torchcodec` `0.17.*` 以通配补丁位锁定，构建时自动取该版本线最新补丁，无需手动跟进；
   `torch` / `torchvision` / `torchaudio` 由 `pytorch/pytorch` 基镜像提供，跟随基镜像 tag 变更。
 - `pytorch/pytorch` 同一 torch 版本另有 `2.15.0-cuda13.2-cudnn9-runtime` 变体，
@@ -267,7 +268,7 @@
 - `audio.cpp` 另有模型变体 tag（如 `v0.9.2-drama3-base-small`）与应用版本同源，
   不计入版本线比较；「版本」列按 Dockerfile 中锁定的应用版本记录。
 - `MirrorProxy` 使用自建修复版标签 `v1.7.2-ext6`（基于上游 `v1.7.2`），
-  用于修正上游原版问题；版本线比较仍按上游 `1.7.2` 计，
-  上游已发布 `1.7.3`，自建修复版尚未跟进。
+  用于修正上游原版问题；版本线比较仍按上游 `1.7.2` 计。上游 `1.7` 线
+  最新为 `1.7.3`，并已发布 `1.8.0`（MAJOR 列），自建修复版尚未跟进。
 - AI 模型项目通过 git commit hash 或 tag 锁定代码版本，具体依赖（如 `requirements.txt`）在构建时从上游仓库动态拉取。
 - 本仓库不存在 `requirements.txt`、`package.json`、`pom.xml`、`go.mod` 等传统依赖声明文件。
