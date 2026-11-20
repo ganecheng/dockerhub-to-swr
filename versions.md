@@ -34,7 +34,7 @@
 | dumbproxy        | `1.52.2`        | `1.52.2` (已是最新) | `1.52.2` (已是最新)        | `1.52.2` (已是最新)        | https://github.com/SenseUnit/dumbproxy/releases         | `dumbproxy/Dockerfile`                                                                                                 | 轻量 HTTP 代理                                                  |
 | MirrorProxy      | `1.7.2-ext6`    | `1.8.0`             | `1.7.3`                    | `1.7.3`                    | https://github.com/ganecheng/MirrorProxy/releases       | `mirrorproxy/Dockerfile`                                                                                               | 自部署镜像代理平台 (自建修复版)                                 |
 | ttyd             | `1.7.7`         | `1.7.7` (已是最新)  | `1.7.7` (已是最新)         | `1.7.7` (已是最新)         | https://github.com/tsl0922/ttyd/releases                | `ttyd/Dockerfile`                                                                                                      | Web 终端共享工具                                                |
-| audio.cpp        | `v0.9.4`        | `v0.9.5`            | `v0.9.5`                   | `v0.9.5`                   | https://github.com/0xShug0/audio.cpp/releases           | `audio-cpp/Dockerfile`                                                                                                 | 语音 AI 推理服务 (Vulkan 预编译二进制)                          |
+| audio.cpp        | `v0.9.5`        | `v0.9.5` (已是最新) | `v0.9.5` (已是最新)        | `v0.9.5` (已是最新)        | https://github.com/0xShug0/audio.cpp/releases           | `audio-cpp/Dockerfile`                                                                                                 | 语音 AI 推理服务 (Vulkan 预编译二进制)                          |
 | unbound          | apt 默认最新    | -                   | -                          | -                          | -                                                       | `unbound/Dockerfile`                                                                                                   | 验证性递归缓存 DNS 解析器                                       |
 | dind 辅助脚本    | `master`        | -                   | -                          | -                          | https://github.com/moby/moby/tree/master/hack           | `k3s/Dockerfile`, `gitea-runner-ubuntu/Dockerfile`                                                                     | 来自 `moby/moby` 的嵌套 Docker 配置                             |
 
@@ -46,10 +46,10 @@
 |--------------|-----------|----------------------|----------------------|----------------------|-------------------------------------------------|---------------------------------------------------------------------|-----------------------|
 | Gitea Runner | `6.0.0`   | `6.0.0` (已是最新)   | `6.0.0` (已是最新)   | `6.0.0` (已是最新)   | https://gitea.com/gitea/runner/releases         | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | CI/CD Runner          |
 | Node.js      | `26.13.1` | `26.13.1` (已是最新) | `26.13.1` (已是最新) | `26.13.1` (已是最新) | https://nodejs.org/dist/index.json              | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | JavaScript 运行时     |
-| Qwen Code    | `0.27.3`  | `0.28.0`             | `0.27.4`             | `0.27.4`             | https://registry.npmjs.org/@qwen-code/qwen-code | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | 终端 AI 编码助手      |
+| Qwen Code    | `0.28.0`  | `0.28.0` (已是最新)  | `0.28.0` (已是最新)  | `0.28.0` (已是最新)  | https://registry.npmjs.org/@qwen-code/qwen-code | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | 终端 AI 编码助手      |
 | kubectl      | `1.37.2`  | `1.37.2` (已是最新)  | `1.37.2` (已是最新)  | `1.37.2` (已是最新)  | https://dl.k8s.io/release/stable.txt            | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 命令行工具 |
 | Helm         | `4.3.2`   | `4.3.2` (已是最新)   | `4.3.2` (已是最新)   | `4.3.2` (已是最新)   | https://github.com/helm/helm/releases           | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 包管理器   |
-| GitHub CLI   | `2.104.0` | `2.105.0`            | `2.104.0` (已是最新) | `2.104.0` (已是最新) | https://github.com/cli/cli/releases             | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | GitHub 命令行工具     |
+| GitHub CLI   | `2.105.0` | `2.105.0` (已是最新) | `2.105.0` (已是最新) | `2.105.0` (已是最新) | https://github.com/cli/cli/releases             | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | GitHub 命令行工具     |
 | Gitea CLI    | `0.16.0`  | `0.16.0` (已是最新)  | `0.16.0` (已是最新)  | `0.16.0` (已是最新)  | https://gitea.com/gitea/tea/releases            | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | Gitea 命令行工具      |
 
 ---
@@ -62,7 +62,7 @@
 | OpenJDK 25 (Temurin) | latest GA | -                   | -                   | -                   | https://api.adoptium.net/v3/info/release_names | `gitea-runner-ubuntu/modules/jdk25.sh`, `gitea-runner-ubuntu/modules/jmeter.sh`                                            | Eclipse Temurin JDK 25 |
 | GraalVM JDK 21       | latest    | -                   | -                   | -                   | https://www.graalvm.org/downloads/             | `gitea-runner-ubuntu/modules/graalvm-jdk21.sh`                                                                             | Oracle GraalVM JDK 21  |
 | GraalVM JDK 25       | latest    | -                   | -                   | -                   | https://www.graalvm.org/downloads/             | `gitea-runner-ubuntu/modules/graalvm-jdk25.sh`                                                                             | Oracle GraalVM JDK 25  |
-| Apache Maven         | `3.10.0`  | `3.10.1`            | `3.10.1`            | `3.10.1`            | https://github.com/apache/maven/releases       | `gitea-runner-ubuntu/modules/graalvm-jdk21.sh`, `graalvm-jdk25.sh`, `jdk21.sh`, `jdk25.sh` (`common.sh` 提供函数)          | 项目构建工具           |
+| Apache Maven         | `3.10.1`  | `3.10.1` (已是最新) | `3.10.1` (已是最新) | `3.10.1` (已是最新) | https://github.com/apache/maven/releases       | `gitea-runner-ubuntu/modules/graalvm-jdk21.sh`, `graalvm-jdk25.sh`, `jdk21.sh`, `jdk25.sh` (`common.sh` 提供函数)          | 项目构建工具           |
 | Apache JMeter        | `5.6.3`   | `5.6.3` (已是最新)  | `5.6.3` (已是最新)  | `5.6.3` (已是最新)  | https://github.com/apache/jmeter/releases      | `gitea-runner-ubuntu/modules/jmeter.sh` (`common.sh` 提供函数)                                                             | 性能测试工具           |
 
 ---
@@ -137,7 +137,7 @@
 
 | 项目    | 仓库                | Commit    | MAJOR 最新版本       | MINOR 最新版本       | PATCH 最新版本       | 查询地址                                      | 引用文件          | 说明              |
 |---------|---------------------|-----------|----------------------|----------------------|----------------------|-----------------------------------------------|-------------------|-------------------|
-| ComfyUI | `Comfy-Org/ComfyUI` | `v0.45.0` | `v0.46.0`            | `v0.45.0` (已是最新) | `v0.45.0` (已是最新) | https://github.com/Comfy-Org/ComfyUI/releases | `comfyui/code.sh` | AI 图像生成工作流 |
+| ComfyUI | `Comfy-Org/ComfyUI` | `v0.46.0` | `v0.46.0` | `v0.46.0` (已是最新) | `v0.46.0` (已是最新) | https://github.com/Comfy-Org/ComfyUI/releases | `comfyui/code.sh` | AI 图像生成工作流 |
 
 ---
 
@@ -237,12 +237,9 @@
   版本号不会自动跟进。其中 Docker CE、k3s、Android SDK Platform 36/35、
   build-tools 36/35、NDK 28、CMake 的当前版本已是所在版本线最新，但上游已有
   更新的主版本线（见 MAJOR 列）。
-- 当前「版本」列落后于上游的组件：`audio.cpp`（`v0.9.4` → 最新 `v0.9.5`）、
-  Qwen Code（`0.27.3` → 最新 `0.28.0`，跨一个次版本线，`0.27` 线最新为
-  `0.27.4`）、GitHub CLI（`2.104.0` → 最新 `2.105.0`）、Apache Maven
-  （`3.10.0` → 最新 `3.10.1`）、ComfyUI（`v0.45.0` → 最新 `v0.46.0`）、
-  MirrorProxy（`v1.7.2-ext6` → 上游最新 `v1.8.0`）；其余组件（如 Helm
-  `4.3.2`、Flutter `3.50.0`、Godot `4.7.2`）均与上游最新版本一致。
+- 当前「版本」列落后于上游的组件：MirrorProxy（`v1.7.2-ext6` → 上游最新    
+  `v1.8.0`）；其余组件（如 Helm `4.3.2`、Flutter `3.50.0`、Godot `4.7.2`） 
+  均与上游最新版本一致。                                                   
 - `torchcodec` `0.17.*` 以通配补丁位锁定，构建时自动取该版本线最新补丁，无需手动跟进；
   `torch` / `torchvision` / `torchaudio` 由 `pytorch/pytorch` 基镜像提供，跟随基镜像 tag 变更。
 - `pytorch/pytorch` 同一 torch 版本另有 `2.15.0-cuda13.2-cudnn9-runtime` 变体，
@@ -258,8 +255,8 @@
   workflow 会自动跟随该主版本线的最新发布，无需逐次修改版本号。
 - 标注为 "apt 默认最新" 的组件未锁定具体版本号，随 Ubuntu 仓库更新而变化。
 - Apache Maven 上游 `4.0.0-rc-7` 为 RC 版本，按 GA 口径不计入，MAJOR 列取最新
-  正式版 `3.10.1`；该版本已发布到 Maven Central 与 dlcdn，当前锁定的 `3.10.0`
-  落后一个补丁版本。
+  正式版 `3.10.1`；该版本已发布到 Maven Central 与 dlcdn，当前锁定版本即     
+  `3.10.1`，无落后补丁。                                                     
 - Godot 版本由构建参数 `GODOT_VERSION` 指定（当前 `4.7.2`），须与工程内的
   `GODOT_VERSION` 及导出模板目录名（`4.7.2.stable`）保持一致；导出模板只保留
   Web 与 Windows 平台以控制镜像体积。Windows 侧的解压依赖 7-Zip。
