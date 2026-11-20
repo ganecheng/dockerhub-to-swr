@@ -1,5 +1,5 @@
 # 基础镜像：Ubuntu 26.10 (stonking)
-FROM ghcr.io/ganecheng/ubuntu:20261114_214924-x86_64
+FROM ghcr.io/ganecheng/ubuntu:20261120_150103-x86_64
 
 # 构建参数：ttyd 版本号
 ARG TTYD_VERSION=1.7.7

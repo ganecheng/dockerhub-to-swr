@@ -1,5 +1,5 @@
 # 基础镜像：Ubuntu 26.10 (stonking)
-FROM ghcr.io/ganecheng/ubuntu:20261114_214924-x86_64
+FROM ghcr.io/ganecheng/ubuntu:20261120_150103-x86_64
 
 # 从 Ubuntu apt 仓库安装 unbound（验证性递归缓存 DNS 解析器）
 RUN <<EOF
