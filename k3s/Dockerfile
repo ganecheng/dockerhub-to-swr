@@ -4,6 +4,9 @@ FROM ghcr.io/ganecheng/ubuntu:20261120_150103-x86_64
 # 构建参数：k3s 版本号，留空时下载最新发布版二进制文件
 ARG K3S_VERSION='v1.34.13+k3s1'
 
+# 构建参数：Helm 版本号（k3s 内置的是 helm-controller，不含 helm CLI，需单独安装）
+ARG HELM_VERSION=4.3.2
+
 # 单个 RUN 层完成所有安装，减少镜像层数和体积
 RUN <<EOF
   # 封装 curl：统一超时和重试策略
@@ -61,6 +64,13 @@ RUN <<EOF
   k3s --version
   kubectl version --client=true
 
+  # 安装 Helm CLI：k3s 只内置 helm-controller（消费 HelmChart CRD），没有 helm 命令，
+  # 安装后才能用 helm install/upgrade 等命令直接部署到本机 k3s 集群
+  curl "https://get.helm.sh/helm-v${HELM_VERSION}-linux-${arch}.tar.gz" -o /tmp/helm.tar.gz
+  tar -xzf /tmp/helm.tar.gz -C /usr/local/bin --strip-components=1 linux-${arch}/helm
+  rm -f /tmp/helm.tar.gz
+  helm version
+
   # 内置 k3s airgap 镜像包，启动脚本会恢复到 k3s 数据目录并导入 Docker。
   install -d /opt/k3s
   echo "Downloading k3s airgap images from $k3s_airgap_url"
@@ -102,6 +112,9 @@ EOF_APT
   apt-get update
 
 EOF
+
+# 默认 KUBECONFIG 指向 k3s 集群，容器内 kubectl / helm 无需额外参数即可操作本机集群
+ENV KUBECONFIG='/etc/rancher/k3s/k3s.yaml'
 
 # 复制启动脚本到镜像
 COPY k3s/run.sh /opt/

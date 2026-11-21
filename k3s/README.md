@@ -36,11 +36,14 @@ docker exec k3s kubectl get nodes -o wide
 - 镜像内置 k3s airgap 镜像包，启动时会恢复到 `/var/lib/rancher/k3s/agent/images` 并导入 Docker。
 - 默认禁用 k3s 的 `traefik`：`K3S_EXTRA_ARGS='--disable=traefik'`
 - 默认保留 k3s 内置 `servicelb`，便于测试 `LoadBalancer` Service。
-- 默认 kubeconfig：`/etc/rancher/k3s/k3s.yaml`
+- 默认 kubeconfig：`/etc/rancher/k3s/k3s.yaml`，并设为容器默认环境变量
+  `KUBECONFIG`，容器内 `kubectl`、`helm` 开箱即用。
 
 ## 常用环境变量
 
 - `K3S_EXTRA_ARGS='...'`：追加 k3s server 启动参数，不需要在这里重复传入 `--docker`。
 - `K3S_STARTUP_TIMEOUT=120`：等待 k3s 就绪的超时时间，单位秒。
 - `K3S_KUBECONFIG_MODE=644`：kubeconfig 文件权限。
+- `KUBECONFIG=/etc/rancher/k3s/k3s.yaml`：客户端默认 kubeconfig（镜像已设置），
+  需要让容器内 `kubectl`、`helm` 指向其他集群时在 `docker run -e` 覆盖。
 - `INIT_SH_FILE=/path/to/init.sh`：容器启动后、Docker 和 k3s 启动前加载自定义初始化脚本。
