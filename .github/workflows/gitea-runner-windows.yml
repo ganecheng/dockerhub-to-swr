@@ -79,7 +79,7 @@ jobs:
   build_extensions:
     runs-on: windows-2025
     needs: [ main_job, build_base ]
-    timeout-minutes: 60
+    timeout-minutes: 90
     env:
       TZ: Asia/Shanghai
       current_datetime: ${{ needs.main_job.outputs.current_datetime }}
@@ -87,7 +87,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        extension: [ flutter, godot ]
+        extension: [ flutter, godot, rust ]
     steps:
       - name: 检出代码
         uses: actions/checkout@v7

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 共享安装函数库 (Git Bash 版)：Web 下载封装、Node.js/Qwen Code CLI/Gitea Runner/Flutter/7-Zip/Godot 安装
+# 共享安装函数库 (Git Bash 版)：Web 下载封装、Node.js/Qwen Code CLI/Gitea Runner/Flutter/7-Zip/Godot/Rust 安装
 # 对应 Linux 版的 modules/common.sh
 # VS Build Tools 和 NuGet 已由基础镜像 (windows) 提供，无需在此安装
 
@@ -298,4 +298,138 @@ function install_godot_export_templates() {
 
   echo ">>> Export templates installed:"
   ls -lh "$templates_root/${version}.stable"
+}
+
+# 架构检测：rustup 的 Windows 发行包命名
+function detect_rust_arch() {
+  local arch
+  arch=$(uname -m)
+  case "$arch" in
+    x86_64|amd64)  echo "x86_64" ;;
+    aarch64|arm64) echo "aarch64" ;;
+    *) echo "ERROR: Unsupported architecture: $arch" >&2; exit 1 ;;
+  esac
+}
+
+# 安装 Rust 工具链（rustup + 指定版本 + rustfmt/clippy）
+# 参数: $1 - Rust 版本号（如 1.96.0）
+# 安装路径: RUSTUP_HOME / CARGO_HOME，由 Dockerfile ENV 指定
+function install_rust_toolchain() {
+  local version=${1:?}
+  local rust_arch
+  rust_arch=$(detect_rust_arch)
+  local cargo_home=${CARGO_HOME:?CARGO_HOME is required}
+  cargo_home=${cargo_home//\\//}
+  local rustup_home=${RUSTUP_HOME:?RUSTUP_HOME is required}
+  rustup_home=${rustup_home//\\//}
+  local tmp_dir=C:/tmp/rust-install
+
+  echo ">>> Installing Rust ${version} (${rust_arch}) to ${CARGO_HOME}..."
+
+  mkdir -p "$tmp_dir" "$cargo_home" "$rustup_home"
+  curl "https://static.rust-lang.org/rustup/dist/${rust_arch}-pc-windows-msvc/rustup-init.exe" -o "$tmp_dir/rustup-init.exe"
+  "$tmp_dir/rustup-init.exe" -y --no-modify-path \
+    --default-host "${rust_arch}-pc-windows-msvc" \
+    --default-toolchain "$version" \
+    --profile minimal \
+    -c rustfmt -c clippy
+  rm -rf "$tmp_dir"
+
+  # rustup-init 依据 RUSTUP_HOME / CARGO_HOME 落盘；安装后把 cargo 加入当前进程 PATH
+  export PATH="$(cygpath -u "$cargo_home")/bin:${PATH}"
+
+  echo ">>> Rust ${version} installed:"
+  rustc -vV
+  cargo -V
+  rustfmt -V
+  clippy-driver -V
+}
+
+# 安装 cargo-packager（项目打包脚本检查该命令）
+# 参数: $1 - cargo-packager 版本号（如 0.11.8）
+function install_cargo_packager() {
+  local version=${1:?}
+  local cargo_home=${CARGO_HOME:?CARGO_HOME is required}
+  cargo_home=${cargo_home//\\//}
+  export PATH="$(cygpath -u "$cargo_home")/bin:${PATH}"
+
+  echo ">>> Installing cargo-packager ${version}..."
+  cargo install cargo-packager --version "$version" --locked
+
+  echo ">>> cargo-packager ${version} installed:"
+  cargo packager --version
+
+  # 清掉 cargo install 留下的索引与源码缓存，压缩镜像体积
+  rm -rf "$(cygpath -u "$cargo_home")/registry" "$(cygpath -u "$cargo_home")/git"
+}
+
+# 预置 cargo-packager 的 NSIS 缓存（cargo packager 首次打包会从 GitHub 下载）
+# 安装路径: %LOCALAPPDATA%\.cargo-packager\NSIS（cargo-packager 的 tools_path）
+# 说明: 版本与文件布局对齐 cargo-packager 0.11.8；升级打包器时需同步核对
+function install_nsis_cache() {
+  local local_appdata=${LOCALAPPDATA:-C:/Users/ContainerAdministrator/AppData/Local}
+  local nsis_root
+  nsis_root="$(cygpath -u "${local_appdata//\\//}")/.cargo-packager/NSIS"
+  local tmp_dir=C:/tmp/nsis-install
+  local required_files=(
+    makensis.exe
+    Bin/makensis.exe
+    Stubs/lzma-x86-unicode
+    Stubs/lzma_solid-x86-unicode
+    Plugins/x86-unicode/ApplicationID.dll
+    Plugins/x86-unicode/nsis_tauri_utils.dll
+    Include/MUI2.nsh
+    Include/FileFunc.nsh
+    Include/x64.nsh
+    Include/nsDialogs.nsh
+    Include/WinMessages.nsh
+  )
+
+  echo ">>> Pre-seeding cargo-packager NSIS cache to ${nsis_root}..."
+
+  rm -rf "$nsis_root" "$tmp_dir"
+  mkdir -p "$tmp_dir" "$nsis_root"
+
+  curl "https://github.com/tauri-apps/binary-releases/releases/download/nsis-3.9/nsis-3.09.zip" -o "$tmp_dir/nsis.zip"
+  pwsh -NoProfile -Command "Expand-Archive -Path 'C:/tmp/nsis-install/nsis.zip' -DestinationPath 'C:/tmp/nsis-install/nsis' -Force"
+  cp -a "$tmp_dir/nsis/nsis-3.09/." "$nsis_root/"
+
+  curl "https://github.com/tauri-apps/binary-releases/releases/download/nsis-plugins-v0/NSIS-ApplicationID.zip" -o "$tmp_dir/applicationid.zip"
+  pwsh -NoProfile -Command "Expand-Archive -Path 'C:/tmp/nsis-install/applicationid.zip' -DestinationPath 'C:/tmp/nsis-install/applicationid' -Force"
+  mkdir -p "$nsis_root/Plugins/x86-unicode"
+
+  # cargo-packager 使用 ReleaseUnicode 版本；压缩包里还有 Debug/Release 等多个同名 DLL，
+  # 不能直接 find 后覆盖复制，否则可能选中 Debug 版本
+  local appid_dll="$tmp_dir/applicationid/ReleaseUnicode/ApplicationID.dll"
+  if [[ ! -f "$appid_dll" ]]; then
+    echo "ERROR: ApplicationID.dll (ReleaseUnicode) not found in archive" >&2
+    exit 1
+  fi
+  cp -f "$appid_dll" "$nsis_root/Plugins/x86-unicode/ApplicationID.dll"
+
+  curl "https://github.com/tauri-apps/nsis-tauri-utils/releases/download/nsis_tauri_utils-v0.2.1/nsis_tauri_utils.dll" \
+    -o "$nsis_root/Plugins/x86-unicode/nsis_tauri_utils.dll"
+
+  local file
+  for file in "${required_files[@]}"; do
+    if [[ ! -f "$nsis_root/$file" ]]; then
+      echo "ERROR: NSIS 缓存缺少文件: $file" >&2
+      exit 1
+    fi
+  done
+  rm -rf "$tmp_dir"
+
+  echo ">>> NSIS cache ready:"
+  ls -lh "$nsis_root/makensis.exe" "$nsis_root/Stubs/lzma-x86-unicode" "$nsis_root/Plugins/x86-unicode/"
+}
+
+# 确保 Ninja 可用（项目工作流设置了 CMAKE_GENERATOR=Ninja；
+# VS 自带的 Ninja 不一定在 PATH 上，缺失时通过 Chocolatey 安装）
+function install_ninja() {
+  echo ">>> Ensuring Ninja is available..."
+  export PATH="$PATH:/c/ProgramData/chocolatey/bin"
+  if ! command -v ninja >/dev/null 2>&1; then
+    choco install ninja -y --no-progress
+  fi
+  ninja --version
 }

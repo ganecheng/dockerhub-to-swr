@@ -26,12 +26,14 @@ gitea-runner-windows/               ← 基础镜像
 ├── run.sh                         # 容器入口脚本（Git Bash，Runner 注册、守护进程）
 ├── config.template.yaml            # Runner 配置文件模板（环境变量占位符）
 ├── modules/                        # 模块化安装脚本
-│   ├── common.sh                   # 共享函数库 (Web 下载封装、Node.js/Qwen Code CLI/Gitea Runner/Flutter/7-Zip/Godot 安装)
+│   ├── common.sh                   # 共享函数库 (Node.js/Qwen Code CLI/Gitea Runner/Flutter/7-Zip/Godot/Rust 安装)
 │   ├── setup.sh                    # 基础镜像安装脚本 (Node.js + Qwen Code + Gitea Runner)
 │   ├── flutter.sh                  # Flutter SDK 安装模块
-│   └── godot.sh                    # 7-Zip + Godot 编辑器与导出模板安装模块
+│   ├── godot.sh                    # 7-Zip + Godot 编辑器与导出模板安装模块
+│   └── rust.sh                     # Rust 工具链 + cargo-packager + NSIS 缓存安装模块
 ├── Dockerfile.flutter               # gitea-runner-windows-flutter
 ├── Dockerfile.godot                 # gitea-runner-windows-godot
+├── Dockerfile.rust                  # gitea-runner-windows-rust
 └── README.md
 ```
 
@@ -39,9 +41,10 @@ gitea-runner-windows/               ← 基础镜像
 
 | 镜像名称                       | Dockerfile           | 包含组件                                                                                           | Runner 标签                                   |
 |--------------------------------|----------------------|----------------------------------------------------------------------------------------------------|-----------------------------------------------|
-| `gitea-runner-windows`         | `Dockerfile`         | windows 全部组件 + Node.js 26.13.1 + Qwen Code + Python 3 (Chocolatey) + Gitea Runner 6.0.0       | `windows-latest,windows-2022`                 |
+| `gitea-runner-windows`         | `Dockerfile`         | windows 全部组件 + Node.js 26.13.1 + Qwen Code + Python 3 (Chocolatey) + Gitea Runner 6.0.0        | `windows-latest,windows-2022`                 |
 | `gitea-runner-windows-flutter` | `Dockerfile.flutter` | + Flutter 3.50.0 (仅 Windows 桌面)                                                                 | `windows-latest,windows-2022,windows-flutter` |
 | `gitea-runner-windows-godot`   | `Dockerfile.godot`   | + 7-Zip + Godot 4.7.2 (Windows 桌面 + Web 导出模板)                                                | `windows-latest,windows-2022,windows-godot`   |
+| `gitea-runner-windows-rust`    | `Dockerfile.rust`    | + Rust 1.96.0 (rustfmt/clippy) + cargo-packager 0.11.8 + NSIS 3.09 缓存 + vcvars64 环境            | `windows-latest,windows-2022,windows-rust`    |
 
 > windows 已包含：Windows Server Core ltsc2025 + VS Build Tools 2022 (MSVC v143, Windows SDK, CMake) + Git for
 > Windows（Chocolatey 最新版，含 Git Bash）+ NuGet + PowerShell 7
@@ -52,6 +55,14 @@ gitea-runner-windows/               ← 基础镜像
 > （只保留 Web 与全部 Windows 架构，裁剪后约 683 MiB），版本可用构建参数 `GODOT_VERSION` 覆盖；
 > 镜像内已提供 `godot` 命令（`C:\opt\bin\godot` 包装脚本），以及 `GODOT_BIN`、
 > `GODOT_EXPORT_TEMPLATES_DIR` 两个环境变量。
+
+> `rust` 扩展预装 Rust 1.96.0（rustfmt/clippy）、CMake + Ninja、cargo-packager 0.11.8 与 NSIS 3.09 缓存，
+> 并把 `vcvars64` 的 MSVC 环境（`PATH`/`INCLUDE`/`LIB` 等）写入机器级变量；版本可分别用
+> 构建参数 `RUST_VERSION`、`CARGO_PACKAGER_VERSION` 覆盖。NSIS 缓存位于
+> `%LOCALAPPDATA%\.cargo-packager\NSIS`，job 内首次 `cargo packager` 不再访问 GitHub。
+> 另设置 `CARGO_NET_GIT_FETCH_WITH_CLI=true`，git 依赖走系统 git，便于复用代理与凭据配置。
+> 镜像不预取项目依赖，job 内首次 `cargo build` 仍会访问 crates.io；如需加速可配置 crates.io
+> 镜像源，或把 `CARGO_HOME` 的 `registry` / `git` 子目录映射到持久卷。
 
 ## 本地构建
 

@@ -2,7 +2,7 @@
 
 > 本文件统计本仓库中所有 Dockerfile、GitHub Actions workflow 和 shell 脚本引用的开源组件版本号。
 >
-> 最后更新：2026-11-20
+> 最后更新：2026-11-22
 
 ---
 
@@ -42,15 +42,17 @@
 
 ## 3. Gitea Runner & CI/CD 工具
 
-| 组件         | 版本      | MAJOR 最新版本       | MINOR 最新版本       | PATCH 最新版本       | 查询地址                                        | 引用文件                                                            | 说明                  |
-|--------------|-----------|----------------------|----------------------|----------------------|-------------------------------------------------|---------------------------------------------------------------------|-----------------------|
-| Gitea Runner | `6.0.0`   | `6.0.0` (已是最新)   | `6.0.0` (已是最新)   | `6.0.0` (已是最新)   | https://gitea.com/gitea/runner/releases         | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | CI/CD Runner          |
-| Node.js      | `26.13.1` | `26.13.1` (已是最新) | `26.13.1` (已是最新) | `26.13.1` (已是最新) | https://nodejs.org/dist/index.json              | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | JavaScript 运行时     |
-| Qwen Code    | `0.28.0`  | `0.28.0` (已是最新)  | `0.28.0` (已是最新)  | `0.28.0` (已是最新)  | https://registry.npmjs.org/@qwen-code/qwen-code | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | 终端 AI 编码助手      |
-| kubectl      | `1.37.2`  | `1.37.2` (已是最新)  | `1.37.2` (已是最新)  | `1.37.2` (已是最新)  | https://dl.k8s.io/release/stable.txt            | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 命令行工具 |
-| Helm         | `4.3.2`   | `4.3.2` (已是最新)   | `4.3.2` (已是最新)   | `4.3.2` (已是最新)   | https://github.com/helm/helm/releases           | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 包管理器   |
-| GitHub CLI   | `2.105.0` | `2.105.0` (已是最新) | `2.105.0` (已是最新) | `2.105.0` (已是最新) | https://github.com/cli/cli/releases             | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | GitHub 命令行工具     |
-| Gitea CLI    | `0.16.0`  | `0.16.0` (已是最新)  | `0.16.0` (已是最新)  | `0.16.0` (已是最新)  | https://gitea.com/gitea/tea/releases            | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | Gitea 命令行工具      |
+| 组件           | 版本      | MAJOR 最新版本       | MINOR 最新版本       | PATCH 最新版本       | 查询地址                                        | 引用文件                                                            | 说明                   |
+|----------------|-----------|----------------------|----------------------|----------------------|-------------------------------------------------|---------------------------------------------------------------------|------------------------|
+| Gitea Runner   | `6.0.0`   | `6.0.0` (已是最新)   | `6.0.0` (已是最新)   | `6.0.0` (已是最新)   | https://gitea.com/gitea/runner/releases         | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | CI/CD Runner           |
+| Node.js        | `26.13.1` | `26.13.1` (已是最新) | `26.13.1` (已是最新) | `26.13.1` (已是最新) | https://nodejs.org/dist/index.json              | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | JavaScript 运行时      |
+| Qwen Code      | `0.28.0`  | `0.28.0` (已是最新)  | `0.28.0` (已是最新)  | `0.28.0` (已是最新)  | https://registry.npmjs.org/@qwen-code/qwen-code | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | 终端 AI 编码助手       |
+| kubectl        | `1.37.2`  | `1.37.2` (已是最新)  | `1.37.2` (已是最新)  | `1.37.2` (已是最新)  | https://dl.k8s.io/release/stable.txt            | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 命令行工具  |
+| Helm           | `4.3.2`   | `4.3.2` (已是最新)   | `4.3.2` (已是最新)   | `4.3.2` (已是最新)   | https://github.com/helm/helm/releases           | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 包管理器    |
+| GitHub CLI     | `2.105.0` | `2.105.0` (已是最新) | `2.105.0` (已是最新) | `2.105.0` (已是最新) | https://github.com/cli/cli/releases             | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | GitHub 命令行工具      |
+| Gitea CLI      | `0.16.0`  | `0.16.0` (已是最新)  | `0.16.0` (已是最新)  | `0.16.0` (已是最新)  | https://gitea.com/gitea/tea/releases            | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | Gitea 命令行工具       |
+| Rust           | `1.96.0`  | `1.100.0`            | `1.96.0`             | `1.96.0`             | https://static.rust-lang.org/dist/              | `gitea-runner-*/Dockerfile.rust`, `modules/rust.sh`                 | Rust 工具链            |
+| cargo-packager | `0.11.8`  | `0.11.8` (已是最新)  | `0.11.8` (已是最新)  | `0.11.8` (已是最新)  | https://crates.io/crates/cargo-packager         | `gitea-runner-*/Dockerfile.rust`, `modules/rust.sh`                 | Windows/Linux 打包工具 |
 
 ---
 
@@ -108,7 +110,8 @@
 | ATL (VS 2022 组件)      | latest                | -                     | -                     | -                     | https://learn.microsoft.com/visualstudio/releases/2022/release-history | `windows/Dockerfile`                                           | 原生插件编译依赖 (atlbase.h)                |
 | MSVC v143               | latest (VS 2022)      | -                     | -                     | -                     | https://learn.microsoft.com/visualstudio/releases/2022/release-history | `windows/Dockerfile`                                           | C/C++ 编译器工具链                          |
 | Windows SDK             | latest (VS 2022 安装) | -                     | -                     | -                     | https://learn.microsoft.com/visualstudio/releases/2022/release-history | `windows/Dockerfile`                                           | 通过 VS Build Tools 安装                    |
-| CMake                   | latest (VS 内置)      | -                     | -                     | -                     | https://learn.microsoft.com/visualstudio/releases/2022/release-history | `windows/Dockerfile`                                           | C/C++ 构建系统                              |
+| CMake                   | latest (VS 内置)      | -                     | -                     | -                     | https://learn.microsoft.com/visualstudio/releases/2022/release-history | `windows/Dockerfile`, `gitea-runner-windows/Dockerfile.rust`   | C/C++ 构建系统                              |
+| Ninja (Chocolatey)      | latest                | -                     | -                     | -                     | https://community.chocolatey.org/packages/ninja                        | `gitea-runner-windows/modules/common.sh`                       | CMAKE_GENERATOR=Ninja 依赖                  |
 | Mozilla CA 证书包       | latest                | -                     | -                     | -                     | https://curl.se/docs/caextract.html                                    | `gitea-runner-windows/modules/common.sh`                       | 供 Dart/Flutter TLS 验证使用 (`cacert.pem`) |
 | 7-Zip (Chocolatey)      | latest                | -                     | -                     | -                     | https://community.chocolatey.org/packages/7zip                         | `gitea-runner-windows/modules/godot.sh` (`common.sh` 提供函数) | Godot 编辑器与导出模板解压依赖              |
 

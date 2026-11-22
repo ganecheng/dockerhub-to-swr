@@ -10,35 +10,38 @@ gitea-runner-ubuntu/                ← 基础镜像 (Dockerfile)
 ├── run.sh                          # 容器入口脚本（Docker 启动、Runner 注册、守护进程）
 ├── config.template.yaml            # Runner 配置文件模板（环境变量占位符）
 ├── modules/                        # 模块化安装脚本
-│   ├── common.sh                   # 共享函数库 (curl 封装、架构检测、JDK/Maven/JMeter/Godot 安装)
+│   ├── common.sh                   # 共享函数库 (curl 封装、架构检测、JDK/Maven/JMeter/Godot/Rust 安装)
 │   ├── settings.xml                # Maven 阿里云镜像配置
 │   ├── jdk21.sh                    # Temurin JDK 21 + Maven 3.10.1
 │   ├── jdk25.sh                    # Temurin JDK 25 + Maven 3.10.1
 │   ├── graalvm-jdk21.sh            # Oracle GraalVM JDK 21 + Maven 3.10.1
 │   ├── graalvm-jdk25.sh            # Oracle GraalVM JDK 25 + Maven 3.10.1
 │   ├── jmeter.sh                   # Temurin JDK 25 + JMeter 5.6.3
-│   └── godot.sh                    # Godot 编辑器 + Web/Windows 导出模板
+│   ├── godot.sh                    # Godot 编辑器 + Web/Windows 导出模板
+│   └── rust.sh                     # Rust 工具链 + cargo-packager + AppImage 工具
 ├── Dockerfile.jdk21                # gitea-runner-ubuntu-jdk21
 ├── Dockerfile.jdk25                # gitea-runner-ubuntu-jdk25
 ├── Dockerfile.graalvm-jdk21        # gitea-runner-ubuntu-graalvm-jdk21
 ├── Dockerfile.graalvm-jdk25        # gitea-runner-ubuntu-graalvm-jdk25
 ├── Dockerfile.jmeter               # gitea-runner-ubuntu-jmeter
 ├── Dockerfile.flutter              # gitea-runner-ubuntu-flutter
-└── Dockerfile.godot                # gitea-runner-ubuntu-godot
+├── Dockerfile.godot                # gitea-runner-ubuntu-godot
+└── Dockerfile.rust                 # gitea-runner-ubuntu-rust
 ```
 
 ## 镜像列表
 
-| 镜像名称                            | Dockerfile                 | 包含组件                                                                                                     | Runner 标签 (x86_64)                               | Runner 标签 (aarch64)                                                      |
-|-------------------------------------|----------------------------|--------------------------------------------------------------------------------------------------------------|----------------------------------------------------|----------------------------------------------------------------------------|
+| 镜像名称                            | Dockerfile                 | 包含组件                                                                                                                                              | Runner 标签 (x86_64)                               | Runner 标签 (aarch64)                                                      |
+|-------------------------------------|----------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------|----------------------------------------------------------------------------|
 | `gitea-runner-ubuntu`               | `Dockerfile`               | Ubuntu 26.10 + Docker 28.5.2 + Gitea Runner 6.0.0 + Node.js 26.13.1 + Qwen Code + Python 3 + Linux 编译工具链 (gcc/clang/cmake/ninja/GTK3) + 常用工具 | `ubuntu-latest,ubuntu-26.10`                       | `ubuntu-aarch64-latest,ubuntu-aarch64-26.10`                               |
-| `gitea-runner-ubuntu-jdk21`         | `Dockerfile.jdk21`         | + Temurin JDK 21 + Maven 3.10.1                                                                              | `ubuntu-latest,ubuntu-26.10,ubuntu-jdk-21`         | `ubuntu-aarch64-latest,ubuntu-aarch64-26.10,ubuntu-aarch64-jdk-21`         |
-| `gitea-runner-ubuntu-jdk25`         | `Dockerfile.jdk25`         | + Temurin JDK 25 + Maven 3.10.1                                                                              | `ubuntu-latest,ubuntu-26.10,ubuntu-jdk-25`         | `ubuntu-aarch64-latest,ubuntu-aarch64-26.10,ubuntu-aarch64-jdk-25`         |
-| `gitea-runner-ubuntu-graalvm-jdk21` | `Dockerfile.graalvm-jdk21` | + GraalVM JDK 21 + Maven 3.10.1 + gcc/g++/zlib1g-dev (native-image)                                          | `ubuntu-latest,ubuntu-26.10,ubuntu-graalvm-jdk-21` | `ubuntu-aarch64-latest,ubuntu-aarch64-26.10,ubuntu-aarch64-graalvm-jdk-21` |
-| `gitea-runner-ubuntu-graalvm-jdk25` | `Dockerfile.graalvm-jdk25` | + GraalVM JDK 25 + Maven 3.10.1 + gcc/g++/zlib1g-dev (native-image)                                          | `ubuntu-latest,ubuntu-26.10,ubuntu-graalvm-jdk-25` | `ubuntu-aarch64-latest,ubuntu-aarch64-26.10,ubuntu-aarch64-graalvm-jdk-25` |
-| `gitea-runner-ubuntu-jmeter`        | `Dockerfile.jmeter`        | + Temurin JDK 25 + JMeter 5.6.3                                                                              | `ubuntu-latest,ubuntu-26.10,ubuntu-jmeter`         | `ubuntu-aarch64-latest,ubuntu-aarch64-26.10,ubuntu-aarch64-jmeter`         |
-| `gitea-runner-ubuntu-flutter`       | `Dockerfile.flutter`       | + Flutter 3.50.0 + Android SDK (compileSdk 37.2, NDK 30, build-tools 37) + OpenJDK 21                        | `ubuntu-latest,ubuntu-26.10,ubuntu-flutter`        | 仅 x86_64                                                                  |
-| `gitea-runner-ubuntu-godot`         | `Dockerfile.godot`         | + Godot 4.7.2 编辑器 + Web/Windows 导出模板                                                                  | `ubuntu-latest,ubuntu-26.10,ubuntu-godot`          | `ubuntu-aarch64-latest,ubuntu-aarch64-26.10,ubuntu-aarch64-godot`          |
+| `gitea-runner-ubuntu-jdk21`         | `Dockerfile.jdk21`         | + Temurin JDK 21 + Maven 3.10.1                                                                                                                       | `ubuntu-latest,ubuntu-26.10,ubuntu-jdk-21`         | `ubuntu-aarch64-latest,ubuntu-aarch64-26.10,ubuntu-aarch64-jdk-21`         |
+| `gitea-runner-ubuntu-jdk25`         | `Dockerfile.jdk25`         | + Temurin JDK 25 + Maven 3.10.1                                                                                                                       | `ubuntu-latest,ubuntu-26.10,ubuntu-jdk-25`         | `ubuntu-aarch64-latest,ubuntu-aarch64-26.10,ubuntu-aarch64-jdk-25`         |
+| `gitea-runner-ubuntu-graalvm-jdk21` | `Dockerfile.graalvm-jdk21` | + GraalVM JDK 21 + Maven 3.10.1 + gcc/g++/zlib1g-dev (native-image)                                                                                   | `ubuntu-latest,ubuntu-26.10,ubuntu-graalvm-jdk-21` | `ubuntu-aarch64-latest,ubuntu-aarch64-26.10,ubuntu-aarch64-graalvm-jdk-21` |
+| `gitea-runner-ubuntu-graalvm-jdk25` | `Dockerfile.graalvm-jdk25` | + GraalVM JDK 25 + Maven 3.10.1 + gcc/g++/zlib1g-dev (native-image)                                                                                   | `ubuntu-latest,ubuntu-26.10,ubuntu-graalvm-jdk-25` | `ubuntu-aarch64-latest,ubuntu-aarch64-26.10,ubuntu-aarch64-graalvm-jdk-25` |
+| `gitea-runner-ubuntu-jmeter`        | `Dockerfile.jmeter`        | + Temurin JDK 25 + JMeter 5.6.3                                                                                                                       | `ubuntu-latest,ubuntu-26.10,ubuntu-jmeter`         | `ubuntu-aarch64-latest,ubuntu-aarch64-26.10,ubuntu-aarch64-jmeter`         |
+| `gitea-runner-ubuntu-flutter`       | `Dockerfile.flutter`       | + Flutter 3.50.0 + Android SDK (compileSdk 37.2, NDK 30, build-tools 37) + OpenJDK 21                                                                 | `ubuntu-latest,ubuntu-26.10,ubuntu-flutter`        | 仅 x86_64                                                                  |
+| `gitea-runner-ubuntu-godot`         | `Dockerfile.godot`         | + Godot 4.7.2 编辑器 + Web/Windows 导出模板                                                                                                           | `ubuntu-latest,ubuntu-26.10,ubuntu-godot`          | `ubuntu-aarch64-latest,ubuntu-aarch64-26.10,ubuntu-aarch64-godot`          |
+| `gitea-runner-ubuntu-rust`          | `Dockerfile.rust`          | + Rust 1.96.0 (rustfmt/clippy) + cargo-packager 0.11.8 + GPUI 图形依赖 (X11/Wayland/EGL/fontconfig)                                                   | `ubuntu-latest,ubuntu-26.10,ubuntu-rust`           | `ubuntu-aarch64-latest,ubuntu-aarch64-26.10,ubuntu-aarch64-rust`           |
 
 > 扩展镜像在基础标签之上追加各自的功能标签，无需重复声明基础标签。
 > Runner 标签为 `GITEA_RUNNER_LABELS_DEFAULT` 的默认值，已按架构分列；flutter 扩展仅提供 x86_64 版本。
@@ -47,6 +50,15 @@ gitea-runner-ubuntu/                ← 基础镜像 (Dockerfile)
 > `GODOT_EXPORT_TEMPLATES_DIR` 两个环境变量。官方 Linux 编辑器的 `DT_NEEDED` 只依赖 libc，
 > X11/Vulkan/ALSA 等均为 dlopen 加载，故 `--headless` 导入与导出无需图形、音频库；
 > 非 headless 运行需另行安装 `libgl1`、`libx11-6` 等运行库。
+
+> `rust` 扩展预装 Rust 1.96.0（rustfmt/clippy）与 cargo-packager 0.11.8，并补齐 gpui-ce 在
+> Linux 上的 X11/Wayland/EGL/fontconfig 构建依赖；版本可分别用构建参数 `RUST_VERSION`、
+> `CARGO_PACKAGER_VERSION` 覆盖。镜像同时预置 AppImage 打包工具缓存
+> （`~/.cache/.cargo-packager/AppImage`）并设置 `APPIMAGE_EXTRACT_AND_RUN=1`，
+> job 内首次打包不再访问 GitHub。另设置 `CARGO_NET_GIT_FETCH_WITH_CLI=true`，
+> git 依赖走系统 git，便于复用代理与凭据配置。镜像不预取项目依赖，job 内首次
+> `cargo build` 仍会访问 crates.io；如需加速可配置 crates.io 镜像源，或把
+> `CARGO_HOME` 的 `registry` / `git` 子目录映射到持久卷。
 
 ## 镜像架构
 

@@ -1,0 +1,38 @@
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+
+# 构建参数：Runner 默认标签的架构后缀（x86_64 构建为空，aarch64 构建为 -aarch64）
+ARG ARCH_SUFFIX
+
+# 构建参数：Rust 工具链版本（与项目的 rust-toolchain.toml 对齐）
+ARG RUST_VERSION=1.96.0
+# 构建参数：cargo-packager 版本（与项目打包脚本中的固定版本对齐）
+ARG CARGO_PACKAGER_VERSION=0.11.8
+
+ENV RUST_VERSION=${RUST_VERSION} \
+    CARGO_PACKAGER_VERSION=${CARGO_PACKAGER_VERSION} \
+    RUSTUP_HOME=/opt/rustup \
+    CARGO_HOME=/opt/cargo \
+    APPIMAGE_EXTRACT_AND_RUN=1 \
+    CARGO_NET_GIT_FETCH_WITH_CLI=true
+
+# GPUI (gpui-ce) 在 Linux 上构建所需的系统依赖
+# 基础镜像已含 build-essential/clang/cmake/ninja-build/pkg-config，这里只补图形与字体库
+RUN <<EOF
+  apt-get update
+  apt-get install --no-install-recommends -y \
+    libxkbcommon-dev libxkbcommon-x11-dev libwayland-dev libx11-dev \
+    libxcb-shape0-dev libxcb-xfixes0-dev libxcb-randr0-dev libxcb-xinput-dev \
+    libegl1-mesa-dev libgles2-mesa-dev libglib2.0-dev libfontconfig-dev
+
+  pkg-config --modversion xkbcommon xkbcommon-x11 wayland-client egl glib-2.0 fontconfig
+
+  rm -rf /var/cache/{apt,debconf} /var/lib/apt/lists/* /tmp/* /var/tmp/*
+EOF
+
+# 模块化安装脚本（Rust / cargo-packager / AppImage 工具缓存）
+COPY gitea-runner-ubuntu/modules/common.sh gitea-runner-ubuntu/modules/rust.sh /tmp/
+RUN bash /tmp/rust.sh && rm -f /tmp/*.sh
+
+ENV PATH="/opt/cargo/bin:${PATH}" \
+    GITEA_RUNNER_LABELS_DEFAULT="ubuntu${ARCH_SUFFIX}-latest,ubuntu${ARCH_SUFFIX}-26.10,ubuntu${ARCH_SUFFIX}-rust"

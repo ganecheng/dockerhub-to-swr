@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 共享安装函数库：架构检测、JDK/GraalVM/Maven/JMeter/Godot 安装
+# 共享安装函数库：架构检测、JDK/GraalVM/Maven/JMeter/Godot/Rust 安装
 set -exuo pipefail
 
 # 封装 curl：统一超时和重试策略（与基础镜像 Dockerfile 一致）
@@ -189,4 +189,95 @@ function install_godot_export_templates() {
 
   echo ">>> Export templates installed:"
   ls -lh "${templates_root}/${version}.stable"
+}
+
+# 架构检测：rustup 发行包使用 uname 风格的架构名
+function detect_rust_arch() {
+  local arch
+  arch=$(uname -m)
+  case "$arch" in
+    x86_64)  echo "x86_64" ;;
+    aarch64) echo "aarch64" ;;
+    *) echo "ERROR: Unsupported architecture: $arch" >&2; exit 1 ;;
+  esac
+}
+
+# 安装 Rust 工具链（rustup + 指定版本 + rustfmt/clippy）
+# 参数: $1 - Rust 版本号（如 1.96.0）
+# 安装路径: RUSTUP_HOME / CARGO_HOME，由 Dockerfile ENV 指定
+function install_rust_toolchain() {
+  local version=${1:?}
+  local cargo_home=${CARGO_HOME:-/opt/cargo}
+  local rustup_home=${RUSTUP_HOME:-/opt/rustup}
+
+  echo ">>> Installing Rust ${version} to ${cargo_home}..."
+  mkdir -p "$cargo_home" "$rustup_home"
+  export CARGO_HOME="$cargo_home"
+  export RUSTUP_HOME="$rustup_home"
+
+  curl "https://sh.rustup.rs" -o /tmp/rustup-init.sh
+  sh /tmp/rustup-init.sh -y --no-modify-path \
+    --default-toolchain "$version" \
+    --profile minimal \
+    -c rustfmt -c clippy
+  rm -f /tmp/rustup-init.sh
+  export PATH="${cargo_home}/bin:${PATH}"
+
+  echo ">>> Rust ${version} installed:"
+  rustc -vV
+  cargo -V
+  rustfmt -V
+  clippy-driver -V
+}
+
+# 安装 cargo-packager（项目打包脚本检查该命令）
+# 参数: $1 - cargo-packager 版本号（如 0.11.8）
+function install_cargo_packager() {
+  local version=${1:?}
+  local cargo_home=${CARGO_HOME:-/opt/cargo}
+  export CARGO_HOME="$cargo_home"
+  export PATH="${cargo_home}/bin:${PATH}"
+
+  echo ">>> Installing cargo-packager ${version}..."
+  cargo install cargo-packager --version "$version" --locked
+
+  echo ">>> cargo-packager ${version} installed:"
+  cargo packager --version
+
+  # 清掉 cargo install 留下的索引与源码缓存，压缩镜像体积
+  rm -rf "$cargo_home/registry" "$cargo_home/git"
+}
+
+# 预置 cargo-packager 的 AppImage 工具缓存（首次打包会从 GitHub 下载）
+# 安装路径: ${XDG_CACHE_HOME:-$HOME/.cache}/.cargo-packager/AppImage
+# 说明: 文件布局对齐 cargo-packager 0.11.8；升级打包器时需同步核对
+function install_appimage_tools() {
+  local cache_root="${XDG_CACHE_HOME:-${HOME}/.cache}/.cargo-packager/AppImage"
+  local arch
+  arch=$(detect_rust_arch)
+  local pairs=(
+    "AppRun-${arch}|https://github.com/tauri-apps/binary-releases/releases/download/apprun-old/AppRun-${arch}"
+    "linuxdeploy-${arch}.AppImage|https://github.com/tauri-apps/binary-releases/releases/download/linuxdeploy/linuxdeploy-${arch}.AppImage"
+    "linuxdeploy-plugin-appimage-${arch}.AppImage|https://github.com/linuxdeploy/linuxdeploy-plugin-appimage/releases/download/continuous/linuxdeploy-plugin-appimage-${arch}.AppImage"
+  )
+
+  echo ">>> Pre-seeding cargo-packager AppImage tools to ${cache_root}..."
+  mkdir -p "$cache_root"
+
+  local pair name url
+  for pair in "${pairs[@]}"; do
+    name=${pair%%|*}
+    url=${pair#*|}
+    if [[ ! -f "$cache_root/$name" ]]; then
+      curl "$url" -o "$cache_root/$name"
+    fi
+    if [[ ! -s "$cache_root/$name" ]]; then
+      echo "ERROR: AppImage 工具为空: $cache_root/$name" >&2
+      exit 1
+    fi
+    chmod 0764 "$cache_root/$name"
+  done
+
+  echo ">>> AppImage tools ready:"
+  ls -lh "$cache_root"
 }
