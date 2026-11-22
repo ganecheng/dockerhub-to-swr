@@ -63,6 +63,8 @@ gitea-runner-windows/               ← 基础镜像
 > 另设置 `CARGO_NET_GIT_FETCH_WITH_CLI=true`，git 依赖走系统 git，便于复用代理与凭据配置。
 > 镜像不预取项目依赖，job 内首次 `cargo build` 仍会访问 crates.io；如需加速可配置 crates.io
 > 镜像源，或把 `CARGO_HOME` 的 `registry` / `git` 子目录映射到持久卷。
+> job 内 `cargo build` / `cargo test` / `cargo packager` 步骤请使用 `shell: pwsh`：
+> Git Bash 的 `/usr/bin/link.exe` 会遮蔽 MSVC 的 `link.exe`，导致链接失败。
 
 ## 本地构建
 

@@ -345,6 +345,28 @@ function install_rust_toolchain() {
   clippy-driver -V
 }
 
+# Git Bash 的 /usr/bin/link.exe 会遮蔽 MSVC 的 link.exe，cargo 链接阶段会选错；
+# 在运行 cargo 前把 MSVC 的 Hostx64\x64 目录提到 PATH 最前，并显式指定 linker。
+function prepend_msvc_linker_path() {
+  local vc_dir=${VCToolsInstallDir:-}
+  if [[ -z "$vc_dir" ]]; then
+    echo "ERROR: VCToolsInstallDir 未设置，无法定位 MSVC 链接器" >&2
+    exit 1
+  fi
+  vc_dir=${vc_dir//\\//}
+  vc_dir=${vc_dir%/}
+
+  local msvc_bin
+  msvc_bin="$(cygpath -u "$vc_dir")/bin/Hostx64/x64"
+  if [[ ! -f "$msvc_bin/link.exe" ]]; then
+    echo "ERROR: 未找到 MSVC link.exe: $msvc_bin/link.exe" >&2
+    exit 1
+  fi
+
+  export PATH="$msvc_bin:$PATH"
+  export CARGO_TARGET_X86_64_PC_WINDOWS_MSVC_LINKER="${vc_dir}/bin/Hostx64/x64/link.exe"
+}
+
 # 安装 cargo-packager（项目打包脚本检查该命令）
 # 参数: $1 - cargo-packager 版本号（如 0.11.8）
 function install_cargo_packager() {
@@ -352,6 +374,7 @@ function install_cargo_packager() {
   local cargo_home=${CARGO_HOME:?CARGO_HOME is required}
   cargo_home=${cargo_home//\\//}
   export PATH="$(cygpath -u "$cargo_home")/bin:${PATH}"
+  prepend_msvc_linker_path
 
   echo ">>> Installing cargo-packager ${version}..."
   cargo install cargo-packager --version "$version" --locked
