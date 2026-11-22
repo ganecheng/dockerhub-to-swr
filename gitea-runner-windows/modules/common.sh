@@ -335,8 +335,28 @@ function install_rust_toolchain() {
     -c rustfmt -c clippy
   rm -rf "$tmp_dir"
 
+  # rustup 默认用 symlink/hardlink 创建 cargo/rustc 等代理；Windows 容器层导入
+  # （hcsshim ImportLayer 0x3）对这类链接不稳定，统一替换成 rustup.exe 的独立副本。
+  # rustup 按 argv[0] 分发，副本与链接行为一致。
+  local bin_dir
+  bin_dir="$(cygpath -u "$cargo_home")/bin"
+  local rustup_exe="$bin_dir/rustup.exe"
+  if [[ ! -f "$rustup_exe" ]]; then
+    echo "ERROR: 未找到 rustup.exe: $rustup_exe" >&2
+    exit 1
+  fi
+  local proxy
+  for proxy in "$bin_dir"/*.exe; do
+    [[ "$proxy" == "$rustup_exe" ]] && continue
+    rm -f "$proxy"
+    cp -f "$rustup_exe" "$proxy"
+  done
+
+  # rustup 下载缓存与临时目录不参与运行，清掉以减小层体积
+  rm -rf "$(cygpath -u "$rustup_home")/downloads" "$(cygpath -u "$rustup_home")/tmp"
+
   # rustup-init 依据 RUSTUP_HOME / CARGO_HOME 落盘；安装后把 cargo 加入当前进程 PATH
-  export PATH="$(cygpath -u "$cargo_home")/bin:${PATH}"
+  export PATH="$bin_dir:${PATH}"
 
   echo ">>> Rust ${version} installed:"
   rustc -vV
@@ -381,6 +401,11 @@ function install_cargo_packager() {
 
   echo ">>> cargo-packager ${version} installed:"
   cargo packager --version
+
+  # cargo install 的临时构建目录可能残留，清掉避免层里出现长路径/硬链接
+  local temp_root
+  temp_root="$(cygpath -u "${LOCALAPPDATA:-C:/Users/ContainerAdministrator/AppData/Local}")/Temp"
+  rm -rf "$temp_root"/cargo-install* 2>/dev/null || true
 
   # 清掉 cargo install 留下的索引与源码缓存，压缩镜像体积
   rm -rf "$(cygpath -u "$cargo_home")/registry" "$(cygpath -u "$cargo_home")/git"

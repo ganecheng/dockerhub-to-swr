@@ -65,6 +65,8 @@ gitea-runner-windows/               ← 基础镜像
 > 镜像源，或把 `CARGO_HOME` 的 `registry` / `git` 子目录映射到持久卷。
 > job 内 `cargo build` / `cargo test` / `cargo packager` 步骤请使用 `shell: pwsh`：
 > Git Bash 的 `/usr/bin/link.exe` 会遮蔽 MSVC 的 `link.exe`，导致链接失败。
+> 为规避 Windows 容器层导入（hcsshim ImportLayer 0x3），rustup 的 `cargo.exe`/`rustc.exe`
+> 等代理已替换为 `rustup.exe` 的独立副本，而不是 symlink/hardlink。
 
 ## 本地构建
 
