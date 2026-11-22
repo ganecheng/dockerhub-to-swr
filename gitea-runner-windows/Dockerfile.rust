@@ -24,14 +24,17 @@ COPY gitea-runner-windows/modules/common.sh gitea-runner-windows/modules/rust.sh
 #    ilammy/msvc-dev-cmd，也不依赖外网；
 # 2. 执行 Rust 安装脚本（rustup / cargo-packager / NSIS 缓存）；
 # 3. 把 cargo bin 追加到机器级 PATH，供 job 直接调用。
-RUN $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"; `
-    if (-not (Test-Path $vswhere)) { throw "未找到 vswhere.exe: $vswhere" }; `
+RUN $programFilesX86 = [Environment]::GetEnvironmentVariable('ProgramFiles(x86)'); `
+    if (-not $programFilesX86) { throw '未找到 ProgramFiles(x86) 环境变量' }; `
+    $vswhere = Join-Path $programFilesX86 'Microsoft Visual Studio\Installer\vswhere.exe'; `
+    if (-not (Test-Path $vswhere)) { throw ('未找到 vswhere.exe: {0}' -f $vswhere) }; `
     $installPath = (& $vswhere -products * -all -property installationPath | Select-Object -First 1).Trim(); `
     if (-not $installPath) { throw '未找到 Visual Studio 安装路径' }; `
     $vcvars = Join-Path $installPath 'VC\Auxiliary\Build\vcvars64.bat'; `
-    if (-not (Test-Path $vcvars)) { throw "未找到 vcvars64.bat: $vcvars" }; `
+    if (-not (Test-Path $vcvars)) { throw ('未找到 vcvars64.bat: {0}' -f $vcvars) }; `
     $wrapper = 'C:\opt\vcvars-dump.cmd'; `
-    $content = @(('@call "{0}" >nul 2>&1' -f $vcvars), '@set'); `
+    $callLine = '@call ' + [char]34 + $vcvars + [char]34 + ' >nul 2>&1'; `
+    $content = @($callLine, '@set'); `
     Set-Content -Path $wrapper -Encoding ASCII -Value $content; `
     $keep = @('PATH','INCLUDE','LIB','LIBPATH','VCINSTALLDIR','VCToolsInstallDir','VCToolsVersion','WindowsSdkDir','WindowsSDKVersion','UCRTVersion','UniversalCRTSdkDir','VSCMD_ARG_TGT_ARCH','Platform','VSINSTALLDIR'); `
     $count = 0; `
@@ -40,22 +43,23 @@ RUN $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhe
         $name = $matches[1]; $value = $matches[2]; `
         if ($keep -contains $name) { `
           [Environment]::SetEnvironmentVariable($name, $value, 'Machine'); `
-          Set-Item -Path "Env:$name" -Value $value; `
+          Set-Item -Path ('Env:' + $name) -Value $value; `
           $count++ `
         } `
       } `
     }; `
     Remove-Item $wrapper -Force; `
     if (-not $env:INCLUDE -or -not $env:LIB) { throw 'MSVC 环境导入失败：INCLUDE/LIB 为空' }; `
-    Write-Host "MSVC 环境变量已写入: $count"; `
+    Write-Host ('MSVC 环境变量已写入: {0}' -f $count); `
     $cmakeBin = Join-Path $installPath 'Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin'; `
     if (Test-Path (Join-Path $cmakeBin 'cmake.exe')) { `
       $env:PATH = $env:PATH + ';' + $cmakeBin; `
       $machinePath = [Environment]::GetEnvironmentVariable('PATH', 'Machine'); `
       if ($machinePath -notlike ('*' + $cmakeBin + '*')) { [Environment]::SetEnvironmentVariable('PATH', $machinePath + ';' + $cmakeBin, 'Machine') } `
-    } else { throw "未找到 VS 内置 CMake: $cmakeBin" }; `
+    } else { throw ('未找到 VS 内置 CMake: {0}' -f $cmakeBin) }; `
     $env:PATH = $env:PATH + ';C:\opt\cargo\bin'; `
     bash /c/tmp/rust.sh; `
+    if ($LASTEXITCODE -ne 0) { throw ('rust.sh 执行失败，退出码: {0}' -f $LASTEXITCODE) }; `
     $machinePath = [Environment]::GetEnvironmentVariable('PATH', 'Machine'); `
     if ($machinePath -notlike '*C:\opt\cargo\bin*') { [Environment]::SetEnvironmentVariable('PATH', $machinePath + ';C:\opt\cargo\bin', 'Machine') }; `
     Remove-Item -Recurse -Force C:\tmp -ErrorAction SilentlyContinue
