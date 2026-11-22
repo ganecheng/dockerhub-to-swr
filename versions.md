@@ -2,70 +2,74 @@
 
 > 本文件统计本仓库中所有 Dockerfile、GitHub Actions workflow 和 shell 脚本引用的开源组件版本号。
 >
-> 最后更新：2026-11-22
+> 最后更新：2026-11-23
 
 ---
 
 ## 1. 基础镜像
 
-| 组件                           | 版本                             | MAJOR 最新版本                   | MINOR 最新版本                   | PATCH 最新版本                   | 查询地址                                                                     | 引用文件                                                                                                                                                                                          | 说明                                                                           |
-|--------------------------------|----------------------------------|----------------------------------|----------------------------------|----------------------------------|------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
-| Ubuntu (stonking)              | `stonking-20261105.1`            | `stonking-20261105.1` (已是最新) | `stonking-20261105.1` (已是最新) | `stonking-20261105.1` (已是最新) | https://github.com/docker-library/official-images/blob/master/library/ubuntu | `ubuntu/Dockerfile`                                                                                                                                                                               | Ubuntu 26.10 基础镜像                                                          |
-| pytorch/pytorch                | `2.15.0-cuda13.4-cudnn9-runtime` | `2.15.0` (已是最新)              | `2.15.0` (已是最新)              | `2.15.0` (已是最新)              | https://github.com/pytorch/pytorch/releases                                  | `pytorch/Dockerfile`                                                                                                                                                                              | PyTorch 官方运行时基础镜像 (Ubuntu 24.04 + Python 3.12 + torch/CUDA 13.4 预装) |
-| Windows Server Core (ltsc2025) | `ltsc2025`                       | `ltsc2025` (已是最新)            | `ltsc2025` (已是最新)            | `ltsc2025` (已是最新)            | https://hub.docker.com/r/amitie10g/visualstudio2022-workload-vctools/tags    | `windows/Dockerfile` (via `amitie10g/visualstudio2022-workload-vctools`)                                                                                                                          | Windows 构建基础镜像                                                           |
-| 自建 Ubuntu 镜像               | `20261114_214924`                | -                                | -                                | -                                | https://github.com/users/ganecheng/packages/container/package/ubuntu         | `k3s/Dockerfile`, `dumbproxy/Dockerfile`, `mirrorproxy/Dockerfile`, `download_file/Dockerfile`, `gitea-runner-ubuntu/Dockerfile`, `ttyd/Dockerfile`, `audio-cpp/Dockerfile`, `unbound/Dockerfile` | 基于 `ubuntu/Dockerfile` 构建的内部镜像 (x86_64 / aarch64 双架构)              |
-| 自建 Windows 镜像              | `20261113_150126`                | -                                | -                                | -                                | https://github.com/users/ganecheng/packages/container/package/windows        | `gitea-runner-windows/Dockerfile` (`Dockerfile.flutter` / `Dockerfile.godot` 经 `BASE_IMAGE` 继承)                                                                                                | 基于 `windows/Dockerfile` 构建的内部镜像                                       |
-| 自建 PyTorch 镜像              | `20261115_103222`                | -                                | -                                | -                                | https://github.com/users/ganecheng/packages/container/package/pytorch        | `comfyui/Dockerfile`                                                                                                                                                                              | 基于 `pytorch/Dockerfile` 构建的内部镜像                                       |
+| 组件                           | 版本                             | MAJOR 最新版本        | MINOR 最新版本        | PATCH 最新版本        | 查询地址                                                                     | 引用文件                                                                                                                                                                                          | 说明                                                                           |
+|--------------------------------|----------------------------------|-----------------------|-----------------------|-----------------------|------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------|
+| Ubuntu (stonking)              | `stonking-20261105.1`            | `stonking-20261117.1` | `stonking-20261117.1` | `stonking-20261117.1` | https://github.com/docker-library/official-images/blob/master/library/ubuntu | `ubuntu/Dockerfile`                                                                                                                                                                               | Ubuntu 26.10 基础镜像                                                          |
+| pytorch/pytorch                | `2.15.0-cuda13.4-cudnn9-runtime` | `2.15.0` (已是最新)   | `2.15.0` (已是最新)   | `2.15.0` (已是最新)   | https://github.com/pytorch/pytorch/releases                                  | `pytorch/Dockerfile`                                                                                                                                                                              | PyTorch 官方运行时基础镜像 (Ubuntu 24.04 + Python 3.12 + torch/CUDA 13.4 预装) |
+| Windows Server Core (ltsc2025) | `ltsc2025`                       | `ltsc2025` (已是最新) | `ltsc2025` (已是最新) | `ltsc2025` (已是最新) | https://hub.docker.com/r/amitie10g/visualstudio2022-workload-vctools/tags    | `windows/Dockerfile` (via `amitie10g/visualstudio2022-workload-vctools`)                                                                                                                          | Windows 构建基础镜像                                                           |
+| 自建 Ubuntu 镜像               | `20261120_150103`                | -                     | -                     | -                     | https://github.com/users/ganecheng/packages/container/package/ubuntu         | `k3s/Dockerfile`, `dumbproxy/Dockerfile`, `mirrorproxy/Dockerfile`, `download_file/Dockerfile`, `gitea-runner-ubuntu/Dockerfile`, `ttyd/Dockerfile`, `audio-cpp/Dockerfile`, `unbound/Dockerfile` | 基于 `ubuntu/Dockerfile` 构建的内部镜像 (x86_64 / aarch64 双架构)              |
+| 自建 Windows 镜像              | `20261120_150116`                | -                     | -                     | -                     | https://github.com/users/ganecheng/packages/container/package/windows        | `gitea-runner-windows/Dockerfile` (`Dockerfile.flutter` / `Dockerfile.godot` / `Dockerfile.rust` 经 `BASE_IMAGE` 继承)                                                                            | 基于 `windows/Dockerfile` 构建的内部镜像                                       |
+| 自建 PyTorch 镜像              | `20261120_150130`                | -                     | -                     | -                     | https://github.com/users/ganecheng/packages/container/package/pytorch        | `comfyui/Dockerfile`                                                                                                                                                                              | 基于 `pytorch/Dockerfile` 构建的内部镜像                                       |
 
 ---
 
 ## 2. 容器运行时 & 基础设施
 
-| 组件             | 版本            | MAJOR 最新版本      | MINOR 最新版本             | PATCH 最新版本             | 查询地址                                                | 引用文件                                                                                                               | 说明                                                            |
-|------------------|-----------------|---------------------|----------------------------|----------------------------|---------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------|
-| Docker CE        | `28.5.2`        | `29.10.0`           | `28.5.2` (已是最新)        | `28.5.2` (已是最新)        | https://download.docker.com/linux/static/stable/x86_64/ | `gitea-runner-ubuntu/Dockerfile` (静态二进制), 各 workflow (`docker/setup-docker-action@v5` with `version: 'v28.5.2'`) | 容器引擎 (28.x 已被 29.x 取代)                                  |
-| Docker CE (apt)  | apt 默认最新    | -                   | -                          | -                          | https://download.docker.com/linux/ubuntu/               | `k3s/Dockerfile`                                                                                                       | 通过 Docker 官方 APT 源安装                                     |
-| containerd.io    | apt 默认最新    | -                   | -                          | -                          | https://download.docker.com/linux/ubuntu/               | `k3s/Dockerfile`                                                                                                       | Docker CE 运行依赖                                              |
-| k3s              | `v1.34.13+k3s1` | `v1.37.2+k3s1`      | `v1.34.13+k3s1` (已是最新) | `v1.34.13+k3s1` (已是最新) | https://update.k3s.io/v1-release/channels               | `k3s/Dockerfile`                                                                                                       | 轻量级 Kubernetes 发行版                                        |
-| tini             | apt 默认最新    | -                   | -                          | -                          | -                                                       | `ubuntu/Dockerfile`                                                                                                    | PID 1 进程管理                                                  |
-| skopeo           | apt 默认最新    | -                   | -                          | -                          | -                                                       | `ubuntu/Dockerfile`                                                                                                    | 镜像同步工具                                                    |
-| yq               | apt 默认最新    | -                   | -                          | -                          | -                                                       | `ubuntu/Dockerfile`                                                                                                    | YAML 处理工具                                                   |
-| Linux 编译工具链 | apt 默认最新    | -                   | -                          | -                          | -                                                       | `gitea-runner-ubuntu/Dockerfile`                                                                                       | build-essential/clang/cmake/ninja-build/pkg-config/libgtk-3-dev |
-| dumbproxy        | `1.52.2`        | `1.52.2` (已是最新) | `1.52.2` (已是最新)        | `1.52.2` (已是最新)        | https://github.com/SenseUnit/dumbproxy/releases         | `dumbproxy/Dockerfile`                                                                                                 | 轻量 HTTP 代理                                                  |
-| MirrorProxy      | `1.7.2-ext6`    | `1.8.0`             | `1.7.3`                    | `1.7.3`                    | https://github.com/ganecheng/MirrorProxy/releases       | `mirrorproxy/Dockerfile`                                                                                               | 自部署镜像代理平台 (自建修复版)                                 |
-| ttyd             | `1.7.7`         | `1.7.7` (已是最新)  | `1.7.7` (已是最新)         | `1.7.7` (已是最新)         | https://github.com/tsl0922/ttyd/releases                | `ttyd/Dockerfile`                                                                                                      | Web 终端共享工具                                                |
-| audio.cpp        | `v0.9.5`        | `v0.9.5` (已是最新) | `v0.9.5` (已是最新)        | `v0.9.5` (已是最新)        | https://github.com/0xShug0/audio.cpp/releases           | `audio-cpp/Dockerfile`                                                                                                 | 语音 AI 推理服务 (Vulkan 预编译二进制)                          |
-| unbound          | apt 默认最新    | -                   | -                          | -                          | -                                                       | `unbound/Dockerfile`                                                                                                   | 验证性递归缓存 DNS 解析器                                       |
-| dind 辅助脚本    | `master`        | -                   | -                          | -                          | https://github.com/moby/moby/tree/master/hack           | `k3s/Dockerfile`, `gitea-runner-ubuntu/Dockerfile`                                                                     | 来自 `moby/moby` 的嵌套 Docker 配置                             |
+| 组件             | 版本            | MAJOR 最新版本     | MINOR 最新版本             | PATCH 最新版本             | 查询地址                                                | 引用文件                                                                                                               | 说明                                                            |
+|------------------|-----------------|--------------------|----------------------------|----------------------------|---------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------|
+| Docker CE        | `28.5.2`        | `29.10.0`          | `28.5.2` (已是最新)        | `28.5.2` (已是最新)        | https://download.docker.com/linux/static/stable/x86_64/ | `gitea-runner-ubuntu/Dockerfile` (静态二进制), 各 workflow (`docker/setup-docker-action@v5` with `version: 'v28.5.2'`) | 容器引擎 (28.x 已被 29.x 取代)                                  |
+| Docker CE (apt)  | apt 默认最新    | -                  | -                          | -                          | https://download.docker.com/linux/ubuntu/               | `k3s/Dockerfile`                                                                                                       | 通过 Docker 官方 APT 源安装                                     |
+| containerd.io    | apt 默认最新    | -                  | -                          | -                          | https://download.docker.com/linux/ubuntu/               | `k3s/Dockerfile`                                                                                                       | Docker CE 运行依赖                                              |
+| k3s              | `v1.34.13+k3s1` | `v1.37.2+k3s1`     | `v1.34.13+k3s1` (已是最新) | `v1.34.13+k3s1` (已是最新) | https://update.k3s.io/v1-release/channels               | `k3s/Dockerfile`                                                                                                       | 轻量级 Kubernetes 发行版                                        |
+| tini             | apt 默认最新    | -                  | -                          | -                          | -                                                       | `ubuntu/Dockerfile`                                                                                                    | PID 1 进程管理                                                  |
+| skopeo           | apt 默认最新    | -                  | -                          | -                          | -                                                       | `ubuntu/Dockerfile`                                                                                                    | 镜像同步工具                                                    |
+| yq               | apt 默认最新    | -                  | -                          | -                          | -                                                       | `ubuntu/Dockerfile`                                                                                                    | YAML 处理工具                                                   |
+| Linux 编译工具链 | apt 默认最新    | -                  | -                          | -                          | -                                                       | `gitea-runner-ubuntu/Dockerfile`                                                                                       | build-essential/clang/cmake/ninja-build/pkg-config/libgtk-3-dev |
+| dumbproxy        | `1.52.2`        | `1.52.3`           | `1.52.3`                   | `1.52.3`                   | https://github.com/SenseUnit/dumbproxy/releases         | `dumbproxy/Dockerfile`                                                                                                 | 轻量 HTTP 代理                                                  |
+| MirrorProxy      | `1.7.2-ext6`    | `1.8.0`            | `1.7.3`                    | `1.7.3`                    | https://github.com/inbjo/MirrorProxy/releases           | `mirrorproxy/Dockerfile`                                                                                               | 自部署镜像代理平台 (自建修复版，基于上游 1.7.2)                 |
+| ttyd             | `1.7.7`         | `1.7.7` (已是最新) | `1.7.7` (已是最新)         | `1.7.7` (已是最新)         | https://github.com/tsl0922/ttyd/releases                | `ttyd/Dockerfile`                                                                                                      | Web 终端共享工具                                                |
+| audio.cpp        | `v0.9.5`        | `v0.9.6`           | `v0.9.6`                   | `v0.9.6`                   | https://github.com/0xShug0/audio.cpp/releases           | `audio-cpp/Dockerfile`                                                                                                 | 语音 AI 推理服务 (Vulkan 预编译二进制)                          |
+| unbound          | apt 默认最新    | -                  | -                          | -                          | -                                                       | `unbound/Dockerfile`                                                                                                   | 验证性递归缓存 DNS 解析器                                       |
+| dind 辅助脚本    | `master`        | -                  | -                          | -                          | https://github.com/moby/moby/tree/master/hack           | `k3s/Dockerfile`, `gitea-runner-ubuntu/Dockerfile`                                                                     | 来自 `moby/moby` 的嵌套 Docker 配置                             |
 
 ---
 
 ## 3. Gitea Runner & CI/CD 工具
 
-| 组件           | 版本      | MAJOR 最新版本       | MINOR 最新版本       | PATCH 最新版本       | 查询地址                                        | 引用文件                                                            | 说明                   |
-|----------------|-----------|----------------------|----------------------|----------------------|-------------------------------------------------|---------------------------------------------------------------------|------------------------|
-| Gitea Runner   | `6.0.0`   | `6.0.0` (已是最新)   | `6.0.0` (已是最新)   | `6.0.0` (已是最新)   | https://gitea.com/gitea/runner/releases         | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | CI/CD Runner           |
-| Node.js        | `26.13.1` | `26.13.1` (已是最新) | `26.13.1` (已是最新) | `26.13.1` (已是最新) | https://nodejs.org/dist/index.json              | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | JavaScript 运行时      |
-| Qwen Code      | `0.28.0`  | `0.28.0` (已是最新)  | `0.28.0` (已是最新)  | `0.28.0` (已是最新)  | https://registry.npmjs.org/@qwen-code/qwen-code | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | 终端 AI 编码助手       |
-| kubectl        | `1.37.2`  | `1.37.2` (已是最新)  | `1.37.2` (已是最新)  | `1.37.2` (已是最新)  | https://dl.k8s.io/release/stable.txt            | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 命令行工具  |
-| Helm           | `4.3.2`   | `4.3.2` (已是最新)   | `4.3.2` (已是最新)   | `4.3.2` (已是最新)   | https://github.com/helm/helm/releases           | `gitea-runner-ubuntu/Dockerfile`                                    | Kubernetes 包管理器    |
-| GitHub CLI     | `2.105.0` | `2.105.0` (已是最新) | `2.105.0` (已是最新) | `2.105.0` (已是最新) | https://github.com/cli/cli/releases             | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | GitHub 命令行工具      |
-| Gitea CLI      | `0.16.0`  | `0.16.0` (已是最新)  | `0.16.0` (已是最新)  | `0.16.0` (已是最新)  | https://gitea.com/gitea/tea/releases            | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile` | Gitea 命令行工具       |
-| Rust           | `1.96.0`  | `1.100.0`            | `1.96.0`             | `1.96.0`             | https://static.rust-lang.org/dist/              | `gitea-runner-*/Dockerfile.rust`, `modules/rust.sh`                 | Rust 工具链            |
-| cargo-packager | `0.11.8`  | `0.11.8` (已是最新)  | `0.11.8` (已是最新)  | `0.11.8` (已是最新)  | https://crates.io/crates/cargo-packager         | `gitea-runner-*/Dockerfile.rust`, `modules/rust.sh`                 | Windows/Linux 打包工具 |
+| 组件               | 版本                      | MAJOR 最新版本       | MINOR 最新版本       | PATCH 最新版本       | 查询地址                                                                   | 引用文件                                                                                                                                                     | 说明                        |
+|--------------------|---------------------------|----------------------|----------------------|----------------------|----------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------|
+| Gitea Runner       | `6.0.0`                   | `6.0.1`              | `6.0.1`              | `6.0.1`              | https://gitea.com/gitea/runner/releases                                    | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile`                                                                                          | CI/CD Runner                |
+| Node.js            | `26.13.1`                 | `26.13.1` (已是最新) | `26.13.1` (已是最新) | `26.13.1` (已是最新) | https://nodejs.org/dist/index.json                                         | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile`                                                                                          | JavaScript 运行时           |
+| Qwen Code          | `0.28.0`                  | `0.28.4`             | `0.28.4`             | `0.28.4`             | https://registry.npmjs.org/@qwen-code/qwen-code                            | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile`                                                                                          | 终端 AI 编码助手            |
+| kubectl            | `1.37.2`                  | `1.37.2` (已是最新)  | `1.37.2` (已是最新)  | `1.37.2` (已是最新)  | https://dl.k8s.io/release/stable.txt                                       | `gitea-runner-ubuntu/Dockerfile`                                                                                                                             | Kubernetes 命令行工具       |
+| Helm               | `4.3.2`                   | `4.3.2` (已是最新)   | `4.3.2` (已是最新)   | `4.3.2` (已是最新)   | https://github.com/helm/helm/releases                                      | `gitea-runner-ubuntu/Dockerfile`, `k3s/Dockerfile`                                                                                                           | Kubernetes 包管理器         |
+| GitHub CLI         | `2.105.0`                 | `2.105.0` (已是最新) | `2.105.0` (已是最新) | `2.105.0` (已是最新) | https://github.com/cli/cli/releases                                        | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile`                                                                                          | GitHub 命令行工具           |
+| Gitea CLI          | `0.16.0`                  | `0.16.0` (已是最新)  | `0.16.0` (已是最新)  | `0.16.0` (已是最新)  | https://gitea.com/gitea/tea/releases                                       | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile`                                                                                          | Gitea 命令行工具            |
+| Rust               | `1.96.0`                  | `1.100.0`            | `1.96.0`             | `1.96.0`             | https://static.rust-lang.org/dist/                                         | `gitea-runner-ubuntu/Dockerfile.rust`, `gitea-runner-windows/Dockerfile.rust`, `gitea-runner-ubuntu/modules/rust.sh`, `gitea-runner-windows/modules/rust.sh` | Rust 工具链                 |
+| cargo-packager     | `0.11.8`                  | `0.11.8` (已是最新)  | `0.11.8` (已是最新)  | `0.11.8` (已是最新)  | https://crates.io/crates/cargo-packager                                    | `gitea-runner-ubuntu/Dockerfile.rust`, `gitea-runner-windows/Dockerfile.rust`, `gitea-runner-ubuntu/modules/rust.sh`, `gitea-runner-windows/modules/rust.sh` | Windows/Linux 打包工具      |
+| NSIS               | `3.9`                     | `3.13`               | `3.13`               | `3.9` (已是最新)     | https://github.com/tauri-apps/binary-releases/releases                     | `gitea-runner-windows/modules/common.sh`                                                                                                                     | Windows 安装包制作工具      |
+| ApplicationID 插件 | `nsis-plugins-v0`         | -                    | -                    | -                    | https://github.com/tauri-apps/binary-releases/releases/tag/nsis-plugins-v0 | `gitea-runner-windows/modules/common.sh`                                                                                                                     | NSIS 应用 ID 插件           |
+| nsis_tauri_utils   | `0.2.1`                   | `0.6.1`              | `0.2.1` (已是最新)   | `0.2.1` (已是最新)   | https://github.com/tauri-apps/nsis-tauri-utils/releases                    | `gitea-runner-windows/modules/common.sh`                                                                                                                     | NSIS Tauri 工具插件         |
+| AppImage 打包工具  | `continuous / apprun-old` | -                    | -                    | -                    | https://github.com/linuxdeploy/linuxdeploy-plugin-appimage/releases        | `gitea-runner-ubuntu/modules/common.sh`                                                                                                                      | AppRun/linuxdeploy 工具缓存 |
 
 ---
 
 ## 4. Java 开发环境
 
-| 组件                 | 版本      | MAJOR 最新版本      | MINOR 最新版本      | PATCH 最新版本      | 查询地址                                       | 引用文件                                                                                                                   | 说明                   |
-|----------------------|-----------|---------------------|---------------------|---------------------|------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------|------------------------|
-| OpenJDK 21 (Temurin) | latest GA | -                   | -                   | -                   | https://api.adoptium.net/v3/info/release_names | `gitea-runner-ubuntu/modules/jdk21.sh`, `gitea-runner-ubuntu/modules/flutter.sh`, `gitea-runner-ubuntu/Dockerfile.flutter` | Eclipse Temurin JDK 21 |
-| OpenJDK 25 (Temurin) | latest GA | -                   | -                   | -                   | https://api.adoptium.net/v3/info/release_names | `gitea-runner-ubuntu/modules/jdk25.sh`, `gitea-runner-ubuntu/modules/jmeter.sh`                                            | Eclipse Temurin JDK 25 |
-| GraalVM JDK 21       | latest    | -                   | -                   | -                   | https://www.graalvm.org/downloads/             | `gitea-runner-ubuntu/modules/graalvm-jdk21.sh`                                                                             | Oracle GraalVM JDK 21  |
-| GraalVM JDK 25       | latest    | -                   | -                   | -                   | https://www.graalvm.org/downloads/             | `gitea-runner-ubuntu/modules/graalvm-jdk25.sh`                                                                             | Oracle GraalVM JDK 25  |
-| Apache Maven         | `3.10.1`  | `3.10.1` (已是最新) | `3.10.1` (已是最新) | `3.10.1` (已是最新) | https://github.com/apache/maven/releases       | `gitea-runner-ubuntu/modules/graalvm-jdk21.sh`, `graalvm-jdk25.sh`, `jdk21.sh`, `jdk25.sh` (`common.sh` 提供函数)          | 项目构建工具           |
-| Apache JMeter        | `5.6.3`   | `5.6.3` (已是最新)  | `5.6.3` (已是最新)  | `5.6.3` (已是最新)  | https://github.com/apache/jmeter/releases      | `gitea-runner-ubuntu/modules/jmeter.sh` (`common.sh` 提供函数)                                                             | 性能测试工具           |
+| 组件                 | 版本      | MAJOR 最新版本     | MINOR 最新版本     | PATCH 最新版本     | 查询地址                                       | 引用文件                                                                                                                   | 说明                   |
+|----------------------|-----------|--------------------|--------------------|--------------------|------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------|------------------------|
+| OpenJDK 21 (Temurin) | latest GA | -                  | -                  | -                  | https://api.adoptium.net/v3/info/release_names | `gitea-runner-ubuntu/modules/jdk21.sh`, `gitea-runner-ubuntu/modules/flutter.sh`, `gitea-runner-ubuntu/Dockerfile.flutter` | Eclipse Temurin JDK 21 |
+| OpenJDK 25 (Temurin) | latest GA | -                  | -                  | -                  | https://api.adoptium.net/v3/info/release_names | `gitea-runner-ubuntu/modules/jdk25.sh`, `gitea-runner-ubuntu/modules/jmeter.sh`                                            | Eclipse Temurin JDK 25 |
+| GraalVM JDK 21       | latest    | -                  | -                  | -                  | https://www.graalvm.org/downloads/             | `gitea-runner-ubuntu/modules/graalvm-jdk21.sh`                                                                             | Oracle GraalVM JDK 21  |
+| GraalVM JDK 25       | latest    | -                  | -                  | -                  | https://www.graalvm.org/downloads/             | `gitea-runner-ubuntu/modules/graalvm-jdk25.sh`                                                                             | Oracle GraalVM JDK 25  |
+| Apache Maven         | `3.10.1`  | `3.10.2`           | `3.10.2`           | `3.10.2`           | https://github.com/apache/maven/releases       | `gitea-runner-ubuntu/modules/graalvm-jdk21.sh`, `graalvm-jdk25.sh`, `jdk21.sh`, `jdk25.sh` (`common.sh` 提供函数)          | 项目构建工具           |
+| Apache JMeter        | `5.6.3`   | `5.6.3` (已是最新) | `5.6.3` (已是最新) | `5.6.3` (已是最新) | https://github.com/apache/jmeter/releases      | `gitea-runner-ubuntu/modules/jmeter.sh` (`common.sh` 提供函数)                                                             | 性能测试工具           |
 
 ---
 
@@ -73,7 +77,7 @@
 
 | 组件                       | 版本                   | MAJOR 最新版本             | MINOR 最新版本             | PATCH 最新版本             | 查询地址                                                                          | 引用文件                                                                                                                       | 说明                                            |
 |----------------------------|------------------------|----------------------------|----------------------------|----------------------------|-----------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------|
-| Flutter SDK                | `3.50.0`               | `3.50.0` (已是最新)        | `3.50.0` (已是最新)        | `3.50.0` (已是最新)        | https://storage.googleapis.com/flutter_infra_release/releases/releases_linux.json | `gitea-runner-ubuntu/Dockerfile.flutter`, `gitea-runner-windows/Dockerfile.flutter`, `gitea-runner-windows/modules/flutter.sh` | Flutter 跨平台框架                              |
+| Flutter SDK                | `3.50.0`               | `3.50.1`                   | `3.50.1`                   | `3.50.1`                   | https://storage.googleapis.com/flutter_infra_release/releases/releases_linux.json | `gitea-runner-ubuntu/Dockerfile.flutter`, `gitea-runner-windows/Dockerfile.flutter`, `gitea-runner-windows/modules/flutter.sh` | Flutter 跨平台框架                              |
 | Android Command-line Tools | `16111833`             | `16111833` (已是最新)      | `16111833` (已是最新)      | `16111833` (已是最新)      | https://dl.google.com/android/repository/repository2-3.xml                        | `gitea-runner-ubuntu/Dockerfile.flutter`                                                                                       | Android SDK 命令行工具 (cmdline-tools 23.0)     |
 | Android Platform Tools     | latest                 | -                          | -                          | -                          | https://dl.google.com/android/repository/repository2-3.xml                        | `gitea-runner-ubuntu/Dockerfile.flutter`                                                                                       | ADB 等平台工具                                  |
 | Android SDK Platform 37    | API 37.0 / 37.1 / 37.2 | API 37.2 (已是最新)        | API 37.2 (已是最新)        | API 37.2 (已是最新)        | https://dl.google.com/android/repository/repository2-3.xml                        | `gitea-runner-ubuntu/Dockerfile.flutter`                                                                                       | Android 37 编译平台 (37.0 / 37.1 / 37.2 各一份) |
@@ -138,9 +142,9 @@
 > ComfyUI 版本取数说明：以 GitHub Releases 中实际存在的版本为准，不能以
 > Git tags 为准（仓库可能存在尚未发布 Release 的 tag）。
 
-| 项目    | 仓库                | Commit    | MAJOR 最新版本       | MINOR 最新版本       | PATCH 最新版本       | 查询地址                                      | 引用文件          | 说明              |
-|---------|---------------------|-----------|----------------------|----------------------|----------------------|-----------------------------------------------|-------------------|-------------------|
-| ComfyUI | `Comfy-Org/ComfyUI` | `v0.46.0` | `v0.46.0` | `v0.46.0` (已是最新) | `v0.46.0` (已是最新) | https://github.com/Comfy-Org/ComfyUI/releases | `comfyui/code.sh` | AI 图像生成工作流 |
+| 项目    | 仓库                | Commit    | MAJOR 最新版本 | MINOR 最新版本       | PATCH 最新版本       | 查询地址                                      | 引用文件          | 说明              |
+|---------|---------------------|-----------|----------------|----------------------|----------------------|-----------------------------------------------|-------------------|-------------------|
+| ComfyUI | `Comfy-Org/ComfyUI` | `v0.46.0` | `v0.46.0`      | `v0.46.0` (已是最新) | `v0.46.0` (已是最新) | https://github.com/Comfy-Org/ComfyUI/releases | `comfyui/code.sh` | AI 图像生成工作流 |
 
 ---
 
@@ -180,7 +184,7 @@
 ## 12. 镜像构建依赖与触发顺序 (Phase)
 
 > 下游 Dockerfile 通过 timestamp tag 硬编码引用上游镜像
-> （如 `20261114_214924`）。
+> （如 `20261120_150103`）。
 > Phase 1 构建成功后会自动创建 PR 更新下游 Dockerfile 的 FROM tag（分支 `auto/update-*-base`）。
 > 两个 Phase 的 GitHub `schedule` 已移除（定时队列拥堵导致触发不准时），
 > 改由 gsc-config 仓库的 Gitea 工作流
@@ -198,17 +202,17 @@
 
 ### Phase 2 - 依赖 Phase 1（合并 Phase 1 自动创建的 PR 后触发）
 
-| Workflow                   | 镜像                                                                                                      | 依赖 (Phase 1) | 定时触发              | 引用文件                          |
-|----------------------------|-----------------------------------------------------------------------------------------------------------|----------------|-----------------------|-----------------------------------|
-| `gitea-runner-ubuntu.yml`  | `gitea-runner-ubuntu` + 7 扩展 (jdk21 / jdk25 / graalvm-jdk21 / graalvm-jdk25 / jmeter / flutter / godot) | ubuntu 双架构  | Gitea 触发 周六 03:00 | `gitea-runner-ubuntu/Dockerfile`  |
-| `gitea-runner-windows.yml` | `gitea-runner-windows` + flutter / godot 扩展                                                             | windows        | Gitea 触发 周六 03:00 | `gitea-runner-windows/Dockerfile` |
-| `k3s.yml`                  | `gsc-hub/k3s:<ts>-x86_64`                                                                                 | ubuntu         | Gitea 触发 周六 03:00 | `k3s/Dockerfile`                  |
-| `dumbproxy.yml`            | `gsc-hub/dumbproxy:<ts>-x86_64`                                                                           | ubuntu         | Gitea 触发 周六 03:00 | `dumbproxy/Dockerfile`            |
-| `mirrorproxy.yml`          | `gsc-hub/mirrorproxy:<ts>-x86_64`                                                                         | ubuntu         | Gitea 触发 周六 03:00 | `mirrorproxy/Dockerfile`          |
-| `ttyd.yml`                 | `gsc-hub/ttyd:<ts>-x86_64`                                                                                | ubuntu         | Gitea 触发 周六 03:00 | `ttyd/Dockerfile`                 |
-| `audio-cpp.yml`            | `gsc-hub/audio-cpp:<ts>-x86_64`                                                                           | ubuntu         | Gitea 触发 周六 03:00 | `audio-cpp/Dockerfile`            |
-| `unbound.yml`              | `gsc-hub/unbound:<ts>-x86_64`                                                                             | ubuntu         | Gitea 触发 周六 03:00 | `unbound/Dockerfile`              |
-| `comfyui.yml`              | `gsc-hub/comfyui:<ts>-x86_64`                                                                             | pytorch        | Gitea 触发 周六 03:00 | `comfyui/Dockerfile`              |
+| Workflow                   | 镜像                                                                                                             | 依赖 (Phase 1) | 定时触发              | 引用文件                          |
+|----------------------------|------------------------------------------------------------------------------------------------------------------|----------------|-----------------------|-----------------------------------|
+| `gitea-runner-ubuntu.yml`  | `gitea-runner-ubuntu` + 8 扩展 (jdk21 / jdk25 / graalvm-jdk21 / graalvm-jdk25 / jmeter / flutter / godot / rust) | ubuntu 双架构  | Gitea 触发 周六 03:00 | `gitea-runner-ubuntu/Dockerfile`  |
+| `gitea-runner-windows.yml` | `gitea-runner-windows` + flutter / godot / rust 扩展                                                             | windows        | Gitea 触发 周六 03:00 | `gitea-runner-windows/Dockerfile` |
+| `k3s.yml`                  | `gsc-hub/k3s:<ts>-x86_64`                                                                                        | ubuntu         | Gitea 触发 周六 03:00 | `k3s/Dockerfile`                  |
+| `dumbproxy.yml`            | `gsc-hub/dumbproxy:<ts>-x86_64`                                                                                  | ubuntu         | Gitea 触发 周六 03:00 | `dumbproxy/Dockerfile`            |
+| `mirrorproxy.yml`          | `gsc-hub/mirrorproxy:<ts>-x86_64`                                                                                | ubuntu         | Gitea 触发 周六 03:00 | `mirrorproxy/Dockerfile`          |
+| `ttyd.yml`                 | `gsc-hub/ttyd:<ts>-x86_64`                                                                                       | ubuntu         | Gitea 触发 周六 03:00 | `ttyd/Dockerfile`                 |
+| `audio-cpp.yml`            | `gsc-hub/audio-cpp:<ts>-x86_64`                                                                                  | ubuntu         | Gitea 触发 周六 03:00 | `audio-cpp/Dockerfile`            |
+| `unbound.yml`              | `gsc-hub/unbound:<ts>-x86_64`                                                                                    | ubuntu         | Gitea 触发 周六 03:00 | `unbound/Dockerfile`              |
+| `comfyui.yml`              | `gsc-hub/comfyui:<ts>-x86_64`                                                                                    | pytorch        | Gitea 触发 周六 03:00 | `comfyui/Dockerfile`              |
 
 > `gitea-runner-ubuntu.yml` 和 `gitea-runner-windows.yml` 内部已通过 `needs:` 保证 base 先于扩展构建。
 > `ubuntu.yml` 与 `gitea-runner-ubuntu.yml` 构建 x86_64 与 aarch64 双架构镜像，flutter 扩展仅 x86_64。
@@ -237,12 +241,19 @@
 - 标注为 "已是最新" 表示当前版本即为该版本线的最新版本。
 - 「版本」列为代码库当前锁定的值，三个「最新版本」列为上游对应版本线的最新 GA；
   两者不一致的行需手动修改对应 Dockerfile 的 `FROM` / `ARG` / `ENV` 才能升级，
-  版本号不会自动跟进。其中 Docker CE、k3s、Android SDK Platform 36/35、
+  版本号不会自动跟进。Docker CE、k3s、Rust、NSIS、Android SDK Platform 36/35、
   build-tools 36/35、NDK 28、CMake 的当前版本已是所在版本线最新，但上游已有
-  更新的主版本线（见 MAJOR 列）。
-- 当前「版本」列落后于上游的组件：MirrorProxy（`v1.7.2-ext6` → 上游最新    
-  `v1.8.0`）；其余组件（如 Helm `4.3.2`、Flutter `3.50.0`、Godot `4.7.2`） 
-  均与上游最新版本一致。                                                   
+  更新的版本线（见 MAJOR 列）。
+- 当前锁定版本落后于所在版本线最新发布的组件：Ubuntu（`stonking-20261105.1`
+  → `stonking-20261117.1`）、dumbproxy（`1.52.2` → `1.52.3`）、MirrorProxy
+  （`v1.7.2-ext6` → 上游 `v1.8.0`，1.7 线为 `v1.7.3`）、audio.cpp
+  （`v0.9.5` → `v0.9.6`）、Gitea Runner（`6.0.0` → `6.0.1`）、Qwen Code
+  （`0.28.0` → `0.28.4`）、Apache Maven（`3.10.1` → `3.10.2`）、Flutter
+  （`3.50.0` → `3.50.1`）、nsis_tauri_utils（`0.2.1` → `0.6.1`）。
+- 其余组件与上游最新 GA 一致：pytorch/pytorch `2.15.0`、Helm `4.3.2`、
+  Node.js `26.13.1`、kubectl `1.37.2`、GitHub CLI `2.105.0`、Gitea CLI
+  `0.16.0`、cargo-packager `0.11.8`、JMeter `5.6.3`、Godot `4.7.2`、
+  ComfyUI `v0.46.0` 等；GitHub Actions 均使用主版本浮标签。
 - `torchcodec` `0.17.*` 以通配补丁位锁定，构建时自动取该版本线最新补丁，无需手动跟进；
   `torch` / `torchvision` / `torchaudio` 由 `pytorch/pytorch` 基镜像提供，跟随基镜像 tag 变更。
 - `pytorch/pytorch` 同一 torch 版本另有 `2.15.0-cuda13.2-cudnn9-runtime` 变体，
@@ -257,9 +268,9 @@
 - GitHub Actions 使用主版本浮标签（如 `actions/checkout@v7`），
   workflow 会自动跟随该主版本线的最新发布，无需逐次修改版本号。
 - 标注为 "apt 默认最新" 的组件未锁定具体版本号，随 Ubuntu 仓库更新而变化。
-- Apache Maven 上游 `4.0.0-rc-7` 为 RC 版本，按 GA 口径不计入，MAJOR 列取最新
-  正式版 `3.10.1`；该版本已发布到 Maven Central 与 dlcdn，当前锁定版本即     
-  `3.10.1`，无落后补丁。                                                     
+- Apache Maven 上游 `4.0.0-rc-7` 仍为 RC 版本，按 GA 口径不计入，MAJOR 列取最新
+  正式版 `3.10.2`；该版本已发布到 Maven Central 与 dlcdn，当前锁定 `3.10.1`
+  仍可升级一个补丁版本。
 - Godot 版本由构建参数 `GODOT_VERSION` 指定（当前 `4.7.2`），须与工程内的
   `GODOT_VERSION` 及导出模板目录名（`4.7.2.stable`）保持一致；导出模板只保留
   Web 与 Windows 平台以控制镜像体积。Windows 侧的解压依赖 7-Zip。
@@ -267,8 +278,17 @@
   无上游版本可查（可在镜像内用 `apt-cache policy <包名>` 验证实际安装版本）。
 - `audio.cpp` 另有模型变体 tag（如 `v0.9.2-drama3-base-small`）与应用版本同源，
   不计入版本线比较；「版本」列按 Dockerfile 中锁定的应用版本记录。
-- `MirrorProxy` 使用自建修复版标签 `v1.7.2-ext6`（基于上游 `v1.7.2`），
-  用于修正上游原版问题；版本线比较仍按上游 `1.7.2` 计。上游 `1.7` 线
-  最新为 `1.7.3`，并已发布 `1.8.0`（MAJOR 列），自建修复版尚未跟进。
+- `MirrorProxy` 上游仓库为 `inbjo/MirrorProxy`，自建修复版标签
+  `v1.7.2-ext6`（基于上游 `v1.7.2`）用于修正上游原版问题；版本线比较仍按
+  上游 `1.7.2` 计。上游 `1.7` 线最新为 `1.7.3`，并已发布 `1.8.0`
+  （MAJOR 列），自建修复版尚未跟进。
+- Rust 扩展镜像的 Rust 工具链锁定 `1.96.0`（与项目的 `rust-toolchain.toml`
+  对齐），上游 stable 已发布 `1.100.0`；cargo-packager `0.11.8` 的 NSIS 缓存
+  固定使用 NSIS `3.9`，虽然上游已有 `3.13`，升级 cargo-packager 前不宜单独
+  调整缓存版本。Linux 侧 AppImage 工具使用上游 `continuous` / `apprun-old`
+  滚动产物，无固定版本号。
+- 自建基础镜像的引用 tag 已同步为 `20261120_150103`（ubuntu）、
+  `20261120_150130`（pytorch）与 `20261120_150116`（windows），与各下游
+  Dockerfile 的 `FROM` 保持一致；下次 Phase 1 构建后由自动 PR 更新。
 - AI 模型项目通过 git commit hash 或 tag 锁定代码版本，具体依赖（如 `requirements.txt`）在构建时从上游仓库动态拉取。
 - 本仓库不存在 `requirements.txt`、`package.json`、`pom.xml`、`go.mod` 等传统依赖声明文件。
