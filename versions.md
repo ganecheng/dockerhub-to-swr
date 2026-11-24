@@ -2,7 +2,7 @@
 
 > 本文件统计本仓库中所有 Dockerfile、GitHub Actions workflow 和 shell 脚本引用的开源组件版本号。
 >
-> 最后更新：2026-11-23
+> 最后更新：2026-11-25
 
 ---
 
@@ -51,11 +51,11 @@
 | Helm               | `4.3.2`                   | `4.3.2` (已是最新)   | `4.3.2` (已是最新)   | `4.3.2` (已是最新)   | https://github.com/helm/helm/releases                                      | `gitea-runner-ubuntu/Dockerfile`, `k3s/Dockerfile`                                                                                                           | Kubernetes 包管理器         |
 | GitHub CLI         | `2.105.0`                 | `2.105.0` (已是最新) | `2.105.0` (已是最新) | `2.105.0` (已是最新) | https://github.com/cli/cli/releases                                        | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile`                                                                                          | GitHub 命令行工具           |
 | Gitea CLI          | `0.16.0`                  | `0.16.0` (已是最新)  | `0.16.0` (已是最新)  | `0.16.0` (已是最新)  | https://gitea.com/gitea/tea/releases                                       | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile`                                                                                          | Gitea 命令行工具            |
-| Rust               | `1.96.0`                  | `1.100.0`            | `1.96.0`             | `1.96.0`             | https://static.rust-lang.org/dist/                                         | `gitea-runner-ubuntu/Dockerfile.rust`, `gitea-runner-windows/Dockerfile.rust`, `gitea-runner-ubuntu/modules/rust.sh`, `gitea-runner-windows/modules/rust.sh` | Rust 工具链                 |
+| Rust               | `1.96.0`                  | `1.100.0`            | `1.96.1`             | `1.96.1`             | https://static.rust-lang.org/dist/                                         | `gitea-runner-ubuntu/Dockerfile.rust`, `gitea-runner-windows/Dockerfile.rust`, `gitea-runner-ubuntu/modules/rust.sh`, `gitea-runner-windows/modules/rust.sh` | Rust 工具链                 |
 | cargo-packager     | `0.11.8`                  | `0.11.8` (已是最新)  | `0.11.8` (已是最新)  | `0.11.8` (已是最新)  | https://crates.io/crates/cargo-packager                                    | `gitea-runner-ubuntu/Dockerfile.rust`, `gitea-runner-windows/Dockerfile.rust`, `gitea-runner-ubuntu/modules/rust.sh`, `gitea-runner-windows/modules/rust.sh` | Windows/Linux 打包工具      |
 | NSIS               | `3.9`                     | `3.13`               | `3.13`               | `3.9` (已是最新)     | https://github.com/tauri-apps/binary-releases/releases                     | `gitea-runner-windows/modules/common.sh`                                                                                                                     | Windows 安装包制作工具      |
 | ApplicationID 插件 | `nsis-plugins-v0`         | -                    | -                    | -                    | https://github.com/tauri-apps/binary-releases/releases/tag/nsis-plugins-v0 | `gitea-runner-windows/modules/common.sh`                                                                                                                     | NSIS 应用 ID 插件           |
-| nsis_tauri_utils   | `0.2.1`                   | `0.6.1`              | `0.2.1` (已是最新)   | `0.2.1` (已是最新)   | https://github.com/tauri-apps/nsis-tauri-utils/releases                    | `gitea-runner-windows/modules/common.sh`                                                                                                                     | NSIS Tauri 工具插件         |
+| nsis_tauri_utils   | `0.2.1`                   | `0.6.1`              | `0.2.2`              | `0.2.2`              | https://github.com/tauri-apps/nsis-tauri-utils/releases                    | `gitea-runner-windows/modules/common.sh`                                                                                                                     | NSIS Tauri 工具插件         |
 | AppImage 打包工具  | `continuous / apprun-old` | -                    | -                    | -                    | https://github.com/linuxdeploy/linuxdeploy-plugin-appimage/releases        | `gitea-runner-ubuntu/modules/common.sh`                                                                                                                      | AppRun/linuxdeploy 工具缓存 |
 
 ---
@@ -241,7 +241,7 @@
 - 标注为 "已是最新" 表示当前版本即为该版本线的最新版本。
 - 「版本」列为代码库当前锁定的值，三个「最新版本」列为上游对应版本线的最新 GA；
   两者不一致的行需手动修改对应 Dockerfile 的 `FROM` / `ARG` / `ENV` 才能升级，
-  版本号不会自动跟进。Docker CE、k3s、Rust、NSIS、Android SDK Platform 36/35、
+  版本号不会自动跟进。Docker CE、k3s、NSIS、Android SDK Platform 36/35、
   build-tools 36/35、NDK 28、CMake 的当前版本已是所在版本线最新，但上游已有
   更新的版本线（见 MAJOR 列）。
 - 当前锁定版本落后于所在版本线最新发布的组件：Ubuntu（`stonking-20261105.1`
@@ -249,7 +249,8 @@
   （`v1.7.2-ext6` → 上游 `v1.8.0`，1.7 线为 `v1.7.3`）、audio.cpp
   （`v0.9.5` → `v0.9.6`）、Gitea Runner（`6.0.0` → `6.0.1`）、Qwen Code
   （`0.28.0` → `0.28.4`）、Apache Maven（`3.10.1` → `3.10.2`）、Flutter
-  （`3.50.0` → `3.50.1`）、nsis_tauri_utils（`0.2.1` → `0.6.1`）。
+  （`3.50.0` → `3.50.1`）、Rust（`1.96.0` → `1.96.1`）、nsis_tauri_utils
+  （`0.2.1` → `0.2.2`，MAJOR 列为 `0.6.1`）。
 - 其余组件与上游最新 GA 一致：pytorch/pytorch `2.15.0`、Helm `4.3.2`、
   Node.js `26.13.1`、kubectl `1.37.2`、GitHub CLI `2.105.0`、Gitea CLI
   `0.16.0`、cargo-packager `0.11.8`、JMeter `5.6.3`、Godot `4.7.2`、
@@ -283,10 +284,10 @@
   上游 `1.7.2` 计。上游 `1.7` 线最新为 `1.7.3`，并已发布 `1.8.0`
   （MAJOR 列），自建修复版尚未跟进。
 - Rust 扩展镜像的 Rust 工具链锁定 `1.96.0`（与项目的 `rust-toolchain.toml`
-  对齐），上游 stable 已发布 `1.100.0`；cargo-packager `0.11.8` 的 NSIS 缓存
-  固定使用 NSIS `3.9`，虽然上游已有 `3.13`，升级 cargo-packager 前不宜单独
-  调整缓存版本。Linux 侧 AppImage 工具使用上游 `continuous` / `apprun-old`
-  滚动产物，无固定版本号。
+  对齐），上游 stable 已发布 `1.100.0`，1.96 线另有补丁版 `1.96.1`；
+  cargo-packager `0.11.8` 的 NSIS 缓存固定使用 NSIS `3.9`，虽然上游已有
+  `3.13`，升级 cargo-packager 前不宜单独调整缓存版本。Linux 侧 AppImage 工具
+  使用上游 `continuous` / `apprun-old` 滚动产物，无固定版本号。
 - 自建基础镜像的引用 tag 已同步为 `20261120_150103`（ubuntu）、
   `20261120_150130`（pytorch）与 `20261120_150116`（windows），与各下游
   Dockerfile 的 `FROM` 保持一致；下次 Phase 1 构建后由自动 PR 更新。
