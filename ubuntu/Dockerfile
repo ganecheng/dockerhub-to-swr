@@ -1,5 +1,5 @@
 # 基础镜像：Ubuntu 26.10 (stonking)
-FROM ubuntu:stonking-20261105.1
+FROM ubuntu:stonking-20261117.1
 
 # 环境变量：禁止 apt 交互式提示
 ENV DEBIAN_FRONTEND=noninteractive
