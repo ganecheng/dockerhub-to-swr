@@ -46,10 +46,10 @@
 |--------------------|---------------------------|----------------------|----------------------|----------------------|----------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------|
 | Gitea Runner       | `6.0.1`                   | `6.0.1` (已是最新) | `6.0.1` (已是最新) | `6.0.1` (已是最新) | https://gitea.com/gitea/runner/releases                                    | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile`                                                                                          | CI/CD Runner                |
 | Node.js            | `26.13.1`                 | `26.13.1` (已是最新) | `26.13.1` (已是最新) | `26.13.1` (已是最新) | https://nodejs.org/dist/index.json                                         | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile`                                                                                          | JavaScript 运行时           |
-| Qwen Code          | `0.28.4`                  | `0.28.7`            | `0.28.7`            | `0.28.7`            | https://registry.npmjs.org/@qwen-code/qwen-code                            | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile`                                                                                          | 终端 AI 编码助手            |
-| kubectl            | `1.37.2`                  | `1.37.3`            | `1.37.3`            | `1.37.3`            | https://dl.k8s.io/release/stable.txt                                       | `gitea-runner-ubuntu/Dockerfile`                                                                                                                             | Kubernetes 命令行工具       |
+| Qwen Code          | `0.28.7`                  | `0.28.7` (已是最新) | `0.28.7` (已是最新) | `0.28.7` (已是最新) | https://registry.npmjs.org/@qwen-code/qwen-code                            | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile`                                                                                          | 终端 AI 编码助手            |
+| kubectl            | `1.37.3`                  | `1.37.3` (已是最新) | `1.37.3` (已是最新) | `1.37.3` (已是最新) | https://dl.k8s.io/release/stable.txt                                       | `gitea-runner-ubuntu/Dockerfile`                                                                                                                             | Kubernetes 命令行工具       |
 | Helm               | `4.3.2`                   | `4.3.2` (已是最新)   | `4.3.2` (已是最新)   | `4.3.2` (已是最新)   | https://github.com/helm/helm/releases                                      | `gitea-runner-ubuntu/Dockerfile`, `k3s/Dockerfile`                                                                                                           | Kubernetes 包管理器         |
-| GitHub CLI         | `2.105.0`                 | `2.106.0`            | `2.106.0`            | `2.106.0`            | https://github.com/cli/cli/releases                                        | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile`                                                                                          | GitHub 命令行工具           |
+| GitHub CLI         | `2.106.0`                 | `2.106.0` (已是最新) | `2.106.0` (已是最新) | `2.106.0` (已是最新) | https://github.com/cli/cli/releases                                        | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile`                                                                                          | GitHub 命令行工具           |
 | Gitea CLI          | `0.16.0`                  | `0.16.0` (已是最新)  | `0.16.0` (已是最新)  | `0.16.0` (已是最新)  | https://gitea.com/gitea/tea/releases                                       | `gitea-runner-ubuntu/Dockerfile`, `gitea-runner-windows/Dockerfile`                                                                                          | Gitea 命令行工具            |
 | Rust               | `1.96.0`                  | `1.100.0`            | `1.96.1`             | `1.96.1`             | https://static.rust-lang.org/dist/                                         | `gitea-runner-ubuntu/Dockerfile.rust`, `gitea-runner-windows/Dockerfile.rust`, `gitea-runner-ubuntu/modules/rust.sh`, `gitea-runner-windows/modules/rust.sh` | Rust 工具链                 |
 | cargo-packager     | `0.11.8`                  | `0.11.8` (已是最新)  | `0.11.8` (已是最新)  | `0.11.8` (已是最新)  | https://crates.io/crates/cargo-packager                                    | `gitea-runner-ubuntu/Dockerfile.rust`, `gitea-runner-windows/Dockerfile.rust`, `gitea-runner-ubuntu/modules/rust.sh`, `gitea-runner-windows/modules/rust.sh` | Windows/Linux 打包工具      |
@@ -246,11 +246,11 @@
   更新的版本线（见 MAJOR 列）。
 - 当前锁定版本落后于所在版本线最新发布的组件：MirrorProxy（`v1.7.2-ext6`
   → 上游 `v1.8.1`，1.7 线为 `v1.7.3`）、Rust（`1.96.0` → `1.96.1`）、
-  GitHub CLI（`2.105.0` → `2.106.0`）、kubectl（`1.37.2` → `1.37.3`）、
-  Qwen Code（`0.28.4` → `0.28.7`）、nsis_tauri_utils（`0.2.1` → `0.2.2`，
+  nsis_tauri_utils（`0.2.1` → `0.2.2`，
   MAJOR 列为 `0.6.1`）。
 - 其余组件与上游最新 GA 一致：pytorch/pytorch `2.15.0`、Helm `4.3.2`、
   Node.js `26.13.1`、Gitea Runner `6.0.1`、Gitea CLI `0.16.0`、
+  Qwen Code `0.28.7`、GitHub CLI `2.106.0`、kubectl `1.37.3`、
   cargo-packager `0.11.8`、JMeter `5.6.3`、Godot `4.7.2`、dumbproxy
   `1.52.3`、ttyd `1.7.7`、audio.cpp `v0.9.6`、ComfyUI `v0.46.0` 等；
   GitHub Actions 均使用主版本浮标签。
