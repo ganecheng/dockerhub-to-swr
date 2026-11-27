@@ -2,7 +2,7 @@
 ARG BASE_ARCH=x86_64
 
 # 基础镜像：Ubuntu 26.10 (stonking)
-FROM ghcr.io/ganecheng/ubuntu:20261120_150103-${BASE_ARCH}
+FROM ghcr.io/ganecheng/ubuntu:20261127_150040-${BASE_ARCH}
 
 # 构建参数：Gitea Runner 版本号
 ARG GITEA_RUNNER_VERSION=6.0.1
