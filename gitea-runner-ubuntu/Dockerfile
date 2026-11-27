@@ -11,13 +11,13 @@ ARG DOCKER_VERSION=28.5.2
 # 构建参数：Node.js 版本号
 ARG NODE_VERSION=26.13.1
 # 构建参数：Qwen Code 版本号
-ARG QWEN_CODE_VERSION=0.28.4
+ARG QWEN_CODE_VERSION=0.28.7
 # 构建参数：kubectl 版本号
-ARG KUBECTL_VERSION=1.37.2
+ARG KUBECTL_VERSION=1.37.3
 # 构建参数：Helm 版本号
 ARG HELM_VERSION=4.3.2
 # 构建参数：GitHub CLI (gh) 版本号
-ARG GH_VERSION=2.105.0
+ARG GH_VERSION=2.106.0
 # 构建参数：Gitea CLI (tea) 版本号
 ARG TEA_VERSION=0.16.0
 # 构建参数：Runner 默认标签的架构后缀（x86_64 构建为空，aarch64 构建为 -aarch64）
